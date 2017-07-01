@@ -29,8 +29,6 @@ bool escape_button = false;
 //5. make puzzle effect from jigsaw puzzle game!
 //6. fix the bug with returnin J and T figure to the base!(upd: they're not the only one) DONE!
 
-//git_hub test2
-
 int lvl_amount = 10; //read that value from binary
 
 int SDL_main(int argc, char *argv[])
@@ -85,16 +83,15 @@ int SDL_main(int argc, char *argv[])
 	  if(level){
 	       if(level->update() == LEVEL_COMPLETE){
 		    uint32_t time_result = level->total_time();
+		    Level_Info info;
+		    read_level_info(info, lvl);
 		    
-		    Document doc;
-		    read_bin(doc);
-		    {
-			 Level_Info info;
-			 read_level_info(info, lvl);
-		    
-			 if(info.time == 0 || (info.time > time_result))
-			      info.time = time_result;
-		    }
+		    if(info.time == 0 || (info.time > time_result))
+			info.time = time_result;
+		    if(info.status == 0)
+			info.status = 1;
+
+		    update_level_info(info, lvl);
 		    
 		    lvl++;
 		    if(lvl > lvl_amount){
@@ -102,12 +99,13 @@ int SDL_main(int argc, char *argv[])
 			 lvl = 1;
 		    }
 
-		    Level_Info info;
-		    read_level_info(info, lvl);
-		    if(!info.status)
-			 info.status = 1;
+		    Level_Info info2;
+		    read_level_info(info2, lvl);
+		    if(!info2.status)
+			 info2.status = 1;
+		    update_level_info(info2, lvl);
 
-		    level->next_level(info);
+		    level->next_level(info2);
 		    printf("Level #%d\n",lvl);
 	       }
 
