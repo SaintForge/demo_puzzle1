@@ -29,7 +29,7 @@ bool escape_button = false;
 //5. make puzzle effect from jigsaw puzzle game!
 //6. fix the bug with returnin J and T figure to the base!(upd: they're not the only one) DONE!
 
-//git_hub test
+//git_hub test1
 
 int lvl_amount = 10; //read that value from binary
 
