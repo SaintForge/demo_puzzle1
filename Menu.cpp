@@ -9,7 +9,7 @@
 #include "Menu.h"
 
 SDL_Texture* init_texture(const char* path){
-     SDL_Renderer* RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer* RenderScreen = Window_Info::get_renderer();
 
      SDL_Texture *tmp_texture = NULL;
      SDL_Surface *tmp_surface = NULL;
@@ -83,8 +83,8 @@ Main_Menu* init_menu(){
      	  return NULL;
      }
 
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      int w = 300;
      int h = 100;
@@ -101,7 +101,7 @@ Main_Menu* init_menu(){
      menu->hit_button = -1;
 
      update_menu(menu);
-     SDL_RenderClear(Window_Info::get_window_info().get_renderer());
+     SDL_RenderClear(Window_Info::get_renderer());
 
      menu->background_area.x = 0;
      menu->background_area.y = 0;
@@ -143,8 +143,8 @@ void return_to_main(Main_Menu *menu){
 	  menu->buttons.clear();
 
 
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      int w = 300;
      int h = 100;
@@ -161,8 +161,8 @@ void select_layer(std::vector<Button> &buttons, std::vector<std::string> &text){
      if(!buttons.empty())
 	  buttons.clear();
      
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      int w = 300;
      int h = 100;
@@ -192,8 +192,8 @@ namespace patch
 }
 
 void init_level_buttons(Main_Menu *menu, int start){
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      menu->buttons[1].pos.x = (width >> 1) - (menu->buttons[1].pos.w>>1);
      menu->buttons[1].pos.y = height - (menu->buttons[1].pos.h);
@@ -370,7 +370,7 @@ int handle_event(Main_Menu* menu, SDL_Event *event){
 }
 
 void draw_button(Button &button, TTF_Font *& font, uint8_t r, uint8_t g, uint8_t b, bool level){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Color color = {r, g, b};
 
@@ -406,7 +406,7 @@ void draw_button(Button &button, TTF_Font *& font, uint8_t r, uint8_t g, uint8_t
 
 
 void draw_level_info(Button &button, Uint32 milliseconds, TTF_Font *&font, bool active){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
 
      SDL_Color color;
@@ -465,7 +465,7 @@ void update_menu(Main_Menu *menu){
      if(menu == NULL)
 	  return;
 
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      // SDL_RenderCopy(RenderScreen, menu->background_texture, 0, &menu->background_area);
      

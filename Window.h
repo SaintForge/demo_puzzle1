@@ -7,24 +7,30 @@
 
 class Window_Info{
 public:
-     static Window_Info& get_window_info(){
-	  static Window_Info window_info;
-	  return window_info;
-     }
+    static SDL_Renderer* get_renderer(){
+	return get_window_info().renderer;
+    }
+    static SDL_Window* get_window(){
+	return get_window_info().window;
+    }
      
-     SDL_Renderer* get_renderer();
-     SDL_Window* get_window();
-     
-     uint32_t get_height();     
-     uint32_t get_width();
-     
+    static uint32_t get_height(){
+	return get_window_info().window_height;
+    }
+    static uint32_t get_width(){
+	return get_window_info().window_width;
+    }
 private:
      Window_Info();
      ~Window_Info();
 
      Window_Info(Window_Info const&);
      void operator=(Window_Info const&);
-     
+
+    static Window_Info& get_window_info(){
+	static Window_Info window_info;
+	return window_info;
+    }
 private:
      SDL_Window* window;
      SDL_Renderer* renderer;

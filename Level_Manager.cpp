@@ -8,8 +8,8 @@
 
 Level_Manager::Level_Manager(){
      printf("Level_Manager()::Level_Manager()\n");
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
      
      grid_area.x = 0; grid_area.y = 0;
      grid_area.w = width;
@@ -80,7 +80,7 @@ Level_Manager::~Level_Manager(){
 }
 
 void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Surface* tmp_surface;
      SDL_Texture* tmp_texture;
      
@@ -110,8 +110,8 @@ void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
 void Level_Manager::next_level(Level_Info &info){
      figure_manager.change_figures(info.figures, info.angles);
      
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
      
      int x = width>>1;
      int y = menu_bar_area.h + (height - figure_manager.get_idle_zone().h)>>1;
@@ -205,7 +205,7 @@ int Level_Manager::update(){
 }
 
 void Level_Manager::draw(){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
 
      // SDL_RenderCopy(RenderScreen, grid_texture, NULL, &grid_area);
@@ -260,7 +260,7 @@ void Level_Manager::draw(){
 }
 
 void Level_Manager::draw_timer(uint8_t r, uint8_t g, uint8_t b){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      timer_text.str("");
      if(!level_complete){

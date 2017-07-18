@@ -9,8 +9,8 @@
 
 Figure_Manager::Figure_Manager(){
      printf("Figure_Manager()\n");
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
      
      // default_zone.w = block_width * 10;
      // default_zone.h = height;
@@ -198,7 +198,7 @@ void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Ty
 }
 
 void Figure_Manager::load_effect(const char* path){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Surface* tmp_surface;
      SDL_Texture* tmp_texture;
      
@@ -266,8 +266,8 @@ bool Figure_Manager::is_attached(int index){
 void Figure_Manager::handle_event(SDL_Event &event){
      if(figure_container.empty())
 	  return;
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
 #ifdef ANDROID
      printf("SAS!\n");
@@ -586,8 +586,8 @@ void Figure_Manager::release_figure(){
 
 bool Figure_Manager::check_edge_collision(){
      SDL_Point fig_cntr = figure_container[current]->get_center();
-     int width = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      if(fig_cntr.x < 0 || fig_cntr.y < 0)
 	  return true;
@@ -651,8 +651,8 @@ void Figure_Manager::return_to_idle_zone(int index){
 
 void Figure_Manager::update(){
      float time_dx = (SDL_GetTicks() - start_ticks) / 1000.0f;
-     int width  = Window_Info::get_window_info().get_width();
-     int height = Window_Info::get_window_info().get_height();
+     int width  = Window_Info::get_width();
+     int height = Window_Info::get_height();
 
      if(restart_figures && !idle){
 	  bool clear = true;
@@ -821,7 +821,7 @@ void Figure_Manager::draw_shadow(int index){
 
      uint8_t alpha_shadow = 100;
 
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Point *shell = figure_container[index]->get_shell();
      int size = figure_container[index]->get_size();
      
@@ -843,7 +843,7 @@ void Figure_Manager::draw_shadow(int index){
 }
 
 void Figure_Manager::draw(){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      
      for (int i = 0; i < figure_container.size(); i++) {
 	  draw_shadow(O[i]);
@@ -881,7 +881,7 @@ void Figure_Manager::animate_stick_effect(){
      }
      stick_effect_alpha -= 5;
 
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Point *shell = figure_container[stick_effect_index]->get_shell();
      int size = get_activeblock_size();
      for (int i = 0; i < 4; i++) {

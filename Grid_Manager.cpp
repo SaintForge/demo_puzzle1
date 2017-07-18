@@ -329,7 +329,7 @@ bool Grid_Manager::unattach_figure(int index){
 void Grid_Manager::draw(){
      if(!texture)
 	  return;
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Rect rect;
      rect.w = size;
@@ -358,7 +358,7 @@ void Grid_Manager::draw(){
 }
 
 bool Grid_Manager::animate_start(){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Rect cur_rect;
      int x_start,y_start;
@@ -411,7 +411,7 @@ bool Grid_Manager::animate_start(){
 }
 
 void Grid_Manager::load_grid_texture(SDL_Texture*& text, const char* path){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Surface* tmp_surface;
      SDL_Texture* tmp_texture;
      

@@ -20,21 +20,12 @@
 bool is_running    = true;
 bool escape_button = false;
 
-//TODO:
-//0. fix that bug with rotation stuck when you pick it from the default zone DONE!
-//1. make a structure containing all textures DONE!
-//2. make some IO stuff, at least for creating the levels 
-//3. add a stick animation 
-//4. rotate source image of the T_figure! DONE!
-//5. make puzzle effect from jigsaw puzzle game!
-//6. fix the bug with returnin J and T figure to the base!(upd: they're not the only one) DONE!
-
-int lvl_amount = 10; //read that value from binary
+int lvl_amount = 10; //TODO:read that value from binary
 
 int SDL_main(int argc, char *argv[])
 {
      srand(time(NULL));
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      Level_Manager *level = nullptr;
      int lvl = 0;
@@ -61,8 +52,6 @@ int SDL_main(int argc, char *argv[])
 			 printf("Loading level %d\n",lvl);
 			 level = new Level_Manager();
 
-			 Document doc;
-			 read_bin(doc);
 			 Level_Info info;
 			 read_level_info(info, lvl);
 			 

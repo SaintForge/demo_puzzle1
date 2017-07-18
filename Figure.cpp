@@ -225,7 +225,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 }
 
 void Figure::load_figure_image(const char *path){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Surface* tmp_surface;
      SDL_Texture* tmp_texture;
      
@@ -451,7 +451,7 @@ void Figure::rotate_shell(float angle_dx){
 void Figure::update_angle(float angle_dt){ angle += angle_dt; }
 
 void Figure::draw(){
-     SDL_Renderer *RenderScreen = Window_Info::get_window_info().get_renderer();
+     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Point ff_center;
      ff_center.y = center.y - sprite_area.y;
