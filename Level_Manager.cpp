@@ -160,10 +160,7 @@ int Level_Manager::handle_event(SDL_Event &event){
 	       }
 	  }
      }
-     // else if(event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT){
-	  
-     // }
-
+     
      return LEVEL_INCOMPLETE;
 }
 
