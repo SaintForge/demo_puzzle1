@@ -38,7 +38,7 @@ Window_Info::Window_Info(){
 	  else
 	  {
 	       window = SDL_CreateWindow("Test",
-					 100,
+					 SDL_WINDOWPOS_CENTERED,
 					 25,
 					 window_width,
 					 window_height,

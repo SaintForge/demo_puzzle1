@@ -77,7 +77,7 @@ int read_number(Text_Iterator &first){
      return result;
 }
 
-void read_variable(Document &doc, Text_Iterator &start, std::string str, int& variable){
+void read_variable(Document &doc, Text_Iterator &start, const std::string &str, int& variable){
      auto it = find_txt(start, doc.end(), str);
      if(it == doc.end())
 	  cout << "Failed to find - \"" << str << "\"\n";
@@ -147,14 +147,14 @@ void read_bin(Document &doc){
      file >> doc;
      file.close();
 }
-Text_Iterator get_level_iterator(Document &doc, int number){
-     std::string lvl_number = "#";
-     lvl_number.append(std::to_string(number));
+Text_Iterator get_level_iterator(Document &doc, int number, const std::string& lvl_mode){
+    std::string lvl_number = "#";
+    lvl_number.append(std::to_string(number));
 
-     Text_Iterator it = doc.begin();
-     it = find_txt(it, doc.end(), lvl_number);
+    Text_Iterator it = find_txt(doc.begin(), doc.end(), lvl_mode);
+    it = find_txt(it, doc.end(), lvl_number);
 
-     return it;
+    return it;
 }
 
 bool read_figures(Document &doc, Level_Info& lvl, Text_Iterator& it, int lvl_number){
@@ -276,13 +276,11 @@ bool read_grid(Level_Info& lvl,
      return true;
 }
 
-bool read_level_info(Level_Info& lvl, int lvl_number){
+bool read_level_info(Document& doc, Text_Iterator& it,Level_Info& lvl, int lvl_number, const std::string& lvl_mode){
      if(lvl_number < 1) return false;
 
-     Document doc;
-     read_bin(doc);
-
-     Text_Iterator it = get_level_iterator(doc, lvl_number);
+     if(it == doc.begin())
+	 it = get_level_iterator(doc, lvl_number, lvl_mode);
      if(it == doc.end()){
 	  cout << "Failed to find - " << lvl_number << "\n";
 	  return false;
@@ -305,13 +303,13 @@ bool read_level_info(Level_Info& lvl, int lvl_number){
 
 
 
-void update_level_info(Level_Info& lvl, int lvl_number){
+void update_level_info(Level_Info& lvl, int lvl_number, const std::string& lvl_mode){
      if(lvl_number < 1) return;
 
      Document doc;
      read_bin(doc);
      
-     Text_Iterator it = get_level_iterator(doc, lvl_number);
+     Text_Iterator it = get_level_iterator(doc, lvl_number, lvl_mode);
      if(it == doc.end()){
 	  cout << "Failed to find - " << lvl_number << "\n";
 	  return;

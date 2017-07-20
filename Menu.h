@@ -22,8 +22,6 @@ static const char* font_path = "data/Karmina-Bold.otf";
 
 static const int font_size = 40;
 
-extern int lvl_amount;
-
 #define GAME_EXIT 9000
 #define MENU_EXIT 9001
 #define MENU_OK   9002

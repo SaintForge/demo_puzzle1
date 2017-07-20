@@ -211,6 +211,13 @@ void init_level_buttons(Main_Menu *menu, int start){
      menu->buttons[2].text = "Next";
 
      int buttons_amount = 0;
+     int lvl_amount = 0;
+     {
+	 Document doc;
+	 read_bin(doc);
+	 read_variable(doc, doc.begin(), "easy", lvl_amount);
+	 printf("lvl_amount = %d\n",lvl_amount);
+     }
      if(start < lvl_amount)
 	  buttons_amount = (lvl_amount - start) % 20;
 
@@ -223,12 +230,13 @@ void init_level_buttons(Main_Menu *menu, int start){
      int pitch_y = -1;
      int index = start;
      int start_index = 0;
-     
+
      Document doc;
      read_bin(doc);
+     Text_Iterator it = doc.begin();
      while(buttons_amount != 0){
 	  Level_Info lvl;
-	  read_level_info(lvl, index+1);
+	  read_level_info(doc, it, lvl, index+1, "easy");
 
 	  Button button;
 	  button.text = patch::to_string(index+1);

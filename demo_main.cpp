@@ -13,14 +13,12 @@
 #include <math.h>
 
 #include "Window.h"
-#include "Menu.h"
+#include "New_Menu.h"
 #include "Level_Manager.h"
 #include "IO_Manager.h"
 
 bool is_running    = true;
 bool escape_button = false;
-
-int lvl_amount = 10; //TODO:read that value from binary
 
 int SDL_main(int argc, char *argv[])
 {
@@ -29,34 +27,54 @@ int SDL_main(int argc, char *argv[])
 
      Level_Manager *level = nullptr;
      int lvl = 0;
-
-     Main_Menu *menu = init_menu();
-     if(menu == NULL)
-	  SDL_Log("Error Error Error \n");
      
+     Menu *menu = new Menu(MAIN_PAGE);
+
+     std::string lvl_mode = "easy"; //TODO: menu.get_lvl_mode();
+     int lvl_amount = 0;
+
+
      SDL_Event event;
      while(is_running)
      {
 	  while(SDL_PollEvent(&event) != 0)
 	  {
 	       if(menu && !level){
-		    int menu_result = handle_event(menu, &event);
-		    if(menu_result == GAME_EXIT){
-			 is_running = false;
-			 printf("Game is finished!\n");
-		    }
-		    else if(menu_result >= 1 && menu_result <= lvl_amount){
-			 if(level) delete level;
+		    int menu_result = menu->handle_event(event);
+		    switch(menu_result){
+			case EXIT:{
+			    is_running = false;
+			    printf("Game is finished!\n");
+			} break;
+			case EASY:{
+			    lvl_mode = "easy";
+			} break;
+			case NORMAL:{
+			    lvl_mode = "normal";
+			} break;
+			case HARD:{
+			    lvl_mode = "hard";
+			} break;
+			default:{
+			    if(menu_result >= 1 && menu_result < 1000){
+				if(level) delete level;
+				lvl = menu_result;
 			 
-			 lvl = menu_result;
-			 printf("Loading level %d\n",lvl);
-			 level = new Level_Manager();
+				printf("Loading level %d\n",lvl);
+				level = new Level_Manager();
 
-			 Level_Info info;
-			 read_level_info(info, lvl);
-			 
-			 level->next_level(info);
-		    } 
+				Document doc;
+				read_bin(doc);
+
+				read_variable(doc, doc.begin(), lvl_mode, lvl_amount);
+				
+				Level_Info info;
+				read_level_info(doc, doc.begin(), info, lvl, lvl_mode);
+				
+				level->next_level(info);
+			    }
+			} break;
+		    }
 	       }
 	       else if(level){
 		    if(level->handle_event(event) == LEVEL_EXIT){
@@ -72,36 +90,54 @@ int SDL_main(int argc, char *argv[])
 	  if(level){
 	       if(level->update() == LEVEL_COMPLETE){
 		    uint32_t time_result = level->total_time();
-		    Level_Info info;
-		    read_level_info(info, lvl);
+		    {
+			Level_Info info;
+			{
+			    Document doc;
+			    read_bin(doc);
+			    //TODO: make save_bin() to save all the updates!
+			    // make just one iterator that will point to the place from where to start reading
+			    // make two separate read functions one which will read without saving and one will do that
+			    read_level_info(doc, doc.begin(),info, lvl, lvl_mode);
+			}
 		    
-		    if(info.time == 0 || (info.time > time_result))
-			info.time = time_result;
-		    if(info.status == 0)
-			info.status = 1;
-
-		    update_level_info(info, lvl);
-		    
-		    lvl++;
-		    if(lvl > lvl_amount){
-			 printf("lvl > lvl_amount\n");
-			 lvl = 1;
+			if(info.time == 0 || (info.time > time_result))
+			    info.time = time_result;
+			if(info.status == 0)
+			    info.status = 1;
+			update_level_info(info, lvl, lvl_mode);
 		    }
+		    
+		    if(lvl > lvl_amount - 1){
+			 printf("lvl > lvl_amount\n");
+			 delete level;
+			 level = NULL;
+		    }
+		    else{
+			lvl++;
+			
+			Level_Info info2;
+			{
+			    Document doc;
+			    read_bin(doc);
+			    read_level_info(doc, doc.begin(), info2, lvl, lvl_mode);
+			}
+		    
+			if(!info2.status)
+			    info2.status = 1;
+			update_level_info(info2, lvl, lvl_mode);
 
-		    Level_Info info2;
-		    read_level_info(info2, lvl);
-		    if(!info2.status)
-			 info2.status = 1;
-		    update_level_info(info2, lvl);
-
-		    level->next_level(info2);
-		    printf("Level #%d\n",lvl);
+			level->next_level(info2);
+			printf("Level #%d\n",lvl);
+		    }
 	       }
 
-	       level->draw();
+	       if(level) level->draw();
 	  }
-	  else if(menu)
-	       update_menu(menu);
+	  else if(menu){
+	      menu->update();
+	      menu->render();
+	  }
 
 
 	  SDL_RenderPresent(RenderScreen);
