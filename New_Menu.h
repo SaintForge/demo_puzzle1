@@ -58,8 +58,12 @@ public:
     ~Layer();
     
     int do_event(SDL_Event&);
+    
     void open();
     void close();
+    
+    bool is_level_screen();
+    void update_level_screen(int index);
     
     bool update();
     void render();
@@ -91,8 +95,6 @@ private:
 
     Level_Mode *lvl_info = NULL;
 
-
-
     bool level_page       = false;
     bool scroll_animation = false;
     bool is_scrolling     = false;
@@ -120,6 +122,7 @@ public:
     int handle_event(SDL_Event&);
 
     void update();
+    void update_button(int index);
     void render();
 private:
     void init_texture(SDL_Texture*&, const char*);

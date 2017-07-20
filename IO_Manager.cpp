@@ -147,6 +147,18 @@ void read_bin(Document &doc){
      file >> doc;
      file.close();
 }
+
+void save_bin(Document &doc){
+    std::ofstream file;
+    file.open("file.bin", std::ios::out|std::ios::binary);
+    
+    if(file.is_open()){
+	file << doc;
+	file.close();
+    }
+    
+}
+
 Text_Iterator get_level_iterator(Document &doc, int number, const std::string& lvl_mode){
     std::string lvl_number = "#";
     lvl_number.append(std::to_string(number));
@@ -281,6 +293,7 @@ bool read_level_info(Document& doc, Text_Iterator& it,Level_Info& lvl, int lvl_n
 
      if(it == doc.begin())
 	 it = get_level_iterator(doc, lvl_number, lvl_mode);
+     
      if(it == doc.end()){
 	  cout << "Failed to find - " << lvl_number << "\n";
 	  return false;
@@ -292,6 +305,7 @@ bool read_level_info(Document& doc, Text_Iterator& it,Level_Info& lvl, int lvl_n
      read_variable(doc, it, "lvl_column", lvl.column);
 
      if(!lvl.figures.empty()) lvl.figures.clear();
+     
      if(!read_figures(doc, lvl, it, lvl_number))
 	  return false;
      if(!read_grid(lvl, it, doc.end(), lvl_number)){
@@ -303,11 +317,8 @@ bool read_level_info(Document& doc, Text_Iterator& it,Level_Info& lvl, int lvl_n
 
 
 
-void update_level_info(Level_Info& lvl, int lvl_number, const std::string& lvl_mode){
+void update_level_info(Document &doc, Level_Info& lvl, int lvl_number, const std::string& lvl_mode){
      if(lvl_number < 1) return;
-
-     Document doc;
-     read_bin(doc);
      
      Text_Iterator it = get_level_iterator(doc, lvl_number, lvl_mode);
      if(it == doc.end()){
@@ -315,12 +326,6 @@ void update_level_info(Level_Info& lvl, int lvl_number, const std::string& lvl_m
 	  return;
      }
      
-     std::ofstream file;
-     file.open("file.bin", std::ios::out|std::ios::binary);
-
      write_variable(doc, it, "lvl_status", lvl.status);
      write_variable(doc, it, "lvl_time", lvl.time);
-
-     file << doc;
-     file.close();
 }

@@ -32,7 +32,7 @@ int SDL_main(int argc, char *argv[])
 
      std::string lvl_mode = "easy"; //TODO: menu.get_lvl_mode();
      int lvl_amount = 0;
-
+     uint32_t current_lvl_time = 0;
 
      SDL_Event event;
      while(is_running)
@@ -66,12 +66,14 @@ int SDL_main(int argc, char *argv[])
 				Document doc;
 				read_bin(doc);
 
-				read_variable(doc, doc.begin(), lvl_mode, lvl_amount);
+				Text_Iterator it = doc.begin();
+				read_variable(doc, it, lvl_mode, lvl_amount);
 				
 				Level_Info info;
 				read_level_info(doc, doc.begin(), info, lvl, lvl_mode);
 				
 				level->next_level(info);
+				current_lvl_time = info.time;
 			    }
 			} break;
 		    }
@@ -86,28 +88,19 @@ int SDL_main(int argc, char *argv[])
 
 
 	  // update and draw stuff
-
 	  if(level){
 	       if(level->update() == LEVEL_COMPLETE){
 		    uint32_t time_result = level->total_time();
-		    {
-			Level_Info info;
-			{
-			    Document doc;
-			    read_bin(doc);
-			    //TODO: make save_bin() to save all the updates!
-			    // make just one iterator that will point to the place from where to start reading
-			    // make two separate read functions one which will read without saving and one will do that
-			    read_level_info(doc, doc.begin(),info, lvl, lvl_mode);
-			}
 		    
-			if(info.time == 0 || (info.time > time_result))
-			    info.time = time_result;
-			if(info.status == 0)
-			    info.status = 1;
-			update_level_info(info, lvl, lvl_mode);
+		    Document doc;
+		    read_bin(doc);
+			
+		    if(current_lvl_time == 0 || (time_result < current_lvl_time)){
+			Level_Info lvl_info;
+			read_level_info(doc, doc.begin(), lvl_info, lvl, lvl_mode);
+			update_level_info(doc, lvl_info, lvl, lvl_mode);
 		    }
-		    
+
 		    if(lvl > lvl_amount - 1){
 			 printf("lvl > lvl_amount\n");
 			 delete level;
@@ -116,18 +109,16 @@ int SDL_main(int argc, char *argv[])
 		    else{
 			lvl++;
 			
-			Level_Info info2;
-			{
-			    Document doc;
-			    read_bin(doc);
-			    read_level_info(doc, doc.begin(), info2, lvl, lvl_mode);
-			}
+			Level_Info lvl_info;
+			read_level_info(doc, doc.begin(), lvl_info, lvl, lvl_mode);
 		    
-			if(!info2.status)
-			    info2.status = 1;
-			update_level_info(info2, lvl, lvl_mode);
+			if(lvl_info.status) lvl_info.status = 0;
+			menu->update_button(lvl);
+			
+			update_level_info(doc, lvl_info, lvl, lvl_mode);
+			save_bin(doc);
 
-			level->next_level(info2);
+			level->next_level(lvl_info);
 			printf("Level #%d\n",lvl);
 		    }
 	       }
@@ -142,13 +133,6 @@ int SDL_main(int argc, char *argv[])
 
 	  SDL_RenderPresent(RenderScreen);
 	  SDL_RenderClear(RenderScreen);
-	  
-	  // int time_loop = SDL_GetTicks() - start_loop;
-	  // if(time_loop < 0) continue;
-
-	  // int sleep_loop = 16 - time_loop;
-	  // if(sleep_loop > 0)
-	  //      SDL_Delay(sleep_loop);
      }
 
      return 0;

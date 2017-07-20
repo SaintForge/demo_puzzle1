@@ -76,9 +76,11 @@ private:
 Text_Iterator find_txt(Text_Iterator &first, Text_Iterator &last, const std::string& s);
 
 void read_bin(Document &doc);
+void save_bin(Document &doc);
 bool read_level_info(Document &doc, Text_Iterator& it, Level_Info& lvl, int lvl_number, const std::string& lvl_mode);
 
-void update_level_info(Level_Info& lvl, int lvl_number, const std::string& lvl_mode);
+void update_level_info(Document &doc, Level_Info& lvl, int lvl_number, const std::string& lvl_mode);
+
 void read_variable(Document &doc, Text_Iterator &start, const std::string &str, int& variable);
 void write_variable(Document &doc, Text_Iterator &start, std::string str, int& variable);
 

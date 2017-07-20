@@ -244,14 +244,21 @@ void Layer::init_buttons(Select_Menu menu_choice){
     lvl_info->scroll_bounds.h = btn[0].pos.y;
 
     //TODO: make io function that read all levels at once
+    Document doc;
+    read_bin(doc);
+    Text_Iterator it = doc.begin();
+    
     while(countdown != 0){
 	if(index % 20 == 0 && index != 0) start_x += width + (width/2);
 	if(index % 4 == 0) pitch_y++;
 	if(pitch_y >= 5) pitch_y = 0;
 
+	Level_Info lvl_info;
+	read_level_info(doc, it, lvl_info, index+1, lvl_mode);
+
     	Button_Info but;
     	but.str_array.push_back(std::to_string(index + 1));
-    	but.status = 0;
+    	but.status = lvl_info.status;
     	but.pos.w = 0; but.pos.h = block_size;
     	but.pos.x = start_x + ((index % 4) * (block_size+10));
 	printf("but.pos.x = %d\n",start_x);
@@ -266,12 +273,29 @@ void Layer::init_buttons(Select_Menu menu_choice){
     //
     // Page info
     //
-
     lvl_info->page_number = 1;
     
     lvl_info->page_info   = std::to_string(lvl_info->page_number) + " / " + \
 	std::to_string((lvl_amount / 20) + 1);
     update_page_info_texture();
+}
+
+bool Layer::is_level_screen(){
+    return level_page;
+}
+
+void Layer::update_level_screen(int index){
+    btn[index].status = 0;
+
+    if(index > lvl_info->page_number * 20){
+	int width = Window_Info::get_width();
+	width += width/2;
+	lvl_info->page_number++;
+	for (int i = 1; i < btn.size(); i++) {
+	    btn[i].pos.x -= width;
+	}
+    }
+    
 }
 
 void Layer::open(){
@@ -604,17 +628,18 @@ bool Layer::update(){
 void Layer::render(){
     SDL_Renderer *RenderScreen = Window_Info::get_renderer();    
     for (int i = 0; i < btn.size(); i++) {
-	if(click_index != i)
-	    SDL_RenderCopy(RenderScreen, button_texture, 0, &btn[i].pos);
+	if(click_index != i){
+	    if(btn[i].status == 0)
+		SDL_RenderCopy(RenderScreen, button_texture, 0, &btn[i].pos);
+	    else
+		SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
+	}
 	else
 	    SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
 	render_text(btn[i].pos, btn[i].str_array);
     }
     if(lvl_info)
 	SDL_RenderCopy(RenderScreen, page_info_texture, 0, &lvl_info->page_info_rect);
-    // SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, 255);
-    // SDL_RenderDrawRect(RenderScreen, &lvl_info->scroll_bounds);
-    // SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
 }
 
 Menu::~Menu(){
@@ -785,6 +810,11 @@ void Menu::update(){
 	    layer.top().open();
 	}
     }
+}
+
+void Menu::update_button(int index){
+    if(layer.top().is_level_screen())
+	layer.top().update_level_screen(index);
 }
 
 void Menu::render(){

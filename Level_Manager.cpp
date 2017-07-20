@@ -206,8 +206,12 @@ void Level_Manager::draw(){
 
 
      // SDL_RenderCopy(RenderScreen, grid_texture, NULL, &grid_area);
+     
      SDL_SetRenderDrawColor(RenderScreen, 42, 6, 21, 255);
+     // SDL_SetRenderDrawColor(RenderScreen, 240, 148, 173, 255);
+     // SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      SDL_RenderFillRect(RenderScreen, NULL);
+     
      // SDL_RenderDrawRect(RenderScreen, &figure_area);
      // SDL_RenderDrawRect(RenderScreen, &menu_bar_area);
      // SDL_RenderCopy(RenderScreen, figure_texture, NULL, &figure_area);
