@@ -36,7 +36,6 @@ Level_Manager::Level_Manager(){
      restart_button.y = 0 + (restart_button.h>>1);
 
 #ifdef PC
-     load_image(grid_texture, "..\\data\\sprites\\menu_background.png");
      load_image(menu_exit_texture, "..\\data\\sprites\\exit_button2.png");
      load_image(menu_restart_texture, "..\\data\\sprites\\restart_button2.png");
 
@@ -45,7 +44,6 @@ Level_Manager::Level_Manager(){
      complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
 #else
-     load_image(grid_texture, "data/sprites/menu_background.png");
      load_image(menu_exit_texture, "data/sprites/exit_button2.png");
      load_image(menu_restart_texture, "data/sprites/restart_button2.png");
 
@@ -70,8 +68,6 @@ Level_Manager::Level_Manager(){
 }
 
 Level_Manager::~Level_Manager(){
-     if(grid_texture) SDL_DestroyTexture(grid_texture);
-     // if(figure_texture) SDL_DestroyTexture(figure_texture);
      
      if(begin_sound) Mix_FreeChunk(begin_sound);
      if(complete_sound_1) Mix_FreeChunk(complete_sound_1);
@@ -107,7 +103,7 @@ void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
      }
 }
 
-void Level_Manager::next_level(Level_Info &info){
+void Level_Manager::next_level(Level_Info &info, int level_number){
      figure_manager.change_figures(info.figures, info.angles);
      
      int width = Window_Info::get_width();
@@ -117,12 +113,53 @@ void Level_Manager::next_level(Level_Info &info){
      int y = menu_bar_area.h + (height - figure_manager.get_idle_zone().h)>>1;
      grid_manager.update_grid(&figure_manager, x, y, info);
      
-     
      level_complete = false;
      alpha = 255;
 
      Mix_PlayChannel( -1, begin_sound, 0 );
      start_time = SDL_GetTicks();
+     
+     this->level_number = level_number;
+
+     load_level_number(lvl_number_texture, {255, 255, 255});
+     load_level_number(lvl_number_sh_texture, {0, 0, 0});
+
+     level_line[0].w = level_number_rect.w;
+     level_line[1].w = level_number_rect.w;
+     level_line[0].h = level_line[1].h = 2;
+     
+     level_line[0].x = (menu_bar_area.w / 2) - (level_line[0].w + level_line[0].w);
+     level_line[1].x = (menu_bar_area.w / 2) + (level_line[1].w);
+     level_line[0].y = level_line[1].y = level_number_rect.y + level_number_rect.h/2;
+
+}
+
+void Level_Manager::load_level_number(SDL_Texture*& texture, SDL_Color color){
+    if(texture)
+	SDL_DestroyTexture(texture);
+
+    SDL_Renderer *RenderScreen = Window_Info::get_renderer();
+    SDL_Surface *tmp_surface = TTF_RenderUTF8_Blended(font,
+						      std::to_string(level_number).c_str(),
+						      color);
+    if(!tmp_surface){
+	printf("Failed at loading surface at Level_Manager::load_level_number - %s", SDL_GetError());
+	return;
+    }
+
+    level_number_rect.w = tmp_surface->w;
+    level_number_rect.h = tmp_surface->h;
+    level_number_rect.x = menu_bar_area.x + (menu_bar_area.w / 2) - (level_number_rect.w/2);
+    level_number_rect.y = menu_bar_area.y + (menu_bar_area.h / 2) - (level_number_rect.h/2);
+    
+    texture = SDL_CreateTextureFromSurface(RenderScreen, tmp_surface);
+    if(!lvl_number_texture){
+	printf("Failed at loading texture at Level_Manager::load_level_number - %s", SDL_GetError());
+	SDL_FreeSurface(tmp_surface);
+	return;
+    }
+
+    SDL_FreeSurface(tmp_surface);
 }
 
 int Level_Manager::handle_event(SDL_Event &event){
@@ -203,66 +240,63 @@ int Level_Manager::update(){
 
 void Level_Manager::draw(){
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
-
-
-     // SDL_RenderCopy(RenderScreen, grid_texture, NULL, &grid_area);
      
      SDL_SetRenderDrawColor(RenderScreen, 42, 6, 21, 255);
-     // SDL_SetRenderDrawColor(RenderScreen, 240, 148, 173, 255);
-     // SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+     // SDL_SetRenderDrawColor(RenderScreen, 71, 19, 29, 255);
      SDL_RenderFillRect(RenderScreen, NULL);
      
-     // SDL_RenderDrawRect(RenderScreen, &figure_area);
-     // SDL_RenderDrawRect(RenderScreen, &menu_bar_area);
-     // SDL_RenderCopy(RenderScreen, figure_texture, NULL, &figure_area);
+     grid_manager.draw();
+     figure_manager.draw();
 
+     // draw_timer(255, 255, 255);
+
+     // SDL_RenderCopy(RenderScreen, menu_exit_texture, 0, &exit_button);
+     // SDL_RenderCopy(RenderScreen, menu_restart_texture, 0, &restart_button);
      
+     {
+	 SDL_Rect rect = level_number_rect;
+	 rect.x += 5;
+	 rect.y += 5;
+	 SDL_RenderCopy(RenderScreen, lvl_number_sh_texture, 0, &rect);
+	 SDL_RenderCopy(RenderScreen, lvl_number_texture, 0, &level_number_rect);
+     }
+     
+     // SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, 255);
+     // SDL_RenderDrawRect(RenderScreen, &level_number_rect);
+     {
+	 SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+	 SDL_Rect rect = level_line[0];
+	 rect.x += 3; rect.y += 3;
+	 SDL_RenderFillRect(RenderScreen, &rect);
+	 rect = level_line[1];
+	 rect.x += 3; rect.y += 3;
+	 SDL_RenderFillRect(RenderScreen, &rect);
+
+	 SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, 255);
+	 SDL_RenderFillRect(RenderScreen, &level_line[0]);
+	 SDL_RenderFillRect(RenderScreen, &level_line[1]);
+	 SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+     }
+
+
+
      if(!level_complete){
-	  // if(alpha > 5){
-	  //      SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, alpha);
-	  //      SDL_RenderFillRect(RenderScreen, NULL);
-	  // }
-
-	  grid_manager.draw();
-	  figure_manager.draw();
-
-	  draw_timer(255, 255, 255);
-
-	  SDL_RenderCopy(RenderScreen, menu_exit_texture, 0, &exit_button);
-	  SDL_RenderCopy(RenderScreen, menu_restart_texture, 0, &restart_button);
-
-
-	  if(alpha > 5){
-	       SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha);
-	       SDL_RenderFillRect(RenderScreen, NULL);
-	  }
+	 if(alpha > 5){
+	     SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha);
+	     SDL_RenderFillRect(RenderScreen, NULL);
+	 }
      }
      else{
-	  // if(alpha < 255){
-	  //      SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, alpha);
-	  //      SDL_RenderFillRect(RenderScreen, NULL);
-	  // }
-
-	  grid_manager.draw();
-	  figure_manager.draw();
-
-	  draw_timer(255, 255, 255);
-	  
-	  SDL_RenderCopy(RenderScreen, menu_exit_texture, 0, &exit_button);
-	  SDL_RenderCopy(RenderScreen, menu_restart_texture, 0, &restart_button);
-
-	  if(alpha < 255){
-	       SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha);
-	       SDL_RenderFillRect(RenderScreen, NULL);
-	  }
+	 if(alpha < 255){
+	     SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha);
+	     SDL_RenderFillRect(RenderScreen, NULL);
+	 }
      }
-
-
 }
 
 void Level_Manager::draw_timer(uint8_t r, uint8_t g, uint8_t b){
-     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
-
+    SDL_Renderer *RenderScreen = Window_Info::get_renderer();
+     
      timer_text.str("");
      if(!level_complete){
 	  uint32_t seconds_dx = ((SDL_GetTicks() - start_time) / 1000) % 60;

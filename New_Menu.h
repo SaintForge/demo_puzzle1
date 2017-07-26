@@ -46,6 +46,7 @@ public:
     SDL_Rect scroll_bounds;
 
     uint32_t page_number;
+    uint32_t page_number_max;
     std::string page_info;
     SDL_Rect page_info_rect;
 };
@@ -120,6 +121,7 @@ public:
     ~Menu();
  
     int handle_event(SDL_Event&);
+    const std::string& get_lvl_mode();
 
     void update();
     void update_button(int index);
@@ -134,7 +136,9 @@ private:
     SDL_Texture *button_texture;
     SDL_Texture *highlight_texture;
     TTF_Font* font;
-    
+
+    std::string lvl_mode;
+
     Select_Menu menu_layer;
     int select_button;
     std::stack<Layer> layer;

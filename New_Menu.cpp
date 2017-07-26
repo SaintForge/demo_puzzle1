@@ -274,9 +274,9 @@ void Layer::init_buttons(Select_Menu menu_choice){
     // Page info
     //
     lvl_info->page_number = 1;
-    
+    lvl_info->page_number_max = lvl_amount / 20 + 1;
     lvl_info->page_info   = std::to_string(lvl_info->page_number) + " / " + \
-	std::to_string((lvl_amount / 20) + 1);
+	std::to_string(lvl_info->page_number_max);
     update_page_info_texture();
 }
 
@@ -430,18 +430,23 @@ void Layer::next_page(int offset, bool is_default){
     printf("next_page()\n");
     
     int width = Window_Info::get_width();
-    width += width/2;
+
     if(btn[btn.size()-1].pos.x > width){
+	width += width/2;
+	printf("true!\n");
 	if(!is_default){
 	    lvl_info->scroll_target = btn[1].pos.x - (width - offset);
 	    update_page_number(+1);
 	    update_page_info_texture();
+
 	}
 	else
 	    lvl_info->scroll_target = btn[1].pos.x + offset;
     }
-    else
+    else{
 	lvl_info->scroll_target = btn[1].pos.x + offset;
+	printf("sas!\n");
+    }
     
     scroll_animation = true;
 }
@@ -515,7 +520,7 @@ void Layer::update_page_number(int num){
     else if(num < 0 && lvl_info->page_number > 1)
 	lvl_info->page_number--;
 
-    lvl_info->page_info = std::to_string(lvl_info->page_number) + " / 5";
+    lvl_info->page_info = std::to_string(lvl_info->page_number) + " / " + std::to_string(lvl_info->page_number_max);
 }
 
 void Layer::update_page_info_texture(){
@@ -626,16 +631,18 @@ bool Layer::update(){
 }
 
 void Layer::render(){
-    SDL_Renderer *RenderScreen = Window_Info::get_renderer();    
+    SDL_Renderer *RenderScreen = Window_Info::get_renderer();
+    // SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
     for (int i = 0; i < btn.size(); i++) {
 	if(click_index != i){
-	    if(btn[i].status == 0)
+	    if(btn[i].status != 1)
 		SDL_RenderCopy(RenderScreen, button_texture, 0, &btn[i].pos);
 	    else
 		SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
 	}
 	else
 	    SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
+	
 	render_text(btn[i].pos, btn[i].str_array);
     }
     if(lvl_info)
@@ -710,6 +717,9 @@ int Menu::handle_event(SDL_Event& event){
     //TODO: elaborate that
     if(event.type == SDL_QUIT)
 	return EXIT;
+    if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+	return EXIT;
+    
     int result = layer.top().do_event(event);
     Select_Menu menu_choice = menu_layer;
     if(result != -1){
@@ -787,11 +797,24 @@ int Menu::handle_event(SDL_Event& event){
     }
 
     switch(menu_choice){
-	case EASY_PAGE: return EASY;
-	case NORMAL_PAGE: return NORMAL;
-	case HARD_PAGE: return HARD;
+	case EASY_PAGE: {
+	    lvl_mode = "easy";
+	    return EASY;
+	}
+	case NORMAL_PAGE: {
+	    lvl_mode = "normal";
+	    return NORMAL;   
+	}
+	case HARD_PAGE:{
+	    lvl_mode = "hard";
+	    return HARD;
+	}
     }
     return NOTHING;
+}
+
+const std::string& Menu::get_lvl_mode(){
+    return lvl_mode;
 }
 
 void Menu::update(){
