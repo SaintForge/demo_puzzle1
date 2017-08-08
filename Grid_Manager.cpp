@@ -23,8 +23,6 @@ Grid_Manager::Grid_Manager(){
      // Mix_VolumeChunk(block_sound, 20);
 }
 
-
-
 void print_grid(std::vector<std::vector<uint8_t>> &v){
      for (int i = 0 ; i < v.size(); i++) {
 	  for (int j = 0; j < v[i].size(); j++) {
@@ -69,11 +67,13 @@ void Grid_Manager::update_grid(Figure_Manager *man,
 	       bit_field[i][j] = 0;
 	  }
      }
-     if(!info.pos.empty() && (info.pos.size() == info.bit.size())){
-	  for (int i = 0; i < info.pos.size(); i++){
-	       int x = info.pos[i].first;
-	       int y = info.pos[i].second;
-	       bit_field[x][y] = info.bit[i];
+     if(!info.cell_pos.empty() && (info.cell_pos.size() == info.cell_type.size()))
+     {
+	  for (int i = 0; i < info.cell_pos.size(); i++)
+	  {
+	       int x = info.cell_pos[i].first;
+	       int y = info.cell_pos[i].second;
+	       bit_field[x][y] = info.cell_type[i];
 	  }
      }
      state = GRID_EMPTY;

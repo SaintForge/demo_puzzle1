@@ -131,7 +131,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
      switch(form){
 	  case I_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\i_d.png");
 			 break;
 		    case mirror:
@@ -144,7 +144,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  } break;
 	  case O_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\o_d.png");
 			 break;
 		    case mirror:
@@ -157,7 +157,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  }break;
 	  case Z_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\z_d.png");
 			 break;
 		    case mirror:
@@ -170,7 +170,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  }break;
 	  case S_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\s_d.png");
 			 break;
 		    case mirror:
@@ -184,7 +184,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  }break;
 	  case T_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\t_d.png");
 			 break;
 		    case stone:
@@ -197,7 +197,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  }break;
 	  case L_figure:{
 	       switch(type){
-		    case default:
+		    case classic:
 			 load_figure_image("..\\data\\sprites\\l_d.png");
 			 break;
 		    case stone:
@@ -210,7 +210,7 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	  }break;
 	  case J_figure:{
 	       switch(type){
-		    case default:{
+		    case classic:{
 			 load_figure_image("..\\data\\sprites\\j_d.png");
 		    } break;
 		    case mirror:
@@ -462,4 +462,3 @@ void Figure::draw(){
 
      SDL_RenderCopyEx(RenderScreen, sprite, 0, &sprite_area, angle, &ff_center, flip);
 }
-

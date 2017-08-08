@@ -222,62 +222,68 @@ void Layer::init_buttons(Select_Menu menu_choice){
     }
     
     int lvl_amount = 0; // maximum amount of levels to play
+    
+    GameData data;
+    if(data.open_data())
     {
-	Document doc;
-	read_bin(doc);
-	read_variable(doc, doc.begin(), lvl_mode, lvl_amount);
-	printf("lvl_amount = %d\n",lvl_amount);
-    }
-    int block_size = 80;
+	int tmp_index = 0;
+	int start_index = data.read_variable(tmp_index, lvl_mode, lvl_amount);
+	if(start_index > 0)
+	{
+	    data.set_searching_point(start_index);
+	}
 
-    int start_x = (width >> 1) - ((block_size) * 4 + (30))/2 + (block_size/2);
-    int start_y = (height / 3) - ((block_size) * 5)/2;
-    printf("start_x = %d\n",start_x);
-    int countdown = lvl_amount;
+
+	int block_size = 80;
+
+	int start_x = (width >> 1) - ((block_size) * 4 + (30))/2 + (block_size/2);
+	int start_y = (height / 3) - ((block_size) * 5)/2;
     
-    int pitch_y = -1;
-    int index = 0;
+	int pitch_y = -1;
+	int index = 0;
     
-    lvl_info->scroll_bounds.x = 0;
-    lvl_info->scroll_bounds.y = 0;
-    lvl_info->scroll_bounds.w = width;
-    lvl_info->scroll_bounds.h = btn[0].pos.y;
+	lvl_info->scroll_bounds.x = 0;
+	lvl_info->scroll_bounds.y = 0;
+	lvl_info->scroll_bounds.w = width;
+	lvl_info->scroll_bounds.h = btn[0].pos.y;
 
-    //TODO: make io function that read all levels at once
-    Document doc;
-    read_bin(doc);
-    Text_Iterator it = doc.begin();
-    
-    while(countdown != 0){
-	if(index % 20 == 0 && index != 0) start_x += width + (width/2);
-	if(index % 4 == 0) pitch_y++;
-	if(pitch_y >= 5) pitch_y = 0;
+	int countdown = lvl_amount;
+	//TODO: make io function that read all levels at once
+	while(countdown != 0){
+	    if(index % 20 == 0 && index != 0) start_x += width + (width/2);
+	    if(index % 4 == 0) pitch_y++;
+	    if(pitch_y >= 5) pitch_y = 0;
 
-	Level_Info lvl_info;
-	read_level_info(doc, it, lvl_info, index+1, lvl_mode);
+	    Level_Info lvl_info;
+	    data.load_level(index+1, lvl_info);
 
-    	Button_Info but;
-    	but.str_array.push_back(std::to_string(index + 1));
-    	but.status = lvl_info.status;
-    	but.pos.w = 0; but.pos.h = block_size;
-    	but.pos.x = start_x + ((index % 4) * (block_size+10));
-	printf("but.pos.x = %d\n",start_x);
-    	but.pos.y = start_y + (pitch_y * (block_size+10));
-	but.is_button    = true;
-    	btn.push_back(but);
+	    Button_Info but;
+	    but.str_array.push_back(std::to_string(index + 1));
+	    but.status = lvl_info.status;
+	    but.pos.w = 0; but.pos.h = block_size;
+	    but.pos.x = start_x + ((index % 4) * (block_size+10));
+	    printf("but.pos.x = %d\n",start_x);
+	    but.pos.y = start_y + (pitch_y * (block_size+10));
+	    but.is_button    = true;
+	    btn.push_back(but);
 	
-    	index++;
-    	countdown--;
-    }
+	    index++;
+	    countdown--;
+	}
 
-    //
-    // Page info
-    //
-    lvl_info->page_number = 1;
-    lvl_info->page_number_max = lvl_amount / 20 + 1;
-    lvl_info->page_info   = std::to_string(lvl_info->page_number) + " / " + \
-	std::to_string(lvl_info->page_number_max);
-    update_page_info_texture();
+	//
+	// Page info
+	//
+	lvl_info->page_number = 1;
+	lvl_info->page_number_max = lvl_amount / 20 + 1;
+	lvl_info->page_info   = std::to_string(lvl_info->page_number) + " / " + \
+	    std::to_string(lvl_info->page_number_max);
+	update_page_info_texture();
+    }
+    else
+    {
+	printf("Can't read levels!\n");
+    }
 }
 
 bool Layer::is_level_screen(){

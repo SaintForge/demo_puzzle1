@@ -5,7 +5,8 @@
 #include "Window.h"
 #include "New_Menu.h"
 #include "Level_Manager.h"
-#include "IO_Manager.h"
+// #include "IO_Manager.h"
+#include "Game_Data.h"
 
 class Game_Engine{
 public:

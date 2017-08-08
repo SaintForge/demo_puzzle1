@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <list>
@@ -129,13 +130,13 @@ Figure_Type read_figure_type(char ch){
      Figure_Type type;
      switch(ch){
 	  case 'd': case 'D':
-	       type = Figure_Type::default; break;
+	       type = Figure_Type::classic; break;
 	  case 's': case 'S':
 	       type = Figure_Type::stone; break;
 	  case 'm': case 'M':
 	       type = Figure_Type::mirror; break;
 	  default:
-	       type = Figure_Type::default; break;
+	       type = Figure_Type::classic; break;
      }
 
      return type;

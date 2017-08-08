@@ -1,38 +1,89 @@
-#ifndef MEDIA
-#define MEDIA
+#ifndef GAME_DATA
+#define GAME_DATA
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <iostream>
+#include <algorithm>
+#include <fstream>
+#include <string>
+#include <vector>
 
-class Game_Data{
-public:
-     static Game_Data& get_media(){
-	  static Game_Data game_data;
-	  return game_data;
-     }
-     
-     SDL_Texture* load_ITexture();
-     SDL_Texture* load_OTexture();
-     SDL_Texture* load_ZTexture();
-     SDL_Texture* load_STexture();
-     SDL_Texture* load_TTexture();
-     SDL_Texture* load_LTexture();
-     SDL_Texture* load_JTexture();
+#include "Level_Info.h"
 
-     void Destroy_Texture(SDL_Texture *&);
+struct GameData
+{
+    GameData()
+	{
+	}
+    virtual ~GameData()
+	{
+	}
+
+    friend std::istream& operator>>(std::istream& in, GameData& game_data);
+    friend std::ostream& operator<<(std::ostream& out, const GameData& game_data);
+
+    bool open_data()
+	{
+	    if(!data.empty()) data.clear();
+	    bool is_opened = false;
+
+	    std::ifstream file;
+	    file.open("file.bin", std::ios::in | std::ios::binary);
+	    if(file.is_open())
+	    {
+		file >> *this;
+		is_opened = true;
+	    }
+	    file.close();
+
+	    return is_opened;
+	}
+    void save_data()
+	{
+	    if(data.empty()) return;
+
+	    std::ofstream file;
+	    file.open("file.bin", std::ios::out | std::ios::binary);
+	    if(file.is_open())
+	    {
+		file << *this;
+	    }
+
+	    file.close();
+	}
+    bool is_empty()
+	{
+	    return data.empty();
+	}
+
+    void load_level(int level_number, Level_Info& level_info);
+    void save_level(int level_number, Level_Info& level_info);
+
+    void print_data()
+	{
+	    for (int i = 0; i < data.size(); i++)
+	    {
+		std::cout << data[i];
+	    }
+	}
+    
+    void set_searching_point(int search_p)
+	{
+	    if(search_p > 0) searching_point = search_p;
+	}
+    
+    void   write_variable(int &start_index, const std::string& variable_name, int variable);
+    size_t read_variable(int &start_index, const std::string& variable_name, int& variable);
 private:
-     Game_Data();
-     ~Game_Data();
-     SDL_Texture* load_image(SDL_Texture *&texture, const char* path);
-private:
-     SDL_Texture* ITexture = nullptr;
-     SDL_Texture* OTexture = nullptr;
-     SDL_Texture* ZTexture = nullptr;
-     SDL_Texture* STexture = nullptr;
-     SDL_Texture* TTexture = nullptr;
-     SDL_Texture* LTexture = nullptr;
-     SDL_Texture* JTexture = nullptr;
+    int find_level_number(int start_point, int level_number);
+
+    void read_variable_number(int row_index, int column_index, int& variable);
+    void read_figures(int &start_index, Level_Info& level_info);
+    void read_grid(int &start_index, Level_Info& level_info);
+
+    void write_variable_number(int row_index, const std::string& variable);
+    
+    std::vector<std::string> data;
+    int searching_point = 0;
 };
 
 #endif

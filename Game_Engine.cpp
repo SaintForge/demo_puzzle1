@@ -49,19 +49,21 @@ void Game_Engine::menu_events(){
 		printf("Loading level %d\n",level_number);
 		level = new Level_Manager();
 
-		Document doc;
-		read_bin(doc);
+		GameData data;
+		if(data.open_data())
+		{
+		    std::string lvl_mode = menu->get_lvl_mode();
 
-		std::string lvl_mode = menu->get_lvl_mode();
-
-		Text_Iterator it = doc.begin();
-		read_variable(doc, it, lvl_mode, level_amount);
+		    int tmp_index = 0;
+		    int start_index = data.read_variable(tmp_index, lvl_mode, level_amount);
+		    data.set_searching_point(start_index);
 				
-		Level_Info info;
-		read_level_info(doc, doc.begin(), info, level_number, lvl_mode);
+		    Level_Info lvl_info;
+		    data.load_level(level_number, lvl_info);
 				
-		level->next_level(info, level_number);
-		current_lvl_time = info.time;
+		    level->next_level(lvl_info, level_number);
+		    current_lvl_time = lvl_info.time;
+		}
 	    }
 	} break;
     }
@@ -83,36 +85,46 @@ void Game_Engine::update_level(){
     if(level->update() == LEVEL_COMPLETE){
 	uint32_t time_result = level->total_time();
 		    
-	Document doc;
-	read_bin(doc);
+	GameData data;
 
-	std::string lvl_mode = menu->get_lvl_mode();
+	if(data.open_data())
+	{
+	    std::string lvl_mode = menu->get_lvl_mode();
+	    int tmp_index = 0;
+	    int start_index = data.read_variable(tmp_index, lvl_mode, level_amount);
+	    data.set_searching_point(start_index);
 			
-	if(current_lvl_time == 0 || (time_result < current_lvl_time)){
-	    Level_Info lvl_info;
-	    read_level_info(doc, doc.begin(), lvl_info, level_number, lvl_mode);
-	    update_level_info(doc, lvl_info, level_number, lvl_mode);
-	}
+	    if(current_lvl_time == 0 || (time_result < current_lvl_time)){
+		Level_Info lvl_info;
+		data.load_level(level_number, lvl_info);
+		lvl_info.time = time_result;
+		data.save_level(level_number, lvl_info);
+	    }
 
-	if(level_number > level_amount - 1){
-	    printf("lvl > lvl_amount\n");
-	    delete level;
-	    level = NULL;
-	}
-	else{
-	    level_number++;
-			
-	    Level_Info lvl_info;
-	    read_level_info(doc, doc.begin(), lvl_info, level_number, lvl_mode);
+	    if(level_number > level_amount - 1){
+		printf("lvl > lvl_amount\n");
+		delete level;
+		level = NULL;
+	    }
+	    else{
+		level_number++;
+		Level_Info lvl_info;
+
+		data.load_level(level_number, lvl_info);
 		    
-	    if(lvl_info.status) lvl_info.status = 0;
-	    menu->update_button(level_number);
+		if(lvl_info.status) lvl_info.status = 0;
+		menu->update_button(level_number);
 			
-	    update_level_info(doc, lvl_info, level_number, lvl_mode);
-	    save_bin(doc);
+		data.save_level(level_number, lvl_info);
+		data.save_data();
 
-	    level->next_level(lvl_info, level_number);
-	    printf("Level #%d\n",level_number);
+		level->next_level(lvl_info, level_number);
+		printf("Level #%d\n",level_number);
+	    }
+	}
+	else
+	{
+	    printf("Coudn't read the level\n");
 	}
     }
 

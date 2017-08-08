@@ -6,7 +6,7 @@
 #include <string>
 #include <stack>
 
-#include "IO_Manager.h"
+#include "Game_Data.h"
 #include "Vector2.h"
 
 static const char* button_texture_path = "..\\data\\sprites\\circle_touch.png";

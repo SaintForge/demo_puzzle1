@@ -71,9 +71,9 @@ public:
      }
 
      static Vector2 random2(){
-	  Vector2 rand((rand() % 50) - 25, (rand() % 50) - 25);
-	  rand.normalize();
-	  return rand;
+	  Vector2 rand_v((rand() % 50) - 25, (rand() % 50) - 25);
+	  rand_v.normalize();
+	  return rand_v;
      }
 
 };

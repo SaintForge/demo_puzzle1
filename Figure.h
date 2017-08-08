@@ -24,7 +24,7 @@ enum Figure_Form{
 };
 
 enum Figure_Type{
-     default,
+     classic,
      stone,
      mirror
 };

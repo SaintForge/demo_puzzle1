@@ -5,24 +5,17 @@
 
 #include "Figure.h"
 
-using figure_info = std::pair<Figure_Form, Figure_Type>;
-using figure = std::vector<figure_info>;
-using angle = std::vector<uint8_t>;
-using bit_pos = std::vector<std::pair<uint8_t, uint8_t>>;
-using bit_type = std::vector<uint8_t>;
-
 struct Level_Info{
-     int status;
-     int time;
+    int status;
+    int time;
      
-     int row;
-     int column;
-          
-     bit_type bit;
-     bit_pos pos;
-     
-     figure figures;
-     angle angles;
+    int row;
+    int column;
+    std::vector<int> cell_type;
+    std::vector<std::pair<int, int>> cell_pos;
+    
+    std::vector<std::pair<Figure_Form, Figure_Type>> figure_type;
+    std::vector<int> figure_angle;
 };
 
 

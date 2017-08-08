@@ -69,7 +69,7 @@ void Figure_Manager::align_vertically(){
      }
 }
 
-void Figure_Manager::align_horisontally(std::vector<uint8_t>& angle){
+void Figure_Manager::align_horisontally(std::vector<int>& angle){
      int area = block_width * 2;
 
      // int center_x = default_zone.x + (default_zone.w >> 1);
@@ -107,7 +107,7 @@ void Figure_Manager::align_horisontally(std::vector<uint8_t>& angle){
      }
 }
 
-void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Type>> &fg, std::vector<uint8_t> &angles){
+void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Type>> &fg, std::vector<int> &angles){
      if(!figure_container.empty()) figure_container.clear();
      if(!O.empty()) O.clear();
      if(fg.size() != angles.size()){
@@ -418,7 +418,7 @@ void Figure_Manager::handle_event(SDL_Event &event){
 			 if(!mouse_right_button){
 			      if(grabbed){
 				   Figure_Type type = figure_container[current]->get_type();
-				   if(type == default)
+				   if(type == classic)
 					rotate_figure(current);
 				   else if(type == mirror){
 					figure_container[current]->flip_figure();

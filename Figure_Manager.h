@@ -23,12 +23,12 @@ public:
      ~Figure_Manager();
 
      void change_figures(std::vector<std::pair<Figure_Form, Figure_Type>>&,
-			 std::vector<uint8_t>&);
+			 std::vector<int>&);
      
      void toogle_stick_effect(int index);
      void animate_stick_effect();
      
-     void align_horisontally(std::vector<uint8_t>&);
+     void align_horisontally(std::vector<int>&);
      void align_vertically();
      void restart();
 

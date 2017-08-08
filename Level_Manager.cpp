@@ -104,7 +104,7 @@ void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
 }
 
 void Level_Manager::next_level(Level_Info &info, int level_number){
-     figure_manager.change_figures(info.figures, info.angles);
+     figure_manager.change_figures(info.figure_type, info.figure_angle);
      
      int width = Window_Info::get_width();
      int height = Window_Info::get_height();
