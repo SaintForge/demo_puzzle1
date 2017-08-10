@@ -22,11 +22,7 @@ OBJ_LIST := demo_main.o \
 
 INCLUDE_PATH = -I"W:\SDL\sdl_dev_lib\include"
 LIB_PATH := -L"W:\SDL\sdl_dev_lib\lib\x86"
-LIB_FLAGS := -lSDL2main \
-	-lSDL2 \
-	-lSDL2_image \
-	-lSDL2_ttf \
-	-lSDL2_mixer
+LIB_FLAGS := -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 OBJ := $(patsubst %,$(OBJ_PATH)%,$(OBJ_LIST))
 

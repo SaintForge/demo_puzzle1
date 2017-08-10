@@ -43,7 +43,7 @@ Window_Info::Window_Info(){
 					 window_width,
 					 window_height,
 					 SDL_WINDOW_ALLOW_HIGHDPI|
-					 SDL_WINDOW_HIDDEN);
+					 SDL_WINDOW_HIDDEN| SDL_WINDOW_BORDERLESS);
 	       if(window)
 	       {
 		    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
