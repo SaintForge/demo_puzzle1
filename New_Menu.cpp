@@ -30,7 +30,6 @@ void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
 
     page_info_texture = NULL;
     
-
     int w, h;
     switch(menu){
 	case MAIN_PAGE:{
@@ -197,6 +196,13 @@ void Layer::init_buttons(Select_Menu menu_choice){
     int height = Window_Info::get_height();
 
     lvl_info = new Level_Mode();
+
+    {
+	SDL_Surface *tmp_surface = 0;
+	tmp_surface = IMG_Load(level_button_texture_path);
+	level_button_texture = SDL_CreateTextureFromSurface(Window_Info::get_renderer(), tmp_surface);
+	SDL_FreeSurface(tmp_surface);
+    }
     
     // Back button
     {
@@ -233,8 +239,7 @@ void Layer::init_buttons(Select_Menu menu_choice){
 	    data.set_searching_point(start_index);
 	}
 
-
-	int block_size = 80;
+	int block_size = 60;
 
 	int start_x = (width >> 1) - ((block_size) * 4 + (30))/2 + (block_size/2);
 	int start_y = (height / 3) - ((block_size) * 5)/2;
@@ -318,7 +323,10 @@ void Layer::close(){
     level_page = false;
 }
 
-Layer::~Layer(){}
+Layer::~Layer()
+{
+    if(level_button_texture) SDL_DestroyTexture(level_button_texture);
+}
 
 int Layer::do_event(SDL_Event& event){
     if(event.type == SDL_QUIT)
@@ -353,20 +361,30 @@ int Layer::do_event(SDL_Event& event){
 		is_pressed = false;
 		if(!scroll_animation){
 		    if(is_scrolling){
+			float time_elapsed = (SDL_GetTicks() - lvl_info->time_ticks) / 1000.0f;
+			lvl_info->time_ticks = 0;
+						
 			int distance = btn[1].pos.w;
 			int new_x = event.button.x;
-			float time_dt = (SDL_GetTicks() - lvl_info->time_ticks) / 1000.0f;
-			lvl_info->time_ticks = 0;
+			
 			printf("distance = %d\n",distance);
+			
 			if(level_page){
-			    if((time_dt < 0.5f) ||
-			       (abs(lvl_info->move_capacity) >= (distance))){
+			    bool SlideMoves = ((time_elapsed < 0.2f) && is_moving) ||
+				(abs(lvl_info->move_capacity) > btn[1].pos.w)
+				? true : false;
+
+			    if(SlideMoves)
+			    {
+				printf("forward!\n");
 				if(new_x > click_pos)
 				    prev_page(lvl_info->move_capacity, 0);
 				else if(new_x < click_pos)
 				    next_page(-lvl_info->move_capacity, 0);
 			    }
-			    else{
+			    else
+			    {
+				printf("back!\n");
 				if(new_x > click_pos)
 				    next_page(-lvl_info->move_capacity, 1);
 				else if(new_x < click_pos)
@@ -399,7 +417,7 @@ int Layer::do_event(SDL_Event& event){
 			    btn[i].pos.x += event.motion.xrel;
 			lvl_info->move_capacity += event.motion.xrel;
 			if(!is_moving){
-			    if(abs(lvl_info->move_capacity) >= (btn[10].pos.w/2))
+			    if(abs(lvl_info->move_capacity) > (0))
 				is_moving = true;
 			}
 		    }
@@ -484,14 +502,23 @@ bool Layer::check_scroll_area(int x, int y){
 	else return true;
 }
 
-void Layer::render_text(SDL_Rect& pos, std::vector<std::string>& str_array){
+void Layer::render_text(SDL_Rect& pos, std::vector<std::string>& str_array, int status){
     if(str_array[0].empty())
 	return;
     if(pos.w <= 10)
 	return;
     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
     
-    SDL_Color color = {255, 255, 255};
+    SDL_Color color;
+    if(status)
+    {
+	color = {0, 0, 0};
+    }
+    else
+    {
+	color = {255, 255, 255};
+    }
+    
     SDL_Rect rect;
     for (int i = 0; i < str_array.size(); i++) {
 	const char *c_string = str_array[i].c_str();
@@ -569,7 +596,7 @@ bool Layer::update_button_animation(){
     bool done = true;
     for (int i = 0; i < btn.size(); i++) {
 	if(is_opening){
-	    if(btn[i].is_button) t_w = 80;
+	    if(btn[i].is_button) t_w = 60;
 	    else t_w = (width*2)/3;
 	    
 	    if(btn[i].pos.w < t_w){
@@ -600,13 +627,13 @@ bool Layer::update_button_animation(){
 
 void Layer::animate_scroll(){
     if(scroll_animation){
-	const float max_vel = 30.0;
-	const float max_acc = 5.0;
+	const float max_vel = 30.0; //TODO: calculate this according the screen width
 	
 	Vector2 desired;
 	desired.x = lvl_info->scroll_target - btn[1].pos.x;
-	float distance = desired.mag();
-	if(distance < max_vel){
+	
+	float abs_distance = abs(desired.x);
+	if(abs_distance < max_vel){
 	    for (int i = 1 ; i < btn.size(); i++)
 		btn[i].pos.x += desired.x;
 	    
@@ -616,11 +643,7 @@ void Layer::animate_scroll(){
 	    return;
 	}
 
-	Vector2 acc;
-	acc.x = lvl_info->scroll_target - btn[1].pos.x;
-	acc.limit(max_acc);
-
-	lvl_info->velocity.add(acc);
+	lvl_info->velocity.add(desired);
 	lvl_info->velocity.limit(max_vel);
 	for (int i = 1 ; i < btn.size(); i++)
 	    btn[i].pos.x += lvl_info->velocity.x;
@@ -638,18 +661,35 @@ bool Layer::update(){
 
 void Layer::render(){
     SDL_Renderer *RenderScreen = Window_Info::get_renderer();
-    // SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
-    for (int i = 0; i < btn.size(); i++) {
-	if(click_index != i){
-	    if(btn[i].status != 1)
-		SDL_RenderCopy(RenderScreen, button_texture, 0, &btn[i].pos);
-	    else
-		SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
+    SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+    for (int i = 0; i < btn.size(); i++)
+    {
+	if(level_page)
+	{
+	    // if(click_index != i && btn[i].status != 1)
+	    // {
+		SDL_RenderCopy(RenderScreen, level_button_texture, 0, &btn[i].pos);
+	    // }
+	    // else
+	    // {
+	    // 	SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
+	    // }
+	
+	    render_text(btn[i].pos, btn[i].str_array, btn[i].status);
 	}
 	else
-	    SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
-	
-	render_text(btn[i].pos, btn[i].str_array);
+	{
+	    if(click_index != i)
+	    {
+		SDL_RenderCopy(RenderScreen, button_texture, 0, &btn[i].pos);
+	    }
+	    else
+	    {
+		SDL_RenderCopy(RenderScreen, highlight_texture, 0, &btn[i].pos);
+	    }
+	    
+	    render_text(btn[i].pos, btn[i].str_array, btn[i].status);
+	}
     }
     if(lvl_info)
 	SDL_RenderCopy(RenderScreen, page_info_texture, 0, &lvl_info->page_info_rect);

@@ -10,6 +10,7 @@
 #include "Vector2.h"
 
 static const char* button_texture_path = "..\\data\\sprites\\circle_touch.png";
+static const char* level_button_texture_path = "..\\data\\sprites\\level_button.png";
 static const char* button_highligth = "..\\data\\sprites\\circle_touch2.png";
 static const char* font_path = "..\\data\\Karmina-Bold.otf";
 
@@ -70,7 +71,7 @@ public:
     void render();
 private:
     bool update_button_animation();
-    void render_text(SDL_Rect&, std::vector<std::string>&);
+    void render_text(SDL_Rect&, std::vector<std::string>&, int);
     
     void check_input();
     bool check_scroll_area(int x, int y);
@@ -84,6 +85,7 @@ private:
     void update_page_info_texture();
     void delete_page_info();
 private:
+    SDL_Texture *level_button_texture = 0;
     SDL_Texture *button_texture;
     SDL_Texture *highlight_texture;
     SDL_Texture *page_info_texture;
