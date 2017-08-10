@@ -299,6 +299,8 @@ std::ostream& operator<<(std::ostream& out, const GameData& game_data)
     {
 	out << game_data.data[i];
     }
+
+    return out;
 }
 
 std::istream& operator>>(std::istream& in, GameData& game_data)
@@ -314,6 +316,7 @@ std::istream& operator>>(std::istream& in, GameData& game_data)
 	}
     }
     if(game_data.data.back().size()) game_data.data.push_back(std::string{});
+    
     return in;
 }
 
