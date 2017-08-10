@@ -21,7 +21,6 @@
 #define LEVEL_COMPLETE   1
 #define LEVEL_EXIT       2
 
-
 class Level_Manager{
 public:
     Level_Manager();
@@ -39,11 +38,13 @@ private:
     
     void load_image(SDL_Texture *&texture, const char* path);
     void load_level_number(SDL_Texture*&, SDL_Color);
+
+    void update_level_number_animation();
 private:
     SDL_Texture *menu_exit_texture     = nullptr;
     SDL_Texture *menu_restart_texture  = nullptr;
     SDL_Texture *lvl_number_texture    = nullptr;
-    SDL_Texture *lvl_number_sh_texture = nullptr;
+    SDL_Texture *lvl_number_shadow_texture = nullptr;
      
     Mix_Chunk *begin_sound             = nullptr;
     Mix_Chunk *complete_sound_1        = nullptr;
@@ -62,8 +63,10 @@ private:
     SDL_Rect level_line[2];
 
     uint8_t alpha = 255;
+    uint8_t alpha_level_number = 0;
     bool level_complete = false;
     bool toogle_sound_completion = false;
+    bool level_number_animation  = false;
      
     Grid_Manager    grid_manager;
     Figure_Manager  figure_manager;

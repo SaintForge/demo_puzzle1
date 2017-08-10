@@ -122,16 +122,65 @@ void Level_Manager::next_level(Level_Info &info, int level_number){
      this->level_number = level_number;
 
      load_level_number(lvl_number_texture, {255, 255, 255});
-     load_level_number(lvl_number_sh_texture, {0, 0, 0});
+     load_level_number(lvl_number_shadow_texture, {0, 0, 0});
 
-     level_line[0].w = level_number_rect.w;
-     level_line[1].w = level_number_rect.w;
+     alpha_level_number = 0;
+     SDL_SetTextureAlphaMod(lvl_number_texture, alpha_level_number);
+     SDL_SetTextureAlphaMod(lvl_number_shadow_texture, alpha_level_number);
+
      level_line[0].h = level_line[1].h = 2;
      
-     level_line[0].x = (menu_bar_area.w / 2) - (level_line[0].w + level_line[0].w);
-     level_line[1].x = (menu_bar_area.w / 2) + (level_line[1].w);
+     level_line[0].w = 10;
+     level_line[1].w = 10;
+
      level_line[0].y = level_line[1].y = level_number_rect.y + level_number_rect.h/2;
 
+     level_line[0].x = (menu_bar_area.w / 2) - (active_block_size+level_line[0].w);
+     level_line[1].x = (menu_bar_area.w / 2) + (active_block_size);
+
+     level_number_animation = true;
+}
+
+void Level_Manager::update_level_number_animation()
+{
+    if(level_number_animation)
+    {
+	int margin = default_block_size;
+	bool left_stop  = false;
+	bool right_stop = false;
+	bool alpha_stop  = false;
+	
+	if(level_line[0].x > margin)
+	{
+	    level_line[0].x -=2;
+	    level_line[0].w +=2;
+	}
+	else left_stop = true;
+	    
+
+	if(level_line[1].x + level_line[1].w < Window_Info::get_width() - margin)
+	{
+	    level_line[1].w += 2;
+	}
+	else right_stop = true;
+
+	if(alpha_level_number < 250)
+	{
+	    alpha_level_number += 3;
+
+	}
+	else
+	{
+	    alpha_level_number = 255;
+	    alpha_stop = true;
+	}
+
+	SDL_SetTextureAlphaMod(lvl_number_texture, alpha_level_number);
+	SDL_SetTextureAlphaMod(lvl_number_shadow_texture, alpha_level_number);
+
+	if(left_stop && right_stop && alpha_stop)
+	    level_number_animation = false;
+    }
 }
 
 void Level_Manager::load_level_number(SDL_Texture*& texture, SDL_Color color){
@@ -235,6 +284,8 @@ int Level_Manager::update(){
 	  else{ result = LEVEL_COMPLETE;}
      }
 
+     update_level_number_animation();
+
      return result;
 }
 
@@ -257,7 +308,7 @@ void Level_Manager::draw(){
 	 SDL_Rect rect = level_number_rect;
 	 rect.x += 5;
 	 rect.y += 5;
-	 SDL_RenderCopy(RenderScreen, lvl_number_sh_texture, 0, &rect);
+	 SDL_RenderCopy(RenderScreen, lvl_number_shadow_texture, 0, &rect);
 	 SDL_RenderCopy(RenderScreen, lvl_number_texture, 0, &level_number_rect);
      }
      
@@ -292,65 +343,6 @@ void Level_Manager::draw(){
 	     SDL_RenderFillRect(RenderScreen, NULL);
 	 }
      }
-}
-
-void Level_Manager::draw_timer(uint8_t r, uint8_t g, uint8_t b){
-    SDL_Renderer *RenderScreen = Window_Info::get_renderer();
-     
-     timer_text.str("");
-     if(!level_complete){
-	  uint32_t seconds_dx = ((SDL_GetTicks() - start_time) / 1000) % 60;
-	  uint32_t minutes_dx = ((SDL_GetTicks() - start_time) / 1000) / 60;
-
-	  if(minutes_dx < 10)
-	       timer_text << "0" << minutes_dx << ":";
-	  else
-	       timer_text << minutes_dx << ":";
-	  if(seconds_dx < 10)
-	       timer_text << "0" << seconds_dx;
-	  else
-	       timer_text << seconds_dx;
-	  
-	  end_time = SDL_GetTicks();
-     }
-     else{
-	  uint32_t seconds_dx = ((end_time - start_time) / 1000) % 60;
-	  uint32_t minutes_dx = ((end_time - start_time) / 1000) / 60;
-
-	  if(minutes_dx < 10)
-	       timer_text << "0" << minutes_dx << ":";
-	  else
-	       timer_text << minutes_dx << ":";
-	  if(seconds_dx < 10)
-	       timer_text << "0" << seconds_dx;
-	  else
-	       timer_text << seconds_dx;
-     }
-
-     SDL_Color color = {r, g, b};
-     SDL_Surface *tmp_surface = TTF_RenderUTF8_Blended(font, timer_text.str().c_str(), color);
-     if(!tmp_surface){
-	  printf("Failed at Level::draw_timer() - %s\n", SDL_GetError());
-	  return;
-     }
-
-     SDL_Rect rect;
-     rect.w = tmp_surface->w;
-     rect.h = tmp_surface->h;
-     rect.x = menu_bar_area.x + (menu_bar_area.w >> 1) - (rect.w>>1);
-     rect.y = menu_bar_area.y + (menu_bar_area.h >> 1) - (rect.h>>1);
-
-     SDL_Texture *tmp_texture = SDL_CreateTextureFromSurface(RenderScreen, tmp_surface);
-     if(!tmp_texture){
-	  printf("Failed at Level::draw_timer() - %s\n", IMG_GetError());
-	  SDL_FreeSurface(tmp_surface);
-	  return;
-     }
-
-     SDL_RenderCopy(RenderScreen, tmp_texture, 0, &rect);
-
-     SDL_FreeSurface(tmp_surface);
-     SDL_DestroyTexture(tmp_texture);
 }
 
 uint32_t Level_Manager::total_time(){

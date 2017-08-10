@@ -47,7 +47,6 @@ public:
      int              get_width();
      int              get_height();
      int              get_block_size();
-
      
      bool is_attached();
      bool is_sticked();
@@ -59,7 +58,6 @@ public:
 
      void transparent_on();
      void transparent_off();
-
 
      void set_default(int x, int y);
      void set_default_state();
