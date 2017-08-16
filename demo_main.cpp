@@ -2,8 +2,9 @@
 
 int SDL_main(int argc, char *argv[])
 {
-  Game_Engine game;
+    Game_Engine game;
     game.run();
+    printf("sas!\n");
     
     return 0;
 }
