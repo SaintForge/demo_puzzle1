@@ -4,7 +4,7 @@ int SDL_main(int argc, char *argv[])
 {
     Game_Engine game;
     game.run();
-    printf("sas!\n");
+    printf("Test commit!\n");
     
     return 0;
 }
