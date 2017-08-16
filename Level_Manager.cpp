@@ -35,7 +35,7 @@ Level_Manager::Level_Manager(){
      restart_button.x = width - (restart_button.w) - (restart_button.w>>1);
      restart_button.y = 0 + (restart_button.h>>1);
 
-#ifdef PC
+#ifdef _WIN32
      load_image(menu_exit_texture, "..\\data\\sprites\\exit_button2.png");
      load_image(menu_restart_texture, "..\\data\\sprites\\restart_button2.png");
 
@@ -48,7 +48,8 @@ Level_Manager::Level_Manager(){
      load_image(menu_restart_texture, "data/sprites/restart_button2.png");
 
      begin_sound = Mix_LoadWAV("data/sound/focus_enter_new.wav");
-     complete_sound = Mix_LoadWAV("data/sound/menu_enter2.wav");
+     complete_sound_1 = Mix_LoadWAV("data/sound/menu_enter1-cut.wav");
+     complete_sound_2 = Mix_LoadWAV("data/sound/menu_enter2.wav");
      font = TTF_OpenFont("data/Karmina-Bold.otf", 50);
 #endif
      

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <cerrno>
 
 #include "Level_Info.h"
 
@@ -23,15 +25,20 @@ struct GameData
 
     bool open_data()
 	{
+	    printf("im here!\n");
 	    if(!data.empty()) data.clear();
 	    bool is_opened = false;
 
 	    std::ifstream file;
-	    file.open("file.bin", std::ios::in | std::ios::binary);
+	    file.open("..\\data\\file.bin", std::ios::in | std::ios::binary);
 	    if(file.is_open())
 	    {
 		file >> *this;
 		is_opened = true;
+	    }
+	    else
+	    {
+		printf("Failed opening binary file - %s\n", std::strerror(errno));
 	    }
 	    file.close();
 
@@ -42,7 +49,7 @@ struct GameData
 	    if(data.empty()) return;
 
 	    std::ofstream file;
-	    file.open("file.bin", std::ios::out | std::ios::binary);
+	    file.open("..\\data\\file.bin", std::ios::out | std::ios::binary);
 	    if(file.is_open())
 	    {
 		file << *this;
