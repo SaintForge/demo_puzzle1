@@ -1,4 +1,4 @@
-C_FLAGS := -std=c++11 -g
+C_FLAGS := -std=c++11
 CC := g++
 RM := rm
 

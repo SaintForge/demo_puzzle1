@@ -39,6 +39,7 @@ Grid_Manager::~Grid_Manager(){
 	  Mix_FreeChunk(piece_snap);
      if(block_sound)
 	  Mix_FreeChunk(block_sound);
+     printf("Grid_Manager::~Grid_Manager()\n");
 }
 
 
