@@ -22,7 +22,7 @@ Figure_Manager::Figure_Manager(){
      default_zone.y = height - (default_zone.h);
      default_zone.x = 0;
 
-     #ifdef PC
+#ifdef _WIN32
      rotation_sound = Mix_LoadWAV("..\\data\\sound\\piece_snap.wav");
      release_sound = Mix_LoadWAV("..\\data\\sound\\piece_snap_new.wav");
      grab_sound = Mix_LoadWAV("..\\data\\sound\\piece_grab_new.wav");
@@ -30,7 +30,7 @@ Figure_Manager::Figure_Manager(){
      return_sound = Mix_LoadWAV("..\\data\\sound\\chunk.wav");
 
      load_effect("..\\data\\sprites\\circle.png");
-     #else
+#else
      rotation_sound = Mix_LoadWAV("data/sound/piece_snap.wav");
      release_sound = Mix_LoadWAV("data/sound/piece_snap_new.wav");
      grab_sound = Mix_LoadWAV("data/sound/piece_grab_new.wav");
@@ -38,11 +38,7 @@ Figure_Manager::Figure_Manager(){
      return_sound = Mix_LoadWAV("data/sound/piece_snap.wav");
 
      load_effect("data/sprites/circle.png");
-     #endif
-     
-
-     if(!return_sound)
-	  printf("DIRTY ASS\n");
+#endif
 
      Mix_VolumeChunk(return_sound, 16);
      Mix_VolumeChunk(rotation_sound, 4);

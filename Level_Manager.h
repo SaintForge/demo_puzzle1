@@ -21,8 +21,6 @@
 #define LEVEL_COMPLETE   1
 #define LEVEL_EXIT       2
 
-struct Level_Editor_Bar; 
-
 class Level_Manager{
 public:
     Level_Manager();
@@ -83,5 +81,6 @@ private:
     int level_number;
     std::stringstream timer_text;
 };
+
 
 #endif

@@ -18,7 +18,8 @@ OBJ_LIST := demo_main.o \
 	Level_Manager.o \
 	New_Menu.o \
 	Game_Engine.o \
-	Game_Data.o
+	Game_Data.o \
+	Level_Editor.o
 
 INCLUDE_PATH = -I"W:\SDL\sdl_dev_lib\include"
 LIB_PATH := -L"W:\SDL\sdl_dev_lib\lib\x86"

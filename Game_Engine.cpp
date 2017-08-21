@@ -49,6 +49,7 @@ void Game_Engine::menu_events(){
 		printf("Loading level %d\n",level_number);
 		level = new Level_Manager();
 
+		printf("opening data!\n");
 		GameData data;
 		if(data.open_data())
 		{

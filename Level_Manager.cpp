@@ -6,90 +6,6 @@
 
 #include "Level_Manager.h"
 
-struct Level_Editor_Bar
-{
-     Level_Editor_Bar(int RowNumber, int ColumnNumber );
-     ~Level_Editor_Bar();
-     
-     void InitNumberTexture(SDL_Texture*&, int number);
-     void HandleEvent();
-     void Render();
-     void Update();
-private:
-     void InitFont();
-     
-     int RowNumber;
-     int ColumnNumber;
-
-     SDL_Rect EditorBar;
-     SDL_Rect ColumnCountButtons[3];
-     SDL_Rect RowCountButtons[3];
-
-     SDL_Texture *ColumnNumberTexture = NULL;
-     SDL_Texture *RowNumberTexture    = NULL;
-
-     TTF_Font *Font = NULL;
-};
-
-Level_Editor_Bar::Level_Editor_Bar(int RowNumber, int ColumnNumber)
-{
-     printf("Level_Editor_Bar(int, int )\n");
-
-     this->RowNumber = RowNumber;
-     this->ColumnNumber = ColumnNumber;
-
-     InitFont();
-     InitNumberTexture(ColumnNumberTexture, &ColumnCountButtons[1],  RowNumber );
-     InitNumberTexture(RowNumberTexture, &RowCountButtons[1],  ColumnNumber );
-     
-}
-
-Level_Editor_Bar::~Level_Editor_Bar()
-{
-     if(ColumnNumberTexture) SDL_DestroyTexture(ColumnNumberTexture);
-     if(RowNumberTexture) SDL_DestroyTexture(RowNumberTexture);
-     if(Font) TTF_CloseFont(Font) ;
-}
-
-void Level_Editor_Bar::InitFont()
-{
-     Font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 30);
-     if(!Font)
-     {
-	  printf("Failed to initialize Font at Level_Editor_Bar::InitFont()\n - %s ", TTF_GetError() );
-	  return;
-     }
-     
-}
-
-void Level_Editor_Bar::InitNumberTexture(SDL_Texture*& Texture, SDL_Rect *TextureRect,
-					 int number)
-{
-     if(!Font) return;
-     if(number < 0) return; 
-     if(Texture) SDL_DestroyTexture(Texture);
-     
-     SDL_Renderer* RenderScreen = Window_Info::get_renderer();
-
-     SDL_Surface* tmp_surface = TTF_RenderUTF8_Blended(Font,  std::to_string(number).c_str(),
-						       {255, 255, 255}) ;
-     if(!tmp_surface)
-     {
-	  printf("Failed to init SDL_Surface at Level_Editor_Bar::InitNumberTexture = %s", TTF_GetError() );
-	  return;
-     }
-
-     TextureRect->w = tmp_surface->w;
-     TextureRect->h = tmp_surface->h;
-
-     Texture = SDL_CreateTextureFromSurface(RenderScreen,  tmp_surface);
-     if(!Texture)
-     {
-	  printf("Failed to init SDL_Texture at Level_Editor_Bar::InitNumberTexture = %s", SDL_GetError() );
-     }
-
-     SDL_FreeSurface(tmp_surface);
-}
 
 Level_Manager::Level_Manager(){
      printf("Level_Manager()::Level_Manager()\n");
@@ -121,8 +37,8 @@ Level_Manager::Level_Manager(){
 
      printf("loaded images!\n");
      begin_sound = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\menu_enter1-cut.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
      printf("loaded sound!\n");
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
      printf("Level assets were initialized!\n ");
@@ -477,12 +393,12 @@ void Level_Manager::draw(){
 	 }
      }
 
-     if(toggle_level_editor)
-     {
-	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 255, 100);
-	  SDL_RenderFillRect(RenderScreen, editor_bar );
-	  SDL_SetRenderDrawColor(RenderScreen, 42, 6, 21, 255);
-     }
+     // if(toggle_level_editor)
+     // {
+     // 	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 255, 100);
+     // 	  SDL_RenderFillRect(RenderScreen, editor_bar );
+     // 	  SDL_SetRenderDrawColor(RenderScreen, 42, 6, 21, 255);
+     // }
 }
 
 uint32_t Level_Manager::total_time(){

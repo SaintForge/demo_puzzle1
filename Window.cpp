@@ -38,12 +38,12 @@ Window_Info::Window_Info(){
 	  else
 	  {
 	       window = SDL_CreateWindow("Test",
-					 SDL_WINDOWPOS_CENTERED,
+					 25,
 					 25,
 					 window_width,
 					 window_height,
 					 SDL_WINDOW_ALLOW_HIGHDPI|
-					 SDL_WINDOW_HIDDEN| SDL_WINDOW_BORDERLESS);
+					 SDL_WINDOW_HIDDEN);
 	       if(window)
 	       {
 		    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);

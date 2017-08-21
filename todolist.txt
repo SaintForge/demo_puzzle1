@@ -1,0 +1,4 @@
+1. There's a bug,
+so that when I press the Back button
+in the level menu and release it outside,
+the game somehow crashes.
