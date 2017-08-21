@@ -25,7 +25,6 @@ struct GameData
 
     bool open_data()
 	{
-	    printf("im here!\n");
 	    if(!data.empty()) data.clear();
 	    bool is_opened = false;
 
@@ -35,10 +34,13 @@ struct GameData
 	    {
 		file >> *this;
 		is_opened = true;
+		printf("Successfully opened the file!\n");
+		
 	    }
 	    else
 	    {
 		printf("Failed opening binary file - %s\n", std::strerror(errno));
+		is_opened = false;
 	    }
 	    file.close();
 

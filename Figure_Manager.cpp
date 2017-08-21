@@ -22,7 +22,7 @@ Figure_Manager::Figure_Manager(){
      default_zone.y = height - (default_zone.h);
      default_zone.x = 0;
 
-     #ifdef PC
+     #ifdef _WIN32
      rotation_sound = Mix_LoadWAV("..\\data\\sound\\piece_snap.wav");
      release_sound = Mix_LoadWAV("..\\data\\sound\\piece_snap_new.wav");
      grab_sound = Mix_LoadWAV("..\\data\\sound\\piece_grab_new.wav");

@@ -200,7 +200,19 @@ void Layer::init_buttons(Select_Menu menu_choice){
     {
 	SDL_Surface *tmp_surface = 0;
 	tmp_surface = IMG_Load(level_button_texture_path);
-	level_button_texture = SDL_CreateTextureFromSurface(Window_Info::get_renderer(), tmp_surface);
+	if(tmp_surface){
+	     level_button_texture = SDL_CreateTextureFromSurface(Window_Info::get_renderer(), tmp_surface);
+	     if(!level_button_texture)
+	     {
+		  printf("Error loading sprite - %s\n",IMG_GetError());
+	     }
+	     else
+	     {
+		  printf("Button texture was loaded!\n");
+	     }
+	}
+	else
+	     printf("Error loading sprite - %s\n",IMG_GetError());
 	SDL_FreeSurface(tmp_surface);
     }
     
@@ -251,7 +263,7 @@ void Layer::init_buttons(Select_Menu menu_choice){
 	lvl_info->scroll_bounds.y = 0;
 	lvl_info->scroll_bounds.w = width;
 	lvl_info->scroll_bounds.h = btn[0].pos.y;
-
+	
 	int countdown = lvl_amount;
 	//TODO: make io function that read all levels at once
 	while(countdown != 0){

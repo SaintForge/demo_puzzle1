@@ -20,8 +20,8 @@ OBJ_LIST := demo_main.o \
 	Game_Engine.o \
 	Game_Data.o
 
-INCLUDE_PATH = -I"W:\SDL\sdl_dev_lib\include"
-LIB_PATH := -L"W:\SDL\sdl_dev_lib\lib\x86"
+INCLUDE_PATH = -I"D:\WorkSpace\stuff\Libs\SDL2_all\include"
+LIB_PATH := -L"D:\WorkSpace\stuff\Libs\SDL2_all\lib"
 LIB_FLAGS := -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 OBJ := $(patsubst %,$(OBJ_PATH)%,$(OBJ_LIST))

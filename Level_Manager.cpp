@@ -36,12 +36,13 @@ Level_Manager::Level_Manager(){
      restart_button.y = 0 + (restart_button.h>>1);
 
 #ifdef _WIN32
+     printf("WIN32 defined!\n");
      load_image(menu_exit_texture, "..\\data\\sprites\\exit_button2.png");
      load_image(menu_restart_texture, "..\\data\\sprites\\restart_button2.png");
 
      begin_sound = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\menu_enter1-cut.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
 #else
      load_image(menu_exit_texture, "data/sprites/exit_button2.png");
