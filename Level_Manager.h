@@ -21,6 +21,8 @@
 #define LEVEL_COMPLETE   1
 #define LEVEL_EXIT       2
 
+struct Level_Editor_Bar; 
+
 class Level_Manager{
 public:
     Level_Manager();
@@ -40,20 +42,22 @@ private:
     void load_level_number(SDL_Texture*&, SDL_Color);
 
     void update_level_number_animation();
-private:
-    SDL_Texture *menu_exit_texture     = nullptr;
-    SDL_Texture *menu_restart_texture  = nullptr;
-    SDL_Texture *lvl_number_texture    = nullptr;
-    SDL_Texture *lvl_number_shadow_texture = nullptr;
-     
-    Mix_Chunk *begin_sound             = nullptr;
-    Mix_Chunk *complete_sound_1        = nullptr;
-    Mix_Chunk *complete_sound_2        = nullptr;
-    Mix_Music *music                   = nullptr;
 
-    TTF_Font *font                     = nullptr;
+    void init_editor_bar();
+    void delete_editor_bar();
+private:
+    SDL_Texture *menu_exit_texture     = NULL;
+    SDL_Texture *menu_restart_texture  = NULL;
+    SDL_Texture *lvl_number_texture    = NULL;
+    SDL_Texture *lvl_number_shadow_texture = NULL;
      
-    SDL_Rect grid_area;
+    Mix_Chunk *begin_sound             = NULL;
+    Mix_Chunk *complete_sound_1        = NULL;
+    Mix_Chunk *complete_sound_2        = NULL;
+    Mix_Music *music                   = NULL;
+
+    TTF_Font *font                     = NULL;
+    
     SDL_Rect figure_area;
     SDL_Rect menu_bar_area;
 
@@ -61,12 +65,15 @@ private:
     SDL_Rect restart_button;
     SDL_Rect level_number_rect;
     SDL_Rect level_line[2];
-
+    
     uint8_t alpha = 255;
     uint8_t alpha_level_number = 0;
     bool level_complete = false;
     bool toogle_sound_completion = false;
     bool level_number_animation  = false;
+
+    bool toggle_tilda_key        = false;
+    bool toggle_level_editor     = false; 
      
     Grid_Manager    grid_manager;
     Figure_Manager  figure_manager;
