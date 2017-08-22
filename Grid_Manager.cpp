@@ -198,14 +198,22 @@ bool Grid_Manager::is_figure_inside(std::shared_ptr<Figure> fig){
 }
 
 void Grid_Manager::restart_grid(){
-     if(!stick_list.empty()){
-	  for (int i = 0; i < bit_field.size(); i++) {
-	       // std::fill(bit_field[i].begin(), bit_field[i].end(), 0);
-	       for (int j = 0; j < bit_field[i].size(); j++) {
-		    if(bit_field[i][j] == 1)
-			 bit_field[i][j] = 0;
+     if(!stick_list.empty())
+     {
+	  int row_index    = 0;
+	  int column_index = 0;
+
+	  for (int i = 0; i < stick_list.size(); ++i)
+	  {
+	       for (int j = 0; j < 4; ++j)
+	       {
+		    row_index = stick_list[i].row[j];
+		    column_index = stick_list[i].col[j];
+		    
+		    bit_field[row_index][column_index] = 0;
 	       }
 	  }
+
 	  stick_list.clear();
      }
 }
