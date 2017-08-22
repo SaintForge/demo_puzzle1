@@ -34,17 +34,21 @@ public:
      Grid_Manager();
      ~Grid_Manager();
 
-     void update_grid(Figure_Manager*,
-		      int, int,
-		      Level_Info&);
+     void check_input(int, int ); 
+     void change_block(int, int); 
+     void update_grid(int, int); 
+     void update_grid(Figure_Manager*, int, int, Level_Info&);
      void restart_grid();
-     bool is_full();
+
+     int get_column_amount();
+     int get_row_amount();
      int get_block_size();
      int get_last_stick_index();
 
+     bool is_full();
      bool unattach_figure(int index);
-
-     int update();
+     
+     int  update();
      void draw();
 private:
      void load_grid_texture(SDL_Texture *&, const char* path);
@@ -57,12 +61,12 @@ private:
      Mix_Chunk *block_sound = NULL;
 
      GRID_STATE state     = GRID_EMPTY;
-     int size             = 50;
+     int size             = 40;
      int row_amount       = 0;
      int column_amount    = 0;
-     bool stick_effect    = false;
      
-     bool start_animation = true;
+     bool stick_effect       = false;
+     bool start_animation    = true;
 
      SDL_Rect grid_area;
      

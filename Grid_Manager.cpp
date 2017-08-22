@@ -9,9 +9,9 @@
 
 Grid_Manager::Grid_Manager(){
      printf("Grid_Manager::Grid_Manager()\n");
-#ifdef PC
+#ifdef _WIN32
      load_grid_texture(texture, "..\\data\\sprites\\grid_cell.png");
-     load_grid_texture(texture2, "..\\data\\sprites\\grid_cell2.png");
+     load_grid_texture(texture2, "..\\data\\sprites\\o_s.png");
      piece_snap = Mix_LoadWAV("..\\data\\sound\\piece_snap2.wav");
      // block_sound = Mix_LoadWAV("..\\data\\sound\\idle.wav");
 #else
@@ -42,8 +42,99 @@ Grid_Manager::~Grid_Manager(){
 }
 
 
-int Grid_Manager::get_block_size(){
+int Grid_Manager::get_column_amount()
+{
+     return column_amount;
+}
+int Grid_Manager::get_row_amount()
+{
+     return row_amount; 
+}
+
+int Grid_Manager::get_block_size()
+{
      return size;
+}
+
+void Grid_Manager::check_input(int x_mouse, int y_mouse)
+{
+     printf("Grid_Manager::check_input()\n");
+     
+     if(x_mouse < grid_area.x)                    return;
+     else if(y_mouse < grid_area.y)               return;
+     else if(x_mouse > grid_area.x + grid_area.w) return;
+     else if(y_mouse > grid_area.y + grid_area.h) return;
+     else
+     {
+	  SDL_Rect targ_rect = {0, 0, size, size };
+	  for (int i = 0 ; i < row_amount; ++i)
+	  {
+	       for (int j = 0; j < column_amount; ++j)
+	       {
+		    targ_rect.x = grid_area.x + (j*size);
+		    targ_rect.y = grid_area.y + (i*size);
+		    
+		    if(x_mouse <= targ_rect.x)                    continue;
+		    else if(y_mouse <= targ_rect.y)               continue;
+		    else if(x_mouse > targ_rect.x + targ_rect.w)  continue;
+		    else if(y_mouse > targ_rect.y + targ_rect.h)  continue;
+		    else
+		    {
+			 change_block(i, j);
+			 break;
+		    }
+	       }
+	  }
+
+     }
+
+}
+
+void Grid_Manager::change_block(int row_index, int column_index)
+{
+     printf("Grid_Manager::change_block()\n");
+     if(row_index < 0 || row_index >= row_amount)          return;
+     if(column_index < 0 || column_index >= column_amount) return;
+
+     if(bit_field[row_index][column_index] != 2)
+	  bit_field[row_index][column_index] += 1;
+     else
+	  bit_field[row_index][column_index] = 0 ;
+}
+
+void Grid_Manager::update_grid(int row, int column)
+{
+     printf("Grid_Manager::resize_grid()\n");
+     if(row <= 0 || column <= 0) return;
+
+     if(!stick_list.size() > 0)
+     {
+     	  stick_list.clear();
+     }
+
+     row_amount = row;
+     column_amount = column;
+
+     int x_pos = (grid_area.x + grid_area.w / 2);
+     int y_pos = (grid_area.y + grid_area.h / 2);
+
+     grid_area.w = (size) * column;
+     grid_area.h = (size) * row;
+
+     grid_area.x = x_pos - (grid_area.w>>1);
+     grid_area.y = y_pos - (grid_area.h>>1);
+
+     //check the case when new amount is higher than old one
+     bit_field.resize(row_amount);
+     for (int i = 0; i < row_amount; ++i)
+     {
+	  bit_field[i].resize(column_amount);
+	  for (int j = 0 ; j < column_amount; ++j)
+	  {
+	       bit_field[i][j] = 0;
+	  }
+
+     }
 }
 
 void Grid_Manager::update_grid(Figure_Manager *man,
@@ -209,7 +300,8 @@ int Grid_Manager::update(){ // TODO:: make 1 functions that check rectangle coll
 				   else if(shell[b].x > rect.x + rect.w)  continue;
 				   else if(shell[b].y > rect.y + rect.h)  continue;
 				   else{
-					if(count == 0){
+					if(count == 0)
+					{
 					     offset_x = rect.x+(rect.w/2) - shell[b].x;
 					     offset_y = rect.y+(rect.h/2) - shell[b].y;
 					}

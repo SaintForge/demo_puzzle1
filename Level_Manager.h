@@ -16,7 +16,7 @@
 #include "Figure.h"
 #include "Figure_Manager.h"
 #include "Grid_Manager.h"
-#include "Level_Editor.h"
+#include "Grid_Editor.h"
 
 #define LEVEL_INCOMPLETE 0
 #define LEVEL_COMPLETE   1
@@ -57,7 +57,7 @@ private:
     
     TTF_Font *font                     = nullptr;
     
-    Level_Editor *lvl_editor           = nullptr; 
+    Grid_Editor *grid_editor           = nullptr; 
      
     SDL_Rect figure_area;
     SDL_Rect menu_bar_area;

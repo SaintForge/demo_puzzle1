@@ -265,118 +265,8 @@ void Figure_Manager::handle_event(SDL_Event &event){
      int width = Window_Info::get_width();
      int height = Window_Info::get_height();
 
-#ifdef ANDROID
-     printf("SAS!\n");
-     switch(event.type){
-     	  case SDL_FINGERDOWN:{
-     	       if(!mouse_left_button && event.tfinger.fingerId == 0){
-     		    start_ticks = SDL_GetTicks();
-     		    int x = round(event.tfinger.x * width);
-     		    int y = round(event.tfinger.y * height);
-		    
-     		    int index = check_input(x, y);
-     		    if(index != -1){
-     			 hit = true;
-     			 hit_index = index;
-			 
-			 x_rel = x_button - figure_container[index]->get_center().x;
-			 y_rel = y_button - figure_container[index]->get_center().y;
 
-			 if(stick_effect){
-			      stick_effect = false;
-			      stick_effect_alpha = 150;
-			 }
-     		    }
-     		    mouse_left_button = true;
-     	       }
-	       else if(mouse_left_button && event.tfinger.fingerId > 0){
-		    if(grabbed)
-			 rotate_figure(current);
-	       }
-     	  } break;
-     	  case SDL_FINGERUP:{
-     	       if(mouse_left_button && (event.tfinger.fingerId == 0)){
-     		    if(grabbed){
-     			 release_figure();
-     		    }
-     		    if(hit && !grabbed){
-     			 if(!figure_container[hit_index]->is_idle()){
-     			      rotate_figure(hit_index);
-			      grabbed = true;
-			      current = hit_index;
-			      figure_high_priority(hit_index);
-			 }
-     			 hit = false;
-     		    }
-     		    mouse_left_button = false;
-     	       }
-     	  } break;
-     	  case SDL_FINGERMOTION:{
-     	       if(grabbed && event.tfinger.fingerId == 0){
-     	  	    int x = round(event.tfinger.dx * width);
-     	  	    int y = round(event.tfinger.dy * height);
-     	  	    figure_container[current]->move_figure(x, y);
-     	       }
-     	  } break;
-     }
-#endif
-#ifdef PC_REAL
-     switch(event.type){
-     	  case SDL_MOUSEBUTTONDOWN:{
-     	       if(!mouse_left_button){
-		    if(is_idle) is_idle = false;
-     		    start_ticks = SDL_GetTicks();
-		    
-     		    int x_button = event.button.x;
-     		    int y_button = event.button.y;
-		    
-     		    int index = check_input(x_button, y_button);
-     		    if(index != -1){
-     			 hit = true;
-     			 hit_index = index;
-			 x_rel = x_button - figure_container[index]->get_center().x;
-			 y_rel = y_button - figure_container[index]->get_center().y;
-
-			 if(stick_effect){
-			      stick_effect = false;
-			      stick_effect_alpha = 150;
-			 }
-     		    }
-     		    mouse_left_button = true;
-     	       }
-	       else if(mouse_left_button){
-		    if(grabbed)
-			 rotate_figure(current);
-	       }
-     	  } break;
-     	  case SDL_MOUSEBUTTONUP:{
-     	       if(mouse_left_button){
-     		    if(grabbed){
-     			 release_figure();
-     		    }
-     		    if(hit && !grabbed){
-     			 if(!figure_container[hit_index]->is_idle()){
-     			      rotate_figure(hit_index);
-			      grabbed = true;
-			      current = hit_index;
-			      figure_high_priority(hit_index);
-			 }
-     			 hit = false;
-     		    }
-     		    mouse_left_button = false;
-     	       }
-     	  } break;
-     	  case SDL_MOUSEMOTION:{
-     	       if(grabbed && mouse_left_button){
-     	  	    int x = event.motion.xrel;
-     	  	    int y = event.motion.yrel;
-     	  	    figure_container[current]->move_figure(x, y);
-     	       }
-     	  } break;
-     }
-#endif
-
-#ifdef PC
+#ifdef _WIN32
      switch(event.type){
      	  case SDL_MOUSEBUTTONDOWN:{
 	       switch(event.button.button){
@@ -448,6 +338,59 @@ void Figure_Manager::handle_event(SDL_Event &event){
 		    figure_container[current]->move_figure(x, y);
 	       }
 	  } break;
+     }
+#else
+     switch(event.type){
+     	  case SDL_FINGERDOWN:{
+     	       if(!mouse_left_button && event.tfinger.fingerId == 0){
+     		    start_ticks = SDL_GetTicks();
+     		    int x = round(event.tfinger.x * width);
+     		    int y = round(event.tfinger.y * height);
+		    
+     		    int index = check_input(x, y);
+     		    if(index != -1){
+     			 hit = true;
+     			 hit_index = index;
+			 
+			 x_rel = x_button - figure_container[index]->get_center().x;
+			 y_rel = y_button - figure_container[index]->get_center().y;
+
+			 if(stick_effect){
+			      stick_effect = false;
+			      stick_effect_alpha = 150;
+			 }
+     		    }
+     		    mouse_left_button = true;
+     	       }
+	       else if(mouse_left_button && event.tfinger.fingerId > 0){
+		    if(grabbed)
+			 rotate_figure(current);
+	       }
+     	  } break;
+     	  case SDL_FINGERUP:{
+     	       if(mouse_left_button && (event.tfinger.fingerId == 0)){
+     		    if(grabbed){
+     			 release_figure();
+     		    }
+     		    if(hit && !grabbed){
+     			 if(!figure_container[hit_index]->is_idle()){
+     			      rotate_figure(hit_index);
+			      grabbed = true;
+			      current = hit_index;
+			      figure_high_priority(hit_index);
+			 }
+     			 hit = false;
+     		    }
+     		    mouse_left_button = false;
+     	       }
+     	  } break;
+     	  case SDL_FINGERMOTION:{
+     	       if(grabbed && event.tfinger.fingerId == 0){
+     	  	    int x = round(event.tfinger.dx * width);
+     	  	    int y = round(event.tfinger.dy * height);
+     	  	    figure_container[current]->move_figure(x, y);
+     	       }
+     	  } break;
      }
 #endif
 }
@@ -678,31 +621,8 @@ void Figure_Manager::update(){
      
      if(hit){
 	  bool fig_is_idle = figure_container[hit_index]->is_idle();
-	  #ifdef ANDROID
-	  if(fig_is_idle){
-	       SDL_Rect def_rect = figure_container[hit_index]->get_area();
-	       grab_figure(hit_index);
-	       SDL_Rect rect = figure_container[current]->get_area();
-	       int end_y = def_rect.y;// - (rect.h>>1);
-	       int offset = end_y - (rect.y + (rect.h>>1));
-	       figure_container[current]->move_figure(0, offset);
-	       hit = false;
-	  }
-	  else if(time_dx > 0.1){
-	       grab_figure(hit_index);
-	       SDL_Point target;
-	       SDL_Point cntr = figure_container[current]->get_center();
-	       SDL_GetMouseState(&target.x, &target.y);
-	       target.x = (target.x - x_rel) - cntr.x;
-	       target.y = (target.y - y_rel) - cntr.y;
-	       figure_container[current]->move_figure(target.x, target.y);
 
-	       // adjust_move = true;
-	       hit = false;
-	  }
-	  #endif
-
-#ifdef PC
+#ifdef _WIN32
 	  if(fig_is_idle){
 	       SDL_Rect def_rect = figure_container[hit_index]->get_area();
 	       grab_figure(hit_index);
@@ -724,8 +644,29 @@ void Figure_Manager::update(){
 	       // adjust_move = true;
 	       hit = false;
 	  }
-	  
-	  #endif
+#else
+	  if(fig_is_idle){
+	       SDL_Rect def_rect = figure_container[hit_index]->get_area();
+	       grab_figure(hit_index);
+	       SDL_Rect rect = figure_container[current]->get_area();
+	       int end_y = def_rect.y;// - (rect.h>>1);
+	       int offset = end_y - (rect.y + (rect.h>>1));
+	       figure_container[current]->move_figure(0, offset);
+	       hit = false;
+	  }
+	  else if(time_dx > 0.1){
+	       grab_figure(hit_index);
+	       SDL_Point target;
+	       SDL_Point cntr = figure_container[current]->get_center();
+	       SDL_GetMouseState(&target.x, &target.y);
+	       target.x = (target.x - x_rel) - cntr.x;
+	       target.y = (target.y - y_rel) - cntr.y;
+	       figure_container[current]->move_figure(target.x, target.y);
+
+	       // adjust_move = true;
+	       hit = false;
+	  }
+#endif
      }
 
      if(idle){

@@ -24,9 +24,9 @@ Level_Manager::Level_Manager(){
      exit_button.x = 0 + (exit_button.w>>1);
      exit_button.y = 0 + (exit_button.h>>1);
 
-     restart_button.w = 50;
-     restart_button.h = 50;
-     restart_button.x = width - (restart_button.w) - (restart_button.w>>1);
+     restart_button.w = active_block_size;
+     restart_button.h = active_block_size;
+     restart_button.x = (width / 2) - restart_button.w / 2;
      restart_button.y = 0 + (restart_button.h>>1);
 
 #ifdef _WIN32
@@ -57,6 +57,7 @@ Level_Manager::Level_Manager(){
 }
 
 Level_Manager::~Level_Manager(){
+     printf("Level_Manager::~Level_Manager()\n");
      if(begin_sound) Mix_FreeChunk(begin_sound);
      if(complete_sound_1) Mix_FreeChunk(complete_sound_1);
      if(complete_sound_2) Mix_FreeChunk(complete_sound_2);
@@ -219,23 +220,34 @@ void Level_Manager::init_editor_mode()
      int row_amount = grid_manager.get_row_amount();
      int column_amount = grid_manager.get_column_amount(); 
 
-     lvl_editor = new Level_Editor(font,  row_amount, column_amount);
+     grid_editor = new Grid_Editor(font, &grid_manager);
 }
 
 void Level_Manager::delete_editor_mode()
 {
-     if(lvl_editor)  delete lvl_editor; 
+     if(grid_editor)
+     {
+	  delete grid_editor;
+     }
 }
 
 int Level_Manager::handle_event(SDL_Event &event){
      if(!level_complete)
+     {
 	  figure_manager.handle_event(event);
-     if(event.key.keysym.sym == SDLK_AC_BACK)
+     }
+     
+     if(event.key.keysym.sym == SDLK_AC_BACK
+	|| (event.type == SDL_QUIT)
+	|| (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
+     {
 	  return LEVEL_EXIT;
-     if(event.type == SDL_QUIT)
-	  return LEVEL_EXIT;
-     if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-	  return LEVEL_EXIT;
+     }
+     
+     if(toggle_level_editor && grid_editor)
+     {
+	  grid_editor->HandleEvent(&event);
+     }
 
      if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE )
      {
@@ -245,6 +257,8 @@ int Level_Manager::handle_event(SDL_Event &event){
      	       {
      		    toggle_level_editor = true;
      		    init_editor_mode();
+		    figure_manager.restart();
+		    grid_manager.restart_grid();
      	       }
      	       else
      	       {
@@ -345,7 +359,7 @@ void Level_Manager::draw(){
      // draw_timer(255, 255, 255);
 
      // SDL_RenderCopy(RenderScreen, menu_exit_texture, 0, &exit_button);
-     // SDL_RenderCopy(RenderScreen, menu_restart_texture, 0, &restart_button);
+     SDL_RenderCopy(RenderScreen, menu_restart_texture, 0, &restart_button);
      
      {
 	 SDL_Rect rect = level_number_rect;
@@ -372,8 +386,6 @@ void Level_Manager::draw(){
 	 SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      }
 
-
-
      if(!level_complete){
 	 if(alpha > 5){
 	     SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha);
@@ -389,7 +401,12 @@ void Level_Manager::draw(){
 
      if(toggle_level_editor)
      {
-	  if(lvl_editor) lvl_editor->Render();
+	  SDL_SetRenderDrawColor(RenderScreen, 0, 255, 255, 20);
+	  SDL_RenderFillRect(RenderScreen, &figure_area);
+	  SDL_RenderFillRect(RenderScreen, &menu_bar_area);
+
+	  if(grid_editor) grid_editor->RenderEditor();
+	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      }
 }
 
