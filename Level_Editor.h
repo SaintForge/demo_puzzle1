@@ -7,28 +7,32 @@
 
 struct Level_Editor
 {
-     Level_Editor(int RowNumber, int ColumnNumber);
+     Level_Editor(TTF_Font*&,  int RowNumber, int ColumnNumber);
      ~Level_Editor();
      
      void HandleEvent();
      void Render();
-     void Update();
+     
+     void UpdateRow(int);
+     void UpdateColumn(int);
 private:
-     void InitFont();
-     void InitNumberTexture(SDL_Texture*& Texture, SDL_Rect *TextureRect, int Number);
-     void InitTexture(SDL_Texture*&, const char*);
+     void InitTexture(SDL_Texture*&, SDL_Rect*, const char*);
 private:
      int RowNumber;
      int ColumnNumber;
 
      SDL_Rect EditorBar;
-
-     SDL_Texture *MinusSignTexture    = NULL;
-     SDL_Texture *PlusSignTexture     = NULL;
+     SDL_Rect ColumnNumberQuad;
+     SDL_Rect RowNumberQuad;
+     SDL_Rect MinusSignQuad;
+     SDL_Rect PlusSignQuad; 
+     
      SDL_Texture *ColumnNumberTexture = NULL;
      SDL_Texture *RowNumberTexture    = NULL;
+     SDL_Texture *MinusSignTexture    = NULL;
+     SDL_Texture *PlusSignTexture     = NULL;
 
-     TTF_Font *Font = NULL;
+     TTF_Font *Font = NULL; 
 };
 
 

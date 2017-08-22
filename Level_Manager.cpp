@@ -6,7 +6,6 @@
 
 #include "Level_Manager.h"
 
-
 Level_Manager::Level_Manager(){
      printf("Level_Manager()::Level_Manager()\n");
      int width = Window_Info::get_width();
@@ -37,8 +36,8 @@ Level_Manager::Level_Manager(){
 
      printf("loaded images!\n");
      begin_sound = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\menu_enter1-cut.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
      printf("loaded sound!\n");
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
      printf("Level assets were initialized!\n ");
@@ -64,8 +63,10 @@ Level_Manager::~Level_Manager(){
      
      if(menu_exit_texture) SDL_DestroyTexture(menu_exit_texture);
      if(menu_restart_texture) SDL_DestroyTexture(menu_restart_texture);
-     if(font) TTF_CloseFont(font) ;
-     // if(toggle_level_editor) delete_editor_bar();
+
+     if(toggle_level_editor) delete_editor_mode();
+
+     if(font) TTF_CloseFont(font);
 }
 
 void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
@@ -211,26 +212,19 @@ void Level_Manager::load_level_number(SDL_Texture*& texture, SDL_Color color){
     SDL_FreeSurface(tmp_surface);
 }
 
-void Level_Manager::init_editor_bar ()
+void Level_Manager::init_editor_mode()
 {
      if(!toggle_level_editor) return;
      
-     // editor_bar = new SDL_Rect();
+     int row_amount = grid_manager.get_row_amount();
+     int column_amount = grid_manager.get_column_amount(); 
 
-     // int height = Window_Info::get_height();
-     // editor_bar->w = active_block_size;
-     // editor_bar->h = active_block_size+active_block_size;
-     // editor_bar->x = 0;
-     // editor_bar->y = ((height +  menu_bar_area.h - figure_area.h)/2) - (editor_bar->h/2);
+     lvl_editor = new Level_Editor(font,  row_amount, column_amount);
 }
 
-void Level_Manager::delete_editor_bar()
+void Level_Manager::delete_editor_mode()
 {
-     // if(editor_bar)
-     // {
-     // 	  delete editor_bar;
-     // 	  editor_bar = NULL;
-     // }
+     if(lvl_editor)  delete lvl_editor; 
 }
 
 int Level_Manager::handle_event(SDL_Event &event){
@@ -250,15 +244,15 @@ int Level_Manager::handle_event(SDL_Event &event){
      	       if(!toggle_level_editor)
      	       {
      		    toggle_level_editor = true;
-     		    init_editor_bar();
+     		    init_editor_mode();
      	       }
      	       else
      	       {
      		    toggle_level_editor = false;
-     		    delete_editor_bar();
+     		    delete_editor_mode();
      	       }
 
-     	       printf("toggle_level_editor = %d\n", toggle_level_editor );
+     	       printf("toggle_level_editor = %d\n", toggle_level_editor);
      	       toggle_tilda_key = true;
      	  }
      }
@@ -393,12 +387,10 @@ void Level_Manager::draw(){
 	 }
      }
 
-     // if(toggle_level_editor)
-     // {
-     // 	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 255, 100);
-     // 	  SDL_RenderFillRect(RenderScreen, editor_bar );
-     // 	  SDL_SetRenderDrawColor(RenderScreen, 42, 6, 21, 255);
-     // }
+     if(toggle_level_editor)
+     {
+	  if(lvl_editor) lvl_editor->Render();
+     }
 }
 
 uint32_t Level_Manager::total_time(){
