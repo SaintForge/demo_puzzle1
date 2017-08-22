@@ -28,10 +28,10 @@ Grid_Editor::Grid_Editor(TTF_Font *& Font, Grid_Manager *grid )
      InitTexture(PlusSignTexture, &PlusSignQuad, "+");
 
      int width = Window_Info::get_width();
-     EditorBar.w = active_block_size;
-     EditorBar.h = active_block_size * 6;
+     EditorBar.w = active_block_size * 6;
+     EditorBar.h = active_block_size;
      EditorBar.x = 0;
-     EditorBar.y = (width >> 1) - (EditorBar.w>>1);
+     EditorBar.y = 0;//(width >> 1) - (EditorBar.w>>1);
 }
 
 Grid_Editor::~Grid_Editor()
@@ -120,21 +120,21 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 		    UpdateRow(RowNumber);
 	       }
 
-	       TargetPosition.y += active_block_size*2;
+	       TargetPosition.x += active_block_size*2;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    RowNumber += 1;
 		    UpdateRow(RowNumber);
 	       }
 
-	       TargetPosition.y += active_block_size;
+	       TargetPosition.x += active_block_size;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    ColumnNumber -= 1;
 		    UpdateColumn(ColumnNumber);
 	       }
 
-	       TargetPosition.y += active_block_size*2;
+	       TargetPosition.x += active_block_size*2;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    ColumnNumber += 1;
@@ -168,7 +168,7 @@ void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiR
      
      TextureRect->x = (UiRect->x + UiRect->w / 2 ) - (TextureRect->w / 2);
      TextureRect->y = (UiRect->y + UiRect->w / 2 ) - (TextureRect->h / 2);
-     UiRect->y += UiRect->h;
+     UiRect->x += UiRect->h;
 
      SDL_RenderCopy(RenderScreen, Texture, 0, TextureRect );
 }
@@ -180,8 +180,10 @@ void Grid_Editor::RenderEditor()
      SDL_Rect TargetPosition = { EditorBar.x, EditorBar.y,
 				 active_block_size, active_block_size };
      
-     SDL_SetRenderDrawColor(RenderScreen, 0, 255, 255, 100);
+     SDL_SetRenderDrawColor(RenderScreen, 0, 20, 147, 255);
      SDL_RenderFillRect(RenderScreen, &EditorBar);
+     SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+     SDL_RenderDrawRect(RenderScreen, &EditorBar);
      
      RenderUIElement(MinusSignTexture, &MinusSignQuad, &TargetPosition);
      RenderUIElement(RowNumberTexture, &RowNumberQuad, &TargetPosition);

@@ -19,19 +19,14 @@ Level_Manager::Level_Manager(){
      menu_bar_area.w = width;
      menu_bar_area.h = unit_width*2;
 
-     exit_button.w = 50;
-     exit_button.h = 50;
-     exit_button.x = 0 + (exit_button.w>>1);
-     exit_button.y = 0 + (exit_button.h>>1);
-
-     restart_button.w = active_block_size;
-     restart_button.h = active_block_size;
-     restart_button.x = (width / 2) - restart_button.w / 2;
-     restart_button.y = 0 + (restart_button.h>>1);
+     // exit_button.w = 50;
+     // exit_button.h = 50;
+     // exit_button.x = 0 + (exit_button.w>>1);
+     // exit_button.y = 0 + (exit_button.h>>1);
 
 #ifdef _WIN32
      printf("Starting loading assets!\n");
-     load_image(menu_exit_texture, "..\\data\\sprites\\exit_button2.png");
+     // load_image(menu_exit_texture, "..\\data\\sprites\\exit_button2.png");
      load_image(menu_restart_texture, "..\\data\\sprites\\restart_button2.png");
 
      printf("loaded images!\n");
@@ -62,7 +57,7 @@ Level_Manager::~Level_Manager(){
      if(complete_sound_1) Mix_FreeChunk(complete_sound_1);
      if(complete_sound_2) Mix_FreeChunk(complete_sound_2);
      
-     if(menu_exit_texture) SDL_DestroyTexture(menu_exit_texture);
+     // if(menu_exit_texture) SDL_DestroyTexture(menu_exit_texture);
      if(menu_restart_texture) SDL_DestroyTexture(menu_restart_texture);
 
      if(toggle_level_editor) delete_editor_mode();
@@ -140,6 +135,11 @@ void Level_Manager::next_level(Level_Info &info, int level_number){
      level_line[0].x = (menu_bar_area.w / 2) - (active_block_size+level_line[0].w);
      level_line[1].x = (menu_bar_area.w / 2) + (active_block_size);
 
+     restart_button.w = active_block_size;
+     restart_button.h = active_block_size;
+     restart_button.x = level_line[0].w;
+     restart_button.y = level_number_rect.y;
+
      level_number_animation = true;
 }
 
@@ -147,7 +147,7 @@ void Level_Manager::update_level_number_animation()
 {
     if(level_number_animation)
     {
-	int margin = default_block_size;
+	int margin = active_block_size*2;
 	bool left_stop  = false;
 	bool right_stop = false;
 	bool alpha_stop  = false;
@@ -279,18 +279,19 @@ int Level_Manager::handle_event(SDL_Event &event){
      }
 
      if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT){
-	  if(!figure_manager.is_grabbed()){
+	  if(!figure_manager.is_grabbed()
+	       && !toggle_level_editor ){
 	       
 	       int x = event.button.x;
 	       int y = event.button.y;
-	       if(x < exit_button.x){}
-	       else if(x > exit_button.x + exit_button.w){}
-	       else if(y < exit_button.y){}
-	       else if(y > exit_button.y + exit_button.h){}
-	       else{
-		    printf("LEVEL_EXIT\n");
-		    return LEVEL_EXIT;
-	       }
+	       // if(x < exit_button.x){}
+	       // else if(x > exit_button.x + exit_button.w){}
+	       // else if(y < exit_button.y){}
+	       // else if(y > exit_button.y + exit_button.h){}
+	       // else{
+	       // 	    printf("LEVEL_EXIT\n");
+	       // 	    return LEVEL_EXIT;
+	       // }
 
 	       if(x < restart_button.x){}
 	       else if(x > restart_button.x + restart_button.w){}
