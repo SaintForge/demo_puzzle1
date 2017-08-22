@@ -105,8 +105,8 @@ void Grid_Manager::change_block(int row_index, int column_index)
 void Grid_Manager::update_grid(int row, int column)
 {
      printf("Grid_Manager::resize_grid()\n");
+     
      if(row <= 0 || column <= 0) return;
-
      if(!stick_list.size() > 0)
      {
      	  stick_list.clear();
@@ -129,11 +129,6 @@ void Grid_Manager::update_grid(int row, int column)
      for (int i = 0; i < row_amount; ++i)
      {
 	  bit_field[i].resize(column_amount);
-	  for (int j = 0 ; j < column_amount; ++j)
-	  {
-	       bit_field[i][j] = 0;
-	  }
-
      }
 }
 

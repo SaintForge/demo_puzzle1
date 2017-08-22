@@ -66,40 +66,71 @@ void Figure_Manager::align_vertically(){
 }
 
 void Figure_Manager::align_horisontally(std::vector<int>& angle){
-     int area = block_width * 2;
+     if(angle.empty()) return;
 
-     // int center_x = default_zone.x + (default_zone.w >> 1);
-     // int center_y = default_zone.y + (default_zone.h >> 2);
+     for (int i = 0; i < figure_container.size(); i++)
+     {
+	  adjust_figure(i, angle[i]);
+     }
+}
+
+void Figure_Manager::realign_horisontally()
+{
+     for (int i = 0; i < figure_container.size(); i++)
+     {
+	  adjust_figure(i, 0);
+     }    
+}
+
+void Figure_Manager::adjust_figure(int index, int angle)
+{
+     int area = block_width * 2;
 
      int columns = (figure_container.size() / 2) + 1;
      int distance = (columns * area);
-
-     for (int i = 0; i < figure_container.size(); i++) {
 	  
+     {
+	  int width = figure_container[index]->get_width();
+	  int height = figure_container[index]->get_height();
+	  if(width > height)
 	  {
-	       int width = figure_container[i]->get_width();
-	       int height = figure_container[i]->get_height();
-	       if(width > height){
-		    figure_container[i]->rotate_shell(angle[i] * 90.0);
-		    figure_container[i]->update_angle(angle[i] * 90.0);
-	       }
+	       figure_container[index]->rotate_shell(angle * 90.0);
+	       figure_container[index]->update_angle(angle * 90.0);
 	  }
+     }
 
-	  SDL_Rect rect_area = figure_container[i]->get_area();
+     SDL_Rect rect_area = figure_container[index]->get_area();
 
-	  int pitch_x = i / 2;
-	  int pitch_y = i % 2;
+     int pitch_x = index / 2;
+     int pitch_y = index % 2;
 	  
-	  // int center_y = (default_zone.y + (default_zone.h>>2)) + (default_zone.h/2)*pitch_y;
-	  int center_y = default_zone.y  + ((block_width*3)*pitch_y) + ((block_width/3)*pitch_y);
-	  int height = rect_area.h;
-	  int y_target = center_y;
+     // int center_y = (default_zone.y + (default_zone.h>>2)) + (default_zone.h/2)*pitch_y;
+     int center_y = default_zone.y  + ((block_width*3)*pitch_y) + ((block_width/3)*pitch_y);
+     int height = rect_area.h;
+     int y_target = center_y;
 
-	  int center_x = (default_zone.x + (default_zone.w>>1)) - (distance>>1) + (((area)*pitch_x) + ((block_width>>1)*pitch_x));
-	  // int center_x = (default_zone.x + block_width*2) + pitch_x*(area+(block_width>>1));
-	  int width = rect_area.w;
-	  int x_target = center_x;
-	  figure_container[i]->set_default(x_target, y_target);
+     int center_x = (default_zone.x + (default_zone.w>>1)) - (distance>>1) + (((area)*pitch_x) + ((block_width>>1)*pitch_x));
+     // int center_x = (default_zone.x + block_width*2) + pitch_x*(area+(block_width>>1));
+     int width = rect_area.w;
+     int x_target = center_x;
+     figure_container[index]->set_default(x_target, y_target);
+}
+
+void Figure_Manager::add_figure(Figure_Form form, Figure_Type type)
+{
+     O.push_back(figure_container.size());
+     std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
+     figure_container.push_back(tmp_figure);
+     
+     realign_horisontally();
+}
+
+void Figure_Manager::delete_last_figure()
+{
+     if(!figure_container.empty() || !O.empty())
+     {
+	  figure_container.pop_back();
+	  O.pop_back();
      }
 }
 
@@ -191,6 +222,71 @@ void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Ty
 
      // vel.x = 0;
      // vel.y = 0;
+}
+
+
+void Figure_Manager::change_figure_form(int index)
+{
+     if(figure_container.empty()) return;
+     if(index < 0 || index >= figure_container.size()) return;
+
+     int figure_angle = figure_container[index]->get_angle();
+     Figure_Type type = figure_container[index]->get_type();
+     Figure_Form form = figure_container[index]->get_form();
+     if(form != T_figure)
+     {
+	  int form_index = ((int) form) + 1;
+	  form = static_cast<Figure_Form>(form_index);
+     }
+     else
+     {
+	  form = O_figure;
+     }
+
+     std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
+
+     O.insert(O.begin() + index + 1, index);
+     figure_container.insert(figure_container.begin() + index + 1, tmp_figure);
+     O.erase(O.begin() + index);
+     figure_container.erase(figure_container.begin() + index);
+     realign_horisontally();
+     // adjust_figure(index, figure_angle / 90);
+}
+
+void Figure_Manager::change_figure_type(int index)
+{
+     if(figure_container.empty()) return;
+     if(index < 0 || index >= figure_container.size()) return;
+
+     int figure_angle = figure_container[index]->get_angle();
+     Figure_Type type = figure_container[index]->get_type();
+     Figure_Form form = figure_container[index]->get_form();
+     if(type != mirror)
+     {
+	  int type_index = ((int) type) + 1;
+	  type = static_cast<Figure_Type>(type_index);
+     }
+     else
+     {
+	  type = classic;
+     }
+
+     std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
+     O.insert(O.begin() + index + 1, index);
+     figure_container.insert(figure_container.begin() + index + 1, tmp_figure);
+     O.erase(O.begin() + index);
+     figure_container.erase(figure_container.begin() + index);
+     // realign_horisontally();
+     adjust_figure(index, figure_angle / 90);
+}
+
+void Figure_Manager::change_figure_angle(int index)
+{
+     if(index < 0 || index >= figure_container.size()) return;
+     
+     figure_container[index]->rotate_shell(90);
+     figure_container[index]->update_angle(90);
+     adjust_figure(index, 0);
 }
 
 void Figure_Manager::load_effect(const char* path){

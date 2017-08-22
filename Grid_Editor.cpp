@@ -83,6 +83,7 @@ void Grid_Editor::InitTexture(SDL_Texture*& Texture, SDL_Rect* Quad, const char*
      SDL_FreeSurface(tmp_surface);
 }
 
+static
 bool ProcessMouseInput(SDL_Rect* TargetQuad, int x, int y)
 {
      if(x < TargetQuad->x) return false ;
@@ -101,8 +102,8 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       MousePressed = true;
 	       printf("MousePressed = true\n");
 
-	       int old_row_number    = RowNumber;
-	       int old_column_number = ColumnNumber;
+	       int tmp_row    = RowNumber;
+	       int tmp_column = ColumnNumber;
 	       
 	       int x_button = event->button.x;
 	       int y_button = event->button.y;
@@ -113,36 +114,34 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       TargetPosition.w = active_block_size;
 	       TargetPosition.h = active_block_size;
 
-	       /*  Minus Column button  */
+	       /*  Minus Row button  */
 	       if(ProcessMouseInput(&TargetPosition,  x_button, y_button))
 	       {
-		    RowNumber -= 1; 
-		    UpdateRow(RowNumber);
+		    UpdateRow(RowNumber - 1);
 	       }
 
+	       /* Plus Row button */
 	       TargetPosition.x += active_block_size*2;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
-		    RowNumber += 1;
-		    UpdateRow(RowNumber);
+		    UpdateRow(RowNumber + 1);
 	       }
 
+	       /* Minus Column button */
 	       TargetPosition.x += active_block_size;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
-		    ColumnNumber -= 1;
-		    UpdateColumn(ColumnNumber);
+		    UpdateColumn(ColumnNumber - 1);
 	       }
-
+	       
+	       /* Plus Column button */
 	       TargetPosition.x += active_block_size*2;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
-		    ColumnNumber += 1;
-		    UpdateColumn(ColumnNumber);
+		    UpdateColumn(ColumnNumber + 1);
 	       }
 
-	       if(old_row_number != RowNumber
-		  || old_column_number != ColumnNumber)
+	       if(tmp_row != RowNumber || tmp_column != ColumnNumber)
 	       {
 		    grid->update_grid(RowNumber, ColumnNumber);
 	       }
@@ -161,10 +160,12 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
      }
 }
 
-
+static
 void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiRect)
 {
      SDL_Renderer* RenderScreen = Window_Info::get_renderer();
+
+     SDL_RenderDrawRect(RenderScreen, UiRect);
      
      TextureRect->x = (UiRect->x + UiRect->w / 2 ) - (TextureRect->w / 2);
      TextureRect->y = (UiRect->y + UiRect->w / 2 ) - (TextureRect->h / 2);

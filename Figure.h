@@ -11,19 +11,24 @@
 
 #include "window.h"
 
-static int default_block_size = 26;
-static int active_block_size  = 50;
+static int default_block_size = 30;
+static int active_block_size  = 40;
 static int get_defblock_size() { int size = default_block_size; return size;}
 static int get_activeblock_size() { int size = active_block_size; return active_block_size; }
 
-enum Figure_Form{
-     O_figure = 0, I_figure,
-     L_figure, J_figure,
-     Z_figure, S_figure,
+enum Figure_Form
+{
+     O_figure,
+     I_figure,
+     L_figure,
+     J_figure,
+     Z_figure,
+     S_figure,
      T_figure
 };
 
-enum Figure_Type{
+enum Figure_Type
+{
      classic,
      stone,
      mirror
@@ -41,12 +46,14 @@ public:
      
      SDL_Point*       get_shell();
      SDL_Point*       get_def_shell();
+     Figure_Form      get_form();
      Figure_Type      get_type();
      
-     int              get_size();
-     int              get_width();
-     int              get_height();
-     int              get_block_size();
+     int get_size();
+     int get_width();
+     int get_height();
+     int get_angle();
+     int get_block_size();
      
      bool is_attached();
      bool is_sticked();
@@ -77,18 +84,20 @@ private:
      
      void scale_image(int scale_dx);
 private:
-     SDL_Texture *sprite  = nullptr;
+     SDL_Texture *sprite = NULL;
 
      SDL_Rect sprite_area;
+
+     Figure_Form fig_form;
      Figure_Type fig_type;
      
      SDL_RendererFlip flip = SDL_FLIP_NONE;
-     float angle = 0;
      
      bool idle            = true;
      bool stick           = false;
      
      // for the skeleton
+     float         angle = 0;
      float         angle_offset[4];
      float 	   def_angle;
 

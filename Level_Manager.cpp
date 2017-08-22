@@ -217,10 +217,8 @@ void Level_Manager::init_editor_mode()
 {
      if(!toggle_level_editor) return;
      
-     int row_amount = grid_manager.get_row_amount();
-     int column_amount = grid_manager.get_column_amount(); 
-
      grid_editor = new Grid_Editor(font, &grid_manager);
+     figure_editor = new Figure_Editor(font, &figure_manager);
 }
 
 void Level_Manager::delete_editor_mode()
@@ -228,6 +226,10 @@ void Level_Manager::delete_editor_mode()
      if(grid_editor)
      {
 	  delete grid_editor;
+     }
+     if(figure_editor)
+     {
+	  delete figure_editor;
      }
 }
 
@@ -247,6 +249,7 @@ int Level_Manager::handle_event(SDL_Event &event){
      if(toggle_level_editor && grid_editor)
      {
 	  grid_editor->HandleEvent(&event);
+	  figure_editor->HandleEvent(&event);
      }
 
      if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE )
@@ -407,6 +410,7 @@ void Level_Manager::draw(){
 	  SDL_RenderFillRect(RenderScreen, &menu_bar_area);
 
 	  if(grid_editor) grid_editor->RenderEditor();
+	  if(figure_editor) figure_editor->RenderEditor();
 	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      }
 }

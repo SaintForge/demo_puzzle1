@@ -21,6 +21,7 @@ Figure::Figure(Figure_Form form, Figure_Type type){
      int column_block  = 0;
      float delta_x     = 0;
      float delta_y     = 0;
+     fig_form = form;
      fig_type = type;
      float center_offset = 0.5f;
      std::vector<std::vector<int>> matrix(2);
@@ -117,6 +118,7 @@ void Figure::set_default(int x, int y){
 Figure::~Figure(){
      printf("~Figure()\n");
      SDL_DestroyTexture(sprite);
+     printf("end ~Figure()\n");
 }
 
 void Figure::transparent_on(){
@@ -353,23 +355,28 @@ void Figure::scale_image(int scale_dx){
 SDL_Rect Figure::get_area(){
      SDL_Rect rect = {point[0].x, point[0].y,
 		      -500, -500};
-     for (int i = 0; i < 4; i++) {
-	  if(rect.x >= point[i].x){
+     for (int i = 0; i < 4; i++)
+     {
+	  if(rect.x >= point[i].x)
+	  {
 	       rect.x = point[i].x;
 	       if(idle) rect.x -= default_block_size >> 1;
 	       else     rect.x -= active_block_size >> 1;
 	  }
-	  if(rect.y >= point[i].y){
+	  if(rect.y >= point[i].y)
+	  {
 	       rect.y = point[i].y;
 	       if(idle) rect.y -= default_block_size >> 1;
 	       else     rect.y -= active_block_size >> 1;
 	  }
-	  if(rect.w <= point[i].x){
+	  if(rect.w <= point[i].x)
+	  {
 	       rect.w = point[i].x;
 	       if(idle) rect.w += (default_block_size >> 1);
 	       else     rect.w += (active_block_size >> 1);
 	  }
-	  if(rect.h <= point[i].y){
+	  if(rect.h <= point[i].y)
+	  {
 	       rect.h = point[i].y;
 	       if(idle) rect.h += (default_block_size >> 1);
 	       else     rect.h += (active_block_size >> 1);
@@ -381,7 +388,6 @@ SDL_Rect Figure::get_area(){
      return rect;
 }
 
-
 bool Figure::is_idle()             { return idle; }
 bool Figure::is_sticked()          { return stick; }
 bool Figure::is_flip(){ return (flip == SDL_FLIP_VERTICAL) ? true : false; }
@@ -389,6 +395,7 @@ bool Figure::is_flip(){ return (flip == SDL_FLIP_VERTICAL) ? true : false; }
 SDL_Point Figure::get_center()     {  return center; }
 SDL_Point Figure::get_def_center() {  return def_center; }
 void Figure::grid_stick()          {  stick = !stick ? 1 : 0; }
+int Figure::get_angle()            {  return angle; }
 
 SDL_Point* Figure::get_shell(){ SDL_Point* points = point; return points; }
 SDL_Point* Figure::get_def_shell() { SDL_Point* def_points = def_point; return def_points;}
@@ -398,7 +405,7 @@ int Figure::get_height()      { return sprite_area.h; }
 int Figure::get_size()        { return idle ? default_block_size : active_block_size; }
 
 Figure_Type Figure::get_type(){ return fig_type; }
-
+Figure_Form Figure::get_form(){ return fig_form; }
 
 void Figure::flip_figure(){
      if(flip == SDL_FLIP_NONE)

@@ -22,13 +22,20 @@ public:
      Figure_Manager();
      ~Figure_Manager();
 
+     void add_figure(Figure_Form form, Figure_Type type);
+     void delete_last_figure();
      void change_figures(std::vector<std::pair<Figure_Form, Figure_Type>>&,
 			 std::vector<int>&);
+     void change_figure_form(int index);
+     void change_figure_type(int index);
+     void change_figure_angle(int index);
      
      void toogle_stick_effect(int index);
      void animate_stick_effect();
-     
-     void align_horisontally(std::vector<int>&);
+
+     void adjust_figure(int index, int angle);
+     void realign_horisontally();
+     void align_horisontally(std::vector<int>& angles);
      void align_vertically();
      void restart();
 
