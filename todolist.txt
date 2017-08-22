@@ -2,3 +2,7 @@
 so that when I press the Back button
 in the level menu and release it outside,
 the game somehow crashes.
+
+2. Keep all button booleans in a separate struct or union
+so that every class or struct wouldn't need to create it's own boolean
+every time. 

@@ -3,8 +3,6 @@
 
 #include <SDL.h>
 
-#define PC 1
-
 class Window_Info{
 public:
     static SDL_Renderer* get_renderer(){
