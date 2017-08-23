@@ -90,13 +90,13 @@ void Figure_Manager::adjust_figure(int index, int angle)
      int distance = (columns * area);
 	  
      {
-	  int width = figure_container[index]->get_width();
-	  int height = figure_container[index]->get_height();
-	  if(width > height)
-	  {
-	       figure_container[index]->rotate_shell(angle * 90.0);
-	       figure_container[index]->update_angle(angle * 90.0);
-	  }
+	  // int width = figure_container[index]->get_width();
+	  // int height = figure_container[index]->get_height();
+	  // if(width > height)
+	  // {
+	  //      figure_container[index]->rotate_shell(angle * 90.0);
+	  //      figure_container[index]->update_angle(angle * 90.0);
+	  // }
      }
 
      SDL_Rect rect_area = figure_container[index]->get_area();
@@ -125,19 +125,37 @@ void Figure_Manager::add_figure(Figure_Form form, Figure_Type type)
      realign_horisontally();
 }
 
-void Figure_Manager::delete_last_figure()
+
+/*
+  This function deletes the specified figure from figure_continer and also looks
+  for the given index in O array and adjust other elements if necessary  
+*/ 
+void Figure_Manager::delete_figure(int index)
 {
-     if(!figure_container.empty() || !O.empty())
+     printf("Figure_Manager::delete_figure()\n");
+     if(index < 0 || index >= figure_container.size()) return;
+
+     int O_index = O[index];
+     figure_container.erase(figure_container.begin() + index);
+
+     for (int i = 0 ; i < O.size(); ++i)
      {
-	  figure_container.pop_back();
-	  O.pop_back();
+	  if(O_index == O[i]) O.erase(O.begin() + i);
      }
+     
+     if(figure_container.size() != O_index)
+     {
+	  for (int i = 0; i < O.size(); ++i) if(O[i] > O_index) O[i]--;
+     }
+
+     realign_horisontally();
 }
 
 void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Type>> &fg, std::vector<int> &angles){
      if(!figure_container.empty()) figure_container.clear();
      if(!O.empty()) O.clear();
-     if(fg.size() != angles.size()){
+     if(fg.size() != angles.size())
+     {
 	  printf("Error! - Amount of figures doesn't match amount of angles!\n");
 	  return;
      }
@@ -261,6 +279,7 @@ void Figure_Manager::change_figure_type(int index)
      int figure_angle = figure_container[index]->get_angle();
      Figure_Type type = figure_container[index]->get_type();
      Figure_Form form = figure_container[index]->get_form();
+     
      if(type != mirror)
      {
 	  int type_index = ((int) type) + 1;
@@ -272,20 +291,41 @@ void Figure_Manager::change_figure_type(int index)
      }
 
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
-     O.insert(O.begin() + index + 1, index);
      figure_container.insert(figure_container.begin() + index + 1, tmp_figure);
-     O.erase(O.begin() + index);
      figure_container.erase(figure_container.begin() + index);
-     // realign_horisontally();
      adjust_figure(index, figure_angle / 90);
 }
 
 void Figure_Manager::change_figure_angle(int index)
 {
+     printf("Figure_Manager::change_figure_angle()\n");
      if(index < 0 || index >= figure_container.size()) return;
-     
-     figure_container[index]->rotate_shell(90);
-     figure_container[index]->update_angle(90);
+
+
+     // if(!figure_container[index]->is_flip())
+     // {
+	  figure_container[index]->rotate_shell(90);
+	  figure_container[index]->update_angle(90);
+
+	  // int figure_angle = figure_container[index] -> get_angle()  / 90;
+	  // printf("figure_angle = %d",figure_angle);
+	  adjust_figure(index, 0);
+     // }
+     // else
+     // {
+     // 	  figure_container[index]->rotate_shell(90);
+     // 	  figure_container[index]->update_angle(90);
+     // }
+}
+
+void Figure_Manager::change_figure_flip(int index)
+{
+     printf("change_figure_flip()\n");
+     if(index < 0 || index >= figure_container.size()) return;
+
+     // int figure_angle = figure_container[index]->get_angle();
+     figure_container[index]->flip_figure();
+     // int figure_angle = figure_container[index] -> get_angle()  / 90;
      adjust_figure(index, 0);
 }
 
@@ -605,8 +645,8 @@ void Figure_Manager::release_figure(){
 	  figure_container[current]->set_default_state();
 	  figure_container[current]->set_idle();
 	  
-	  if(figure_container[current]->is_flip())
-	       figure_container[current]->flip_figure();
+	  // if(figure_container[current]->is_flip())
+	  //      figure_container[current]->flip_figure();
 	  
 	  return_to_idle_zone(current);
 	  idle = true;
@@ -852,7 +892,7 @@ void Figure_Manager::draw_shadow(int index){
      if(figure_container[index]->is_sticked())
 	  return;
 
-     uint8_t alpha_shadow = 100;
+     uint8_t alpha_shadow = 200;
 
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Point *shell = figure_container[index]->get_shell();

@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-#include <SDL.h>
-
 #include "Window.h"
 #include "New_Menu.h"
 #include "Level_Manager.h"

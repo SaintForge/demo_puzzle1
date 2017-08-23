@@ -1,10 +1,10 @@
 #include "Game_Engine.h"
 
-int SDL_main(int argc, char *argv[])
+#undef main 
+int main(int argc, char *argv[])
 {
     Game_Engine game;
     game.run();
-    printf("master commit!\n");
     
     return 0;
 }

@@ -1,4 +1,4 @@
-C_FLAGS := -std=c++11 -g
+C_FLAGS := -std=c++11
 CC := g++
 RM := rm
 
@@ -19,10 +19,11 @@ OBJ_LIST := demo_main.o \
 	New_Menu.o \
 	Game_Engine.o \
 	Game_Data.o \
-	Level_Editor.o
+	Grid_Editor.o \
+	Figure_Editor.o
 
-INCLUDE_PATH = -I"W:\SDL\sdl_dev_lib\include"
-LIB_PATH := -L"W:\SDL\sdl_dev_lib\lib\x86"
+INCLUDE_PATH = -I"W:\stuff\Libs\SDL2_all\include"
+LIB_PATH := -L"W:\stuff\Libs\SDL2_all\lib"
 LIB_FLAGS := -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 OBJ := $(patsubst %,$(OBJ_PATH)%,$(OBJ_LIST))

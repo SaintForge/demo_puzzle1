@@ -1,3 +1,4 @@
+
 #ifndef F_MANAGER
 #define F_MANAGER
 
@@ -23,12 +24,14 @@ public:
      ~Figure_Manager();
 
      void add_figure(Figure_Form form, Figure_Type type);
-     void delete_last_figure();
+     void delete_figure(int index);
      void change_figures(std::vector<std::pair<Figure_Form, Figure_Type>>&,
 			 std::vector<int>&);
+     
      void change_figure_form(int index);
      void change_figure_type(int index);
      void change_figure_angle(int index);
+     void change_figure_flip(int index);
      
      void toogle_stick_effect(int index);
      void animate_stick_effect();

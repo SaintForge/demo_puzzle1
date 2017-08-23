@@ -22,7 +22,7 @@ Figure_Editor::Figure_Editor(TTF_Font *& Font, Figure_Manager* FigureManager)
      InitTexture(NewFigureTexture, &NewFigureQuad, "+");
      InitTexture(DelFigureTexture, &DelFigureQuad, "-");
      InitTexture(RotateFigureTexture, "..\\data\\sprites\\restart_button2.png", &RotateFigureQuad);
-     InitTexture(FlipFigureTexture, "..\\data\\sprites\\flip_button.png", &FlipFigureQuad);
+     InitTexture(FlipFigureTexture,  &FlipFigureQuad, "f" );
      InitTexture(NewTypeTexture, &NewTypeQuad, ">");
      InitTexture(NewFormTexture, &NewFormQuad, "<");
 
@@ -141,7 +141,7 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("Delete Figure hit!\n");
-		    FigureManager->delete_last_figure();
+		    FigureManager->delete_figure(FigureManager->get_figure_amount() - 1);
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
@@ -168,7 +168,8 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
-		    
+		    printf("flip the button \n");
+		    FigureManager->change_figure_flip(FigureManager->get_figure_amount() - 1);
 	       }
 	  }
      }
