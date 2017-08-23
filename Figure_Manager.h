@@ -20,18 +20,24 @@ using namespace std::chrono;
 
 class Figure_Manager{
 public:
+/* --------------Deleveloper mode---------------- */
+     void add_new_figure(Figure_Form form, Figure_Type type);
+     int check_mouse_click(int x, int y);
+     void select_figure(int index);
+
+     void delete_figure();
+     void change_figure_form();
+     void change_figure_type();
+     void change_figure_angle();
+     void change_figure_flip();
+
+     int SelectedFigure = 0;
+     bool DeveloperMode = false;
+/* -----------------------------------------------*/
      Figure_Manager();
      ~Figure_Manager();
 
-     void add_figure(Figure_Form form, Figure_Type type);
-     void delete_figure(int index);
-     void change_figures(std::vector<std::pair<Figure_Form, Figure_Type>>&,
-			 std::vector<int>&);
-     
-     void change_figure_form(int index);
-     void change_figure_type(int index);
-     void change_figure_angle(int index);
-     void change_figure_flip(int index);
+     void change_figures(std::vector<std::pair<Figure_Form, Figure_Type>>&, std::vector<int>&);
      
      void toogle_stick_effect(int index);
      void animate_stick_effect();
@@ -54,6 +60,7 @@ public:
 
      bool move_figure(int index, SDL_Point &target);
      void handle_event(SDL_Event &event);
+     int  check_input(int x, int y);
      
      void figure_high_priority(int index);
      void figure_low_priority(int index);
@@ -62,7 +69,6 @@ public:
      void draw();
      void draw_shadow(int index);
 private:
-     int  check_input(int x, int y);
      void grab_figure(int index);
      void release_figure();
      bool check_edge_collision();

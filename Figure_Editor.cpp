@@ -18,11 +18,13 @@ Figure_Editor::Figure_Editor(TTF_Font *& Font, Figure_Manager* FigureManager)
 
      this->Font = Font;
      this->FigureManager = FigureManager;
+     this->FigureManager->DeveloperMode = true;
+     this->FigureManager->SelectedFigure= 0;
 
      InitTexture(NewFigureTexture, &NewFigureQuad, "+");
      InitTexture(DelFigureTexture, &DelFigureQuad, "-");
      InitTexture(RotateFigureTexture, "..\\data\\sprites\\restart_button2.png", &RotateFigureQuad);
-     InitTexture(FlipFigureTexture,  &FlipFigureQuad, "f" );
+     InitTexture(FlipFigureTexture, "..\\data\\sprites\\flip_button.png" ,  &FlipFigureQuad );
      InitTexture(NewTypeTexture, &NewTypeQuad, ">");
      InitTexture(NewFormTexture, &NewFormQuad, "<");
 
@@ -37,6 +39,9 @@ Figure_Editor::Figure_Editor(TTF_Font *& Font, Figure_Manager* FigureManager)
 Figure_Editor::~Figure_Editor()
 {
      printf("~Figure_Editor::Figure_Editor()\n");
+
+     this->FigureManager->DeveloperMode = false;
+
      if(NewFigureTexture) SDL_DestroyTexture(NewFigureTexture);
      if(DelFigureTexture) SDL_DestroyTexture(DelFigureTexture);
      if(NewTypeTexture) SDL_DestroyTexture(NewTypeTexture);
@@ -115,11 +120,34 @@ bool ProcessMouseInput(SDL_Rect* TargetQuad, int x, int y)
 
 void Figure_Editor::HandleEvent(SDL_Event* event)
 {
-     if(event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT)
+     if(event->type == SDL_MOUSEBUTTONDOWN
+	&& event->button.button == SDL_BUTTON_RIGHT)
      {
-	  if(!MousePressed)
+	  if(!RightMousePressed)
 	  {
-	       MousePressed = true;
+	       int x_button = event->button.x;
+	       int y_button = event->button.y;
+
+	       int index = FigureManager->check_mouse_click(x_button, y_button);
+	       if(index >= 0) FigureManager->select_figure(index);
+
+	       RightMousePressed = true;
+	  }
+     }
+     else if(event->type == SDL_MOUSEBUTTONUP
+	     && event->button.button == SDL_BUTTON_RIGHT)
+     {
+	  if(RightMousePressed)
+	  {
+	       RightMousePressed = false;
+	  }
+     }
+     else if(event->type == SDL_MOUSEBUTTONDOWN
+	     && event->button.button == SDL_BUTTON_LEFT)
+     {
+	  if(!LeftMousePressed)
+	  {
+	       LeftMousePressed = true;
 	       printf("MousePressed = true\n");
 
 	       int x_button = event->button.x;
@@ -130,54 +158,55 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       TargetPosition.y = EditorBar.y;
 	       TargetPosition.w = active_block_size;
 	       TargetPosition.h = active_block_size;
-
+	       
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("New Figure hit!\n");
-		    FigureManager->add_figure(O_figure, classic);
+		    FigureManager->add_new_figure(O_figure, classic);
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("Delete Figure hit!\n");
-		    FigureManager->delete_figure(FigureManager->get_figure_amount() - 1);
+		    FigureManager->delete_figure();
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("changing form!\n");
-		    FigureManager->change_figure_form(FigureManager->get_figure_amount() - 1);
+		    FigureManager->change_figure_form();
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("changing type!\n");
-		    FigureManager->change_figure_type(FigureManager->get_figure_amount() - 1);    
+		    FigureManager->change_figure_type();    
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("rotating button!\n");
-		    FigureManager->change_figure_angle(FigureManager->get_figure_amount() - 1);
+		    FigureManager->change_figure_angle();
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("flip the button \n");
-		    FigureManager->change_figure_flip(FigureManager->get_figure_amount() - 1);
+		    FigureManager->change_figure_flip();
 	       }
 	  }
      }
-     else if(event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT)
+     else if(event->type == SDL_MOUSEBUTTONUP
+	     && event->button.button == SDL_BUTTON_LEFT)
      {
-	  if(MousePressed)
+	  if(LeftMousePressed)
 	  {
-	       MousePressed = false;
+	       LeftMousePressed = false;
 	       printf("MousePresed = false\n");
 	  }
      }

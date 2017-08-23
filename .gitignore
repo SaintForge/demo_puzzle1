@@ -3,3 +3,4 @@ data/
 obj/
 Android/
 .vs/
+makefile

@@ -31,8 +31,8 @@ Level_Manager::Level_Manager(){
 
      printf("loaded images!\n");
      begin_sound = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\lvl_enter_1.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\lvl_enter_2.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
      printf("loaded sound!\n");
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
      printf("Level assets were initialized!\n ");

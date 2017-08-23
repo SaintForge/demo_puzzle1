@@ -415,26 +415,17 @@ Figure_Form Figure::get_form()  { return fig_form; }
    SDL Library doesn't understand whether the picture was rotated or not so it flips 
    the original image and so in the end we've got the wrong result. The one possible solution
    would be if we first figure out if the width of the logical image is higher
-   than its height and if so we flip it horizontally, else we flip it vertically. 
-   And we also need to calculate an angle offset of each point.
+   than its height and if so we flip x coordinates, else we flip it y coordinates. 
 */
 
 void Figure::flip_figure(){
-     // if(flip == SDL_FLIP_NONE)
-     // 	  flip = SDL_FLIP_HORIZONTAL;
-     // else
-     // 	  flip = SDL_FLIP_NONE;
-
      SDL_Rect area = get_area();
-     
-     // flip == SDL_FLIP_NONE ? flip = SDL_FLIP_VERTICAL : flip = SDL_FLIP_NONE;
+
+     if(flip != SDL_FLIP_HORIZONTAL) flip = SDL_FLIP_HORIZONTAL;
+     else                            flip = SDL_FLIP_NONE;
      
      if(area.w > area.h)
      {
-	  printf("area.w > area.h\n");
-	  if(flip != SDL_FLIP_HORIZONTAL) flip = SDL_FLIP_HORIZONTAL;
-	  else                            flip = SDL_FLIP_NONE;
-	  
      	  for (int i = 0 ; i < 4; ++i)
      	  {
      	       int new_x = (area.x + area.w) - (point[i].x - area.x);
@@ -447,10 +438,6 @@ void Figure::flip_figure(){
      }
      else
      {
-	  printf("area.h > area.w\n");
-	  if(flip != SDL_FLIP_HORIZONTAL) flip = SDL_FLIP_HORIZONTAL;
-	  else                            flip = SDL_FLIP_NONE;
-	  
      	  for (int i = 0 ; i < 4; ++i)
      	  {
      	       int new_y = (area.y + area.h) - (point[i].y - area.y);
@@ -460,47 +447,6 @@ void Figure::flip_figure(){
      	  int new_center_y = (area.y + area.h) - (center.y - area.y);
      	  center.y = new_center_y;
      }
-
-     printf("old angle offsets:\n");
-     for (int i = 0; i < 4; ++i)
-     {
-	  printf("%f ", angle_offset[i]);
-     }
-
-     float delta_x = 0;
-     float delta_y = 0; 
-     for (int i = 0; i < 4; ++i)
-     {
-     	  delta_x = center.x - point[i].x;
-     	  delta_y = center.y - point[i].y; 
-     	  angle_offset[i] = atan2(delta_y,delta_x)*180.0/PI;
-     }
-     
-     // angle -= 90;
-     // rotate_shell(angle);
-     printf("\nnew angle offsets:\n");
-     for (int i = 0 ; i < 4; ++i)
-     {
-	  printf("%f ", angle_offset[i] );
-     }
-
-
-     // for (int i = 0; i < 4; i++)
-     // {
-     // 	  SDL_Point new_point = {0, point[i].y};
-     // 	  new_point.x = (area.x + area.w) - (point[i].x - area.x);
-     // 	  point[i].x = new_point.x;
-     // }
-
-     // rel_center.x = center.x;
-     // int old_x = center.x;
-     // SDL_Point new_cntr = {0, center.y};
-     
-     // new_cntr.x = (area.x + area.w) - (center.x - area.x);
-     // center.x = new_cntr.x;
-     // move_figure(old_x - new_cntr.x, 0); // dunno what it's for
-
-     // rel_center.x = new_cntr.x - rel_center.x;
 }
 
 
@@ -511,56 +457,43 @@ void Figure::draw(){
 
      SDL_Point ff_center;
      ff_center.y = center.y - sprite_area.y;
-     // if(flip == SDL_FLIP_NONE)
      ff_center.x = center.x - sprite_area.x;
-     // else
-     // 	  ff_center.x = (center.x - rel_center.x) - sprite_area.x;
 
      SDL_RenderCopyEx(RenderScreen, sprite, 0, &sprite_area, angle, &ff_center, flip);
+}
 
+void Figure::draw_shell()
+{
+     SDL_Renderer* RenderScreen = Window_Info::get_renderer();
+     
      for (int i = 0 ; i < 4; ++i)
      {
 	  SDL_Rect rect = {point[i].x-2, point[i].y-2, 4, 4};
 	  SDL_RenderDrawRect(RenderScreen, &rect );
 	  SDL_RenderDrawPoint(RenderScreen, point[i].x, point[i].y );
      }
-
-     SDL_RenderDrawRect(RenderScreen, &sprite_area );
-
+     
      SDL_SetRenderDrawColor(RenderScreen, 255, 0, 0, 255);
      SDL_Rect rect = {center.x-2, center.y-2, 4, 4};
-     SDL_RenderDrawRect(RenderScreen, &rect );
+     SDL_RenderDrawRect(RenderScreen, &rect );    
 }
 
 
 void Figure::rotate_shell(float angle_dx){
-     int delta_x = 0;
-     int delta_y = 0;
-
-     printf("before rotate_shell():\n");
-     for (int i = 0 ; i < 4; ++i){
-	  printf("point[%d].x = %d\n",i, point[i].x - center.x );
-	  printf("point[%d].y = %d\n",i, point[i].y - center.y );
-     }
-
-     // setting the rotation configure
-     // if(angle_dx < 0) angle_dx = -angle_dx;
-     
      // simply rounding procedure
      if((int)angle % 360 == 0) { angle = 0; }
 
      // rotating the skeleton
-     for (int i = 0; i < 4; i++) {
-	  // calculating radius
-	  float delta_x = (center.x - point[i].x)*(center.x - point[i].x);
-	  float delta_y = (center.y - point[i].y)*(center.y - point[i].y);
-	  float new_radius = sqrt(delta_x + delta_y);
+     for (int i = 0; i < 4; i++)
+     {
+	  float radians = (angle_dx) * (M_PI/180.0);
+	  float c = cos(radians);
+	  float s = sin(radians);
 
-	  //calculating angle offset
-	  delta_x = center.x - point[i].x;
-	  delta_y = center.y - point[i].y;
-	  point[i].x = round((center.x + cos((angle+angle_dx+180.0+angle_offset[i])*PI/180.0) * new_radius));
-	  point[i].y = round((center.y + sin((angle+angle_dx+180.0+angle_offset[i])*PI/180.0) * new_radius));
+	  float new_x = center.x + (point[i].x - center.x) * c - (point[i].y - center.y) * s;
+	  float new_y = center.y + (point[i].x - center.x) * s + (point[i].y - center.y) * c;
 
+	  point[i].x = round(new_x);
+	  point[i].y = round(new_y);
      }
 }

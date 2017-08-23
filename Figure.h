@@ -78,6 +78,7 @@ public:
      void update_angle(float angle);
      
      void draw();
+     void draw_shell();
 private:
      void load_figure(Figure_Form, Figure_Type);
      void load_figure_image(const char* path);

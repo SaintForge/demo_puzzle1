@@ -26,8 +26,9 @@ struct Figure_Editor
      
      Figure_Manager* FigureManager;
 
-     bool FigureIsSelected = false;
-     bool MousePressed     = false;
+     bool FigureIsSelected  = false;
+     bool LeftMousePressed  = false;
+     bool RightMousePressed = false;
 
      Figure_Editor(TTF_Font*& Font, Figure_Manager* FigureManager);
      ~Figure_Editor();

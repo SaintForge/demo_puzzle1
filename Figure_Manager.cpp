@@ -90,6 +90,8 @@ void Figure_Manager::adjust_figure(int index, int angle)
      int distance = (columns * area);
 	  
      {
+	  // TODO: ???
+	  
 	  // int width = figure_container[index]->get_width();
 	  // int height = figure_container[index]->get_height();
 	  // if(width > height)
@@ -116,13 +118,15 @@ void Figure_Manager::adjust_figure(int index, int angle)
      figure_container[index]->set_default(x_target, y_target);
 }
 
-void Figure_Manager::add_figure(Figure_Form form, Figure_Type type)
+void Figure_Manager::add_new_figure(Figure_Form form, Figure_Type type)
 {
      O.push_back(figure_container.size());
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
      figure_container.push_back(tmp_figure);
      
      realign_horisontally();
+
+     SelectedFigure = figure_container.size() - 1;
 }
 
 
@@ -130,13 +134,13 @@ void Figure_Manager::add_figure(Figure_Form form, Figure_Type type)
   This function deletes the specified figure from figure_continer and also looks
   for the given index in O array and adjust other elements if necessary  
 */ 
-void Figure_Manager::delete_figure(int index)
+void Figure_Manager::delete_figure()
 {
      printf("Figure_Manager::delete_figure()\n");
-     if(index < 0 || index >= figure_container.size()) return;
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
 
-     int O_index = O[index];
-     figure_container.erase(figure_container.begin() + index);
+     int O_index = O[SelectedFigure];
+     figure_container.erase(figure_container.begin() + SelectedFigure);
 
      for (int i = 0 ; i < O.size(); ++i)
      {
@@ -147,6 +151,14 @@ void Figure_Manager::delete_figure(int index)
      {
 	  for (int i = 0; i < O.size(); ++i) if(O[i] > O_index) O[i]--;
      }
+
+     printf("were SelectedFigure = %d\n", SelectedFigure);
+
+     if(figure_container.size() == SelectedFigure) SelectedFigure--;
+     else if(SelectedFigure < figure_container.size() - 1) SelectedFigure++;
+     else{}
+
+     printf("now SelectedFigure = %d\n", SelectedFigure);
 
      realign_horisontally();
 }
@@ -242,15 +254,43 @@ void Figure_Manager::change_figures(std::vector<std::pair<Figure_Form, Figure_Ty
      // vel.y = 0;
 }
 
-
-void Figure_Manager::change_figure_form(int index)
+int Figure_Manager::check_mouse_click(int x, int y)
 {
-     if(figure_container.empty()) return;
+     int size = figure_container.size();
+     for(int i = 0; i < size; ++i)
+     {
+	  SDL_Rect area = figure_container[i]->get_area();
+	  if(x < area.x)
+	       continue;
+	  else if(x > area.x + area.w)
+	       continue;
+	  else if(y < area.y)
+	       continue;
+	  else if(y > area.y + area.h)
+	       continue;
+	  else
+	  {
+	       return i;
+	  }
+     }
+     return -1;
+}
+
+void Figure_Manager::select_figure(int index)
+{
      if(index < 0 || index >= figure_container.size()) return;
 
-     int figure_angle = figure_container[index]->get_angle();
-     Figure_Type type = figure_container[index]->get_type();
-     Figure_Form form = figure_container[index]->get_form();
+     SelectedFigure = index;
+}
+
+void Figure_Manager::change_figure_form()
+{
+     if(figure_container.empty()) return;
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
+
+     int figure_angle = figure_container[SelectedFigure]->get_angle();
+     Figure_Type type = figure_container[SelectedFigure]->get_type();
+     Figure_Form form = figure_container[SelectedFigure]->get_form();
      if(form != T_figure)
      {
 	  int form_index = ((int) form) + 1;
@@ -263,22 +303,20 @@ void Figure_Manager::change_figure_form(int index)
 
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
 
-     O.insert(O.begin() + index + 1, index);
-     figure_container.insert(figure_container.begin() + index + 1, tmp_figure);
-     O.erase(O.begin() + index);
-     figure_container.erase(figure_container.begin() + index);
+     figure_container.insert(figure_container.begin() + SelectedFigure + 1, tmp_figure);
+     figure_container.erase(figure_container.begin() + SelectedFigure);
+     
      realign_horisontally();
-     // adjust_figure(index, figure_angle / 90);
 }
 
-void Figure_Manager::change_figure_type(int index)
+void Figure_Manager::change_figure_type()
 {
      if(figure_container.empty()) return;
-     if(index < 0 || index >= figure_container.size()) return;
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
 
-     int figure_angle = figure_container[index]->get_angle();
-     Figure_Type type = figure_container[index]->get_type();
-     Figure_Form form = figure_container[index]->get_form();
+     int figure_angle = figure_container[SelectedFigure]->get_angle();
+     Figure_Type type = figure_container[SelectedFigure]->get_type();
+     Figure_Form form = figure_container[SelectedFigure]->get_form();
      
      if(type != mirror)
      {
@@ -291,42 +329,29 @@ void Figure_Manager::change_figure_type(int index)
      }
 
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
-     figure_container.insert(figure_container.begin() + index + 1, tmp_figure);
-     figure_container.erase(figure_container.begin() + index);
-     adjust_figure(index, figure_angle / 90);
+     figure_container.insert(figure_container.begin() + SelectedFigure + 1, tmp_figure);
+     figure_container.erase(figure_container.begin() + SelectedFigure);
+     adjust_figure(SelectedFigure, figure_angle / 90);
 }
 
-void Figure_Manager::change_figure_angle(int index)
+void Figure_Manager::change_figure_angle()
 {
      printf("Figure_Manager::change_figure_angle()\n");
-     if(index < 0 || index >= figure_container.size()) return;
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
+     
+     figure_container[SelectedFigure]->rotate_shell(90);
+     figure_container[SelectedFigure]->update_angle(90);
 
-
-     // if(!figure_container[index]->is_flip())
-     // {
-	  figure_container[index]->rotate_shell(90);
-	  figure_container[index]->update_angle(90);
-
-	  // int figure_angle = figure_container[index] -> get_angle()  / 90;
-	  // printf("figure_angle = %d",figure_angle);
-	  adjust_figure(index, 0);
-     // }
-     // else
-     // {
-     // 	  figure_container[index]->rotate_shell(90);
-     // 	  figure_container[index]->update_angle(90);
-     // }
+     adjust_figure(SelectedFigure, 0);
 }
 
-void Figure_Manager::change_figure_flip(int index)
+void Figure_Manager::change_figure_flip()
 {
      printf("change_figure_flip()\n");
-     if(index < 0 || index >= figure_container.size()) return;
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
 
-     // int figure_angle = figure_container[index]->get_angle();
-     figure_container[index]->flip_figure();
-     // int figure_angle = figure_container[index] -> get_angle()  / 90;
-     adjust_figure(index, 0);
+     figure_container[SelectedFigure]->flip_figure();
+     adjust_figure(SelectedFigure, 0);
 }
 
 void Figure_Manager::load_effect(const char* path){
@@ -533,7 +558,8 @@ void Figure_Manager::handle_event(SDL_Event &event){
 
 int Figure_Manager::check_input(int x, int y){
      int size = figure_container.size();
-     for (int i = size-1; i >= 0; --i) {
+     for (int i = size-1; i >= 0; --i)
+     {
 	  SDL_Rect area = figure_container[O[i]]->get_area();
 	  if(x < area.x)
 	       continue;
@@ -543,11 +569,13 @@ int Figure_Manager::check_input(int x, int y){
 	       continue;
 	  else if(y > area.y + area.h)
 	       continue;
-	  else{
+	  else
+	  {
 	       const SDL_Point *points = figure_container[O[i]]->get_shell();
 	       int width = figure_container[O[i]]->get_size();
 	       SDL_Rect tmp_rect = {0, 0, width, width};
-	       for (int j = 0; j < 4; j++) {
+	       for (int j = 0; j < 4; j++)
+	       {
 		    tmp_rect.x = points[j].x - (width >> 1);
 		    tmp_rect.y = points[j].y - (width >> 1);
 		    if(x < tmp_rect.x)
@@ -915,6 +943,20 @@ void Figure_Manager::draw_shadow(int index){
      }
 }
 
+
+void DrawFrame(SDL_Rect Frame, int thicknes)
+{
+     SDL_Renderer* RenderScreen = Window_Info::get_renderer();
+
+     for (int i = 0; i < thicknes; ++i)
+     {
+	  SDL_RenderDrawRect(RenderScreen, &Frame);
+	  Frame.x -= 1;
+	  Frame.w += 2;
+	  Frame.y -= 1;
+	  Frame.h += 2;
+     }
+}
 void Figure_Manager::draw(){
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      
@@ -934,8 +976,25 @@ void Figure_Manager::draw(){
 	  }
      }
 
+     if(DeveloperMode && !figure_container.empty())
+     {
+	  if(SelectedFigure >= 0 || SelectedFigure < figure_container.size())
+	  {
+	       SDL_SetRenderDrawColor(RenderScreen, 0, 255, 0, 255);
+	       SDL_Rect figure_area = figure_container[SelectedFigure]->get_area();
+	       DrawFrame(figure_area, 5);
+	  }
+
+	  for (int i = 0; i < figure_container.size(); ++i)
+	  {
+	       figure_container[i]->draw_shell();
+	  }
+
+     }
+
      if(is_idle) SDL_SetTextureAlphaMod(idle_effect, alpha);
 }
+
 
 void Figure_Manager::toogle_stick_effect(int index){
      if(stick_effect)
