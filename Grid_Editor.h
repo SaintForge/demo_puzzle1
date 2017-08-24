@@ -17,9 +17,9 @@ struct Grid_Editor
      
      void UpdateRow(int);
      void UpdateColumn(int);
-private:
+     
      void InitTexture(SDL_Texture*&, SDL_Rect*, const char*);
-private:
+     
      int RowNumber;
      int ColumnNumber;
 
@@ -37,7 +37,12 @@ private:
      TTF_Font *Font = NULL;
      Grid_Manager *grid; 
 
-     bool MousePressed = false; 
+     bool MousePressed        = false;
+     
+     bool MinusRowPressed      = false;
+     bool PlusRowPressed      = false;
+     bool MinusColumnPressed  = false;
+     bool PlusColumnPressed   = false; 
 };
 
 

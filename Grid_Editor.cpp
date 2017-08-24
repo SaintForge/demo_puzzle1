@@ -15,7 +15,7 @@ Grid_Editor::Grid_Editor(TTF_Font *& Font, Grid_Manager *grid )
 	  return;
      }
 
-     RowNumber = grid->get_row_amount() ;
+     RowNumber = grid->get_row_amount();
      ColumnNumber = grid->get_column_amount();
 
      this->Font = Font;
@@ -100,7 +100,6 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	  if(!MousePressed)
 	  {
 	       MousePressed = true;
-	       printf("MousePressed = true\n");
 
 	       int tmp_row    = RowNumber;
 	       int tmp_column = ColumnNumber;
@@ -118,6 +117,7 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       if(ProcessMouseInput(&TargetPosition,  x_button, y_button))
 	       {
 		    UpdateRow(RowNumber - 1);
+		    MinusRowPressed = true;
 	       }
 
 	       /* Plus Row button */
@@ -125,6 +125,7 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    UpdateRow(RowNumber + 1);
+		    PlusRowPressed = true;
 	       }
 
 	       /* Minus Column button */
@@ -132,6 +133,7 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    UpdateColumn(ColumnNumber - 1);
+		    MinusColumnPressed = true;
 	       }
 	       
 	       /* Plus Column button */
@@ -139,6 +141,7 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    UpdateColumn(ColumnNumber + 1);
+		    PlusColumnPressed = true;
 	       }
 
 	       if(tmp_row != RowNumber || tmp_column != ColumnNumber)
@@ -147,7 +150,6 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	       }
 
 	       grid->check_input(x_button, y_button);
-
 	  }
      }
      else if(event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT)
@@ -155,15 +157,25 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 	  if(MousePressed)
 	  {
 	       MousePressed = false;
-	       printf("MousePresed = false\n");
+	       MinusRowPressed     = false;
+	       PlusRowPressed      = false;
+	       MinusColumnPressed  = false;
+	       PlusColumnPressed   = false;
 	  }
      }
 }
 
 static
-void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiRect)
+void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiRect, bool Pressed)
 {
      SDL_Renderer* RenderScreen = Window_Info::get_renderer();
+
+     if(Pressed)
+     {
+	  SDL_SetRenderDrawColor(RenderScreen, 255, 255, 0, 255);
+	  SDL_RenderFillRect(RenderScreen, UiRect );
+	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+     }
 
      SDL_RenderDrawRect(RenderScreen, UiRect);
      
@@ -186,13 +198,12 @@ void Grid_Editor::RenderEditor()
      SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      SDL_RenderDrawRect(RenderScreen, &EditorBar);
      
-     RenderUIElement(MinusSignTexture, &MinusSignQuad, &TargetPosition);
-     RenderUIElement(RowNumberTexture, &RowNumberQuad, &TargetPosition);
-     RenderUIElement(PlusSignTexture, &PlusSignQuad, &TargetPosition);
-     RenderUIElement(MinusSignTexture, &MinusSignQuad, &TargetPosition);
-     RenderUIElement(ColumnNumberTexture, &ColumnNumberQuad, &TargetPosition);
-     RenderUIElement(PlusSignTexture, &PlusSignQuad, &TargetPosition);
-
+     RenderUIElement(MinusSignTexture, &MinusSignQuad, &TargetPosition, MinusRowPressed );
+     RenderUIElement(RowNumberTexture, &RowNumberQuad, &TargetPosition, false );
+     RenderUIElement(PlusSignTexture, &PlusSignQuad, &TargetPosition, PlusRowPressed );
+     RenderUIElement(MinusSignTexture, &MinusSignQuad, &TargetPosition, MinusColumnPressed );
+     RenderUIElement(ColumnNumberTexture, &ColumnNumberQuad, &TargetPosition, false );
+     RenderUIElement(PlusSignTexture, &PlusSignQuad, &TargetPosition, PlusColumnPressed );
 }
 
 
