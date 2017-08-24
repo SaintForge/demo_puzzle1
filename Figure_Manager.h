@@ -20,6 +20,7 @@ using namespace std::chrono;
 
 class Figure_Manager{
 public:
+     
 /* --------------Deleveloper mode---------------- */
      void add_new_figure(Figure_Form form, Figure_Type type);
      int check_mouse_click(int x, int y);
@@ -34,6 +35,7 @@ public:
      int SelectedFigure = 0;
      bool DeveloperMode = false;
 /* -----------------------------------------------*/
+     
      Figure_Manager();
      ~Figure_Manager();
 
@@ -84,7 +86,7 @@ private:
      Mix_Chunk *grab_sound     = nullptr;
           
      SDL_Rect default_zone;
-     int block_width = 30; //TODO
+     int block_width = 26; //TODO
       
      Uint32 start_ticks = 0; // TODO
 

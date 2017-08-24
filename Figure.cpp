@@ -13,7 +13,8 @@
 #define PI 3.14159265
 #define round(x) ((x)>=0?(float)((x)+0.5):(float)((x)-0.5))
 
-Figure::Figure(Figure_Form form, Figure_Type type){
+Figure::Figure(Figure_Form form, Figure_Type type)
+{
      int size = default_block_size;
      printf("Figure()\n");
      int index         = 0;
@@ -27,40 +28,54 @@ Figure::Figure(Figure_Form form, Figure_Type type){
      std::vector<std::vector<int>> matrix(2);
      for (int i = 0; i < 2; i++) { matrix[i].resize(4); }
 
-     switch(form){
-	  case I_figure:{
+     switch(form)
+     {
+	  case I_figure:
+	  {
 	       matrix = { {1, 1, 1, 1}, {0, 0, 0, 0} };
 	       row_block = 4;
 	       column_block = 1;
 	  } break;
-	  case O_figure:{
+	  
+	  case O_figure:
+	  {
 	       matrix = { { 1, 1 }, { 1, 1 } };
 	       row_block = 2;
 	       column_block = 2;
 	  }break;
-	  case Z_figure:{
+	  
+	  case Z_figure:
+	  {
 	       matrix = { {1, 1, 0}, {0, 1, 1} };
 	       row_block = 3;
 	       column_block = 2;
 	  }break;
-	  case S_figure:{
+	  
+	  case S_figure:
+	  {
 	       matrix = { {0, 1, 1}, {1, 1, 0} };
 	       row_block = 3;
 	       column_block = 2;
 	  }break;
-	  case T_figure:{
+	  
+	  case T_figure:
+	  {
 	       matrix = { {0, 1, 0}, {1, 1, 1} };
 	       center_offset = 0.75f;
 	       row_block = 3;
 	       column_block = 2;
 	  }break;
-	  case L_figure:{
+	  
+	  case L_figure:
+	  {
 	       matrix = { {0, 0, 1},{1, 1, 1} };
 	       center_offset = 0.75f;
 	       row_block = 3;
 	       column_block = 2;
 	  }break;
-	  case J_figure:{
+	  
+	  case J_figure:
+	  {
 	       matrix = { {1, 0, 0}, {1, 1, 1} };
 	       center_offset = 0.75f;
 	       row_block = 3;
@@ -80,14 +95,15 @@ Figure::Figure(Figure_Form form, Figure_Type type){
      rel_center.x = center.x;
      rel_center.y = center.y;
      
-     for (int i = 0; i < 2; i++) {
-	  for (int j = 0; j < 4; j++) {
-	       if(matrix[i][j] == 1){
+     for (int i = 0; i < 2; i++)
+     {
+	  for (int j = 0; j < 4; j++)
+	  {
+	       if(matrix[i][j] == 1)
+	       {
 		    // determining the point location
 		    point[index].x = sprite_area.x + (j * size) + (size >> 1);
 		    point[index].y = sprite_area.y + (i * size) + (size >> 1);
-		    // def_point[index].x = point[index].x;
-		    // def_point[index].y = point[index].y;
 		    
 		    //calculating angle offset
 		    delta_x = center.x - point[index].x;
@@ -100,39 +116,48 @@ Figure::Figure(Figure_Form form, Figure_Type type){
      }
 }
 
-void Figure::set_default(int x, int y){
-
+void Figure::set_default(int x, int y)
+{
      SDL_Rect area = get_area();
 
      int shift_x = x - area.x;
      int shift_y = y - area.y;
      move_figure(shift_x, shift_y);
-     for (int i(0); i < 4; i++) {
+     
+     for (int i(0); i < 4; i++)
+     {
 	  def_point[i].x = point[i].x;
 	  def_point[i].y = point[i].y;
 	  def_center = center;
      }
+     
      def_angle = angle;
 }
 
-Figure::~Figure(){
+Figure::~Figure()
+{
      printf("~Figure()\n");
      SDL_DestroyTexture(sprite);
-     printf("end ~Figure()\n");
 }
 
-void Figure::transparent_on(){
+void Figure::transparent_on()
+{
      SDL_SetTextureAlphaMod(sprite, 200);
 }
 
-void Figure::transparent_off(){
+void Figure::transparent_off()
+{
      SDL_SetTextureAlphaMod(sprite, 255);
 }
 
-void Figure::load_figure(Figure_Form form, Figure_Type type){
-     switch(form){
-	  case I_figure:{
-	       switch(type){
+void Figure::load_figure(Figure_Form form, Figure_Type type)
+{
+     switch(form)
+     {
+	  case I_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\i_d.png");
 			 break;
@@ -144,8 +169,10 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 			 break;
 	       }
 	  } break;
-	  case O_figure:{
-	       switch(type){
+	  case O_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\o_d.png");
 			 break;
@@ -157,8 +184,10 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 			 break;
 	       }
 	  }break;
-	  case Z_figure:{
-	       switch(type){
+	  case Z_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\z_d.png");
 			 break;
@@ -170,8 +199,10 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 			 break;
 	       }
 	  }break;
-	  case S_figure:{
-	       switch(type){
+	  case S_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\s_d.png");
 			 break;
@@ -184,8 +215,10 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 	       }
 
 	  }break;
-	  case T_figure:{
-	       switch(type){
+	  case T_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\t_d.png");
 			 break;
@@ -197,8 +230,10 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 			 break;
 	       }
 	  }break;
-	  case L_figure:{
-	       switch(type){
+	  case L_figure:
+	  {
+	       switch(type)
+	       {
 		    case classic:
 			 load_figure_image("..\\data\\sprites\\l_d.png");
 			 break;
@@ -210,9 +245,12 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
 			 break;
 	       }
 	  }break;
-	  case J_figure:{
-	       switch(type){
-		    case classic:{
+	  case J_figure:
+	  {
+	       switch(type)
+	       {
+		    case classic:
+		    {
 			 load_figure_image("..\\data\\sprites\\j_d.png");
 		    } break;
 		    case mirror:
@@ -226,42 +264,49 @@ void Figure::load_figure(Figure_Form form, Figure_Type type){
      }
 }
 
-void Figure::load_figure_image(const char *path){
+void Figure::load_figure_image(const char *path)
+{
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Surface* tmp_surface;
      SDL_Texture* tmp_texture;
      
      if(sprite)
+     {
 	  SDL_DestroyTexture(sprite);
+     }
 
      tmp_surface = IMG_Load(path);
-     if(tmp_surface){
+     if(tmp_surface)
+     {
 	  tmp_texture = SDL_CreateTextureFromSurface(RenderScreen, tmp_surface);
-	  if(tmp_texture){
+	  if(tmp_texture)
+	  {
 	       sprite = tmp_texture;
 	       SDL_FreeSurface(tmp_surface);
 	  }
-	  else{
+	  else
+	  {
 	       SDL_FreeSurface(tmp_surface);
 	       printf("failed to load a texture from the surface! %s\n", SDL_GetError());
 	       return;
 	  }
      }
-     else{
+     else
+     {
 	  printf("failed to load a picture with a given path! - %s\n", IMG_GetError());
 	  return;
      }
 }
 
-void Figure::set_to(int x, int y){
-
+void Figure::set_to(int x, int y)
+{
      int shift_x = x - center.x;
      int shift_y = y - center.y;
-
      move_figure(shift_x, shift_y);
 }
 
-void Figure::move_figure(float shift_x, float shift_y){
+void Figure::move_figure(float shift_x, float shift_y)
+{
      int offset_x = sprite_area.x - center.x;
      int offset_y = sprite_area.y - center.y;
      
@@ -279,8 +324,10 @@ void Figure::move_figure(float shift_x, float shift_y){
 }
 
 void Figure::set_default_state(){
-     if(!idle){
-	  if(angle != def_angle){
+     if(!idle)
+     {
+	  if(angle != def_angle)
+	  {
 	       int angle_dt = def_angle - angle;
 	       rotate_shell(angle_dt);
 	       angle   = def_angle;
@@ -296,16 +343,20 @@ void Figure::set_default_state(){
      }
 }
 
-void Figure::set_idle(){
+void Figure::set_idle()
+{
      idle = true;
      stick = false;
 }
 
-void Figure::mouse_attach(bool attach){
+void Figure::mouse_attach(bool attach)
+{
      // check if it was grabbed already
-     if(attach){
+     if(attach)
+     {
 	  SDL_ShowCursor(SDL_DISABLE);
-	  if(idle){
+	  if(idle)
+	  {
 	       int size = active_block_size - default_block_size;
 	       scale_image(size);
 	       int shift_x = def_center.x - center.x;
@@ -315,12 +366,14 @@ void Figure::mouse_attach(bool attach){
 	       idle = false;
 	  }
      }// else if it wasn't 
-     else{
+     else
+     {
 	  SDL_ShowCursor(SDL_ENABLE);
      }
 }
 
-void Figure::scale_image(int scale_dx){
+void Figure::scale_image(int scale_dx)
+{
      int size = get_size();
      float old_width = sprite_area.w;
      float old_height = sprite_area.h;
@@ -341,7 +394,8 @@ void Figure::scale_image(int scale_dx){
      center.y = new_point_y;
 
      // calculating new point
-     for (int i = 0; i < 4; i++) {
+     for (int i = 0; i < 4; i++)
+     {
 	  w_ratio = (point[i].x - sprite_area.x) / old_width;
 	  h_ratio = (point[i].y - sprite_area.y) / old_height;
 	  
@@ -353,9 +407,9 @@ void Figure::scale_image(int scale_dx){
      }
 }
 
-SDL_Rect Figure::get_area(){
-     SDL_Rect rect = {point[0].x, point[0].y,
-		      -500, -500};
+SDL_Rect Figure::get_area()
+{
+     SDL_Rect rect = {point[0].x, point[0].y, -500, -500};
      for (int i = 0; i < 4; i++)
      {
 	  if(rect.x >= point[i].x)
@@ -383,34 +437,75 @@ SDL_Rect Figure::get_area(){
 	       else     rect.h += (active_block_size >> 1);
 	  }
      }
+     
      rect.w -= rect.x;
      rect.h -= rect.y;
      
      return rect;
 }
 
-bool Figure::is_idle()             { return idle; }
-bool Figure::is_sticked()          { return stick; }
-bool Figure::is_flip(){ return (flip != SDL_FLIP_NONE) ? true : false; }
+bool Figure::is_idle()
+{
+     return idle;
+}
+bool Figure::is_sticked()
+{
+     return stick;
+}
+bool Figure::is_flip()
+{
+     return (flip != SDL_FLIP_NONE) ? true : false;
+}
 
-SDL_Point Figure::get_center()     {  return center; }
-SDL_Point Figure::get_def_center() {  return def_center; }
-void Figure::grid_stick()          {  stick = !stick ? 1 : 0; }
-int Figure::get_angle()            {  return angle; }
+SDL_Point Figure::get_center()
+{
+     return center;
+}
+SDL_Point Figure::get_def_center()
+{
+     return def_center;
+}
+void Figure::grid_stick()
+{
+     stick = !stick ? 1 : 0;
+}
+int Figure::get_angle()
+{
+     return angle;
+}
 
-SDL_Point* Figure::get_shell(){ SDL_Point* points = point; return points; }
-SDL_Point* Figure::get_def_shell() { SDL_Point* def_points = def_point; return def_points;}
+SDL_Point* Figure::get_shell()
+{
+     SDL_Point* points = point; return points;
+}
+SDL_Point* Figure::get_def_shell()
+{
+     SDL_Point* def_points = def_point; return def_points;
+}
 
-int Figure::get_width()       { return sprite_area.w; }
-int Figure::get_height()      { return sprite_area.h; }
-int Figure::get_size()        { return idle ? default_block_size : active_block_size; }
+int Figure::get_width()
+{
+     return sprite_area.w;
+}
+int Figure::get_height()
+{
+     return sprite_area.h;
+}
+int Figure::get_size()
+{
+     return idle ? default_block_size : active_block_size;
+}
 
-Figure_Type Figure::get_type()  { return fig_type; }
-Figure_Form Figure::get_form()  { return fig_form; }
+Figure_Type Figure::get_type()
+{
+     return fig_type;
+}
+Figure_Form Figure::get_form()
+{
+     return fig_form;
+}
 
-
-/* 
-   This function needs a little introduction because it's a little tricky function.
+/* NOTE: This function needs a little introduction because it's a little tricky function.
    Basically what it does is it  flips the figure horizontally. The problem here is that
    SDL Library doesn't understand whether the picture was rotated or not so it flips 
    the original image and so in the end we've got the wrong result. The one possible solution
@@ -418,11 +513,18 @@ Figure_Form Figure::get_form()  { return fig_form; }
    than its height and if so we flip x coordinates, else we flip it y coordinates. 
 */
 
-void Figure::flip_figure(){
+void Figure::flip_figure()
+{
      SDL_Rect area = get_area();
 
-     if(flip != SDL_FLIP_HORIZONTAL) flip = SDL_FLIP_HORIZONTAL;
-     else                            flip = SDL_FLIP_NONE;
+     if(flip != SDL_FLIP_HORIZONTAL)
+     {
+	  flip = SDL_FLIP_HORIZONTAL;
+     }
+     else
+     {
+	  flip = SDL_FLIP_NONE;
+     }
      
      if(area.w > area.h)
      {
@@ -450,9 +552,13 @@ void Figure::flip_figure(){
 }
 
 
-void Figure::update_angle(float angle_dt){ angle += angle_dt; }
+void Figure::update_angle(float angle_dt)
+{
+     angle += angle_dt;
+}
 
-void Figure::draw(){
+void Figure::draw()
+{
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Point ff_center;

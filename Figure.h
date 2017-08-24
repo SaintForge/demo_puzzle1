@@ -11,7 +11,7 @@
 
 #include "window.h"
 
-static int default_block_size = 30;
+static int default_block_size = 26;
 static int active_block_size  = 40;
 static int get_defblock_size() { int size = default_block_size; return size;}
 static int get_activeblock_size() { int size = active_block_size; return active_block_size; }
@@ -35,7 +35,8 @@ enum Figure_Type
 };
 //TODO: add a figure that transforms to another maybe???
 
-class Figure{
+class Figure
+{
 public:
      Figure(Figure_Form form, Figure_Type type);
      ~Figure();

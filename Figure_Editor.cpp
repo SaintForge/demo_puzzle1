@@ -24,10 +24,9 @@ Figure_Editor::Figure_Editor(TTF_Font *& Font, Figure_Manager* FigureManager)
      InitTexture(NewFigureTexture, &NewFigureQuad, "+");
      InitTexture(DelFigureTexture, &DelFigureQuad, "-");
      InitTexture(RotateFigureTexture, "..\\data\\sprites\\restart_button2.png", &RotateFigureQuad);
-     InitTexture(FlipFigureTexture, "..\\data\\sprites\\flip_button.png" ,  &FlipFigureQuad );
+     InitTexture(FlipFigureTexture, &FlipFigureQuad, "f");
      InitTexture(NewTypeTexture, &NewTypeQuad, ">");
      InitTexture(NewFormTexture, &NewFormQuad, "<");
-
 
      int width = Window_Info::get_width();
      EditorBar.w = active_block_size * 6;
@@ -38,7 +37,7 @@ Figure_Editor::Figure_Editor(TTF_Font *& Font, Figure_Manager* FigureManager)
 
 Figure_Editor::~Figure_Editor()
 {
-     printf("~Figure_Editor::Figure_Editor()\n");
+     printf("Figure_Editor::~Figure_Editor()\n");
 
      this->FigureManager->DeveloperMode = false;
 
@@ -120,6 +119,46 @@ bool ProcessMouseInput(SDL_Rect* TargetQuad, int x, int y)
 
 void Figure_Editor::HandleEvent(SDL_Event* event)
 {
+     if(event->type == SDL_KEYDOWN)
+     {
+	  if(!KeyboardPressed)
+	  {
+	       KeyboardPressed = true;
+
+	       int tmp_index = FigureManager->SelectedFigure; 
+
+	       SDL_Keycode key = event->key.keysym.sym;
+	       switch(key)
+	       {
+		    case SDLK_w:
+		    {
+			 tmp_index -= 1;
+		    } break;
+		    case SDLK_a:
+		    {
+			 tmp_index -= 2;
+		    } break; 
+		    case SDLK_s:
+		    {
+			 tmp_index += 1;
+		    } break; 
+		    case SDLK_d:
+		    {
+			 tmp_index += 2;
+		    } break; 
+	       }
+
+	       FigureManager->select_figure(tmp_index);
+	  }
+     }
+     else if(event->type == SDL_KEYUP)
+     {
+	  if(KeyboardPressed)
+	  {
+	       KeyboardPressed = false;
+	  }
+     }
+
      if(event->type == SDL_MOUSEBUTTONDOWN
 	&& event->button.button == SDL_BUTTON_RIGHT)
      {
@@ -148,8 +187,6 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	  if(!LeftMousePressed)
 	  {
 	       LeftMousePressed = true;
-	       printf("MousePressed = true\n");
-
 	       int x_button = event->button.x;
 	       int y_button = event->button.y;
 
@@ -163,6 +200,7 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       {
 		    printf("New Figure hit!\n");
 		    FigureManager->add_new_figure(O_figure, classic);
+		    NewFigureSelected = true;
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
@@ -170,6 +208,7 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       {
 		    printf("Delete Figure hit!\n");
 		    FigureManager->delete_figure();
+		    DelFigureSelected = true;
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
@@ -177,13 +216,15 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       {
 		    printf("changing form!\n");
 		    FigureManager->change_figure_form();
+		    NewFormSelected = true;
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
 	       if(ProcessMouseInput(&TargetPosition, x_button, y_button))
 	       {
 		    printf("changing type!\n");
-		    FigureManager->change_figure_type();    
+		    FigureManager->change_figure_type();
+		    NewTypeSelected = true;
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
@@ -191,6 +232,7 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       {
 		    printf("rotating button!\n");
 		    FigureManager->change_figure_angle();
+		    RotateFigureSelected = true;
 	       }
 
 	       TargetPosition.x += TargetPosition.w;
@@ -198,6 +240,7 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	       {
 		    printf("flip the button \n");
 		    FigureManager->change_figure_flip();
+		    FlipFigureSelected = true;
 	       }
 	  }
      }
@@ -206,16 +249,28 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
      {
 	  if(LeftMousePressed)
 	  {
-	       LeftMousePressed = false;
-	       printf("MousePresed = false\n");
+	       LeftMousePressed     = false;
+	       NewFigureSelected    = false;
+	       DelFigureSelected    = false;
+	       NewTypeSelected      = false;
+	       NewFormSelected      = false;
+	       RotateFigureSelected = false;
+	       FlipFigureSelected   = false;
 	  }
      }
 }
 
 static
-void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiRect)
+void RenderUIElement(SDL_Texture*& Texture, SDL_Rect* TextureRect, SDL_Rect* UiRect, bool Pressed)
 {
      SDL_Renderer* RenderScreen = Window_Info::get_renderer();
+
+     if(Pressed)
+     {
+	  SDL_SetRenderDrawColor(RenderScreen, 255, 255, 0, 255);
+	  SDL_RenderFillRect(RenderScreen, UiRect );
+	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
+     }
 
      SDL_RenderDrawRect(RenderScreen, UiRect);
      
@@ -238,12 +293,10 @@ void Figure_Editor::RenderEditor()
      SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, 255);
      SDL_RenderDrawRect(RenderScreen, &EditorBar);
 
-     RenderUIElement(NewFigureTexture, &NewFigureQuad, &TargetPosition);
-     RenderUIElement(DelFigureTexture, &DelFigureQuad, &TargetPosition);
-     RenderUIElement(NewFormTexture, &NewFormQuad, &TargetPosition);
-     RenderUIElement(NewTypeTexture, &NewTypeQuad, &TargetPosition);
-     RenderUIElement(RotateFigureTexture, &RotateFigureQuad, &TargetPosition);
-     RenderUIElement(FlipFigureTexture, &FlipFigureQuad, &TargetPosition);
-
-
+     RenderUIElement(NewFigureTexture, &NewFigureQuad, &TargetPosition, NewFigureSelected );
+     RenderUIElement(DelFigureTexture, &DelFigureQuad, &TargetPosition, DelFigureSelected );
+     RenderUIElement(NewFormTexture, &NewFormQuad, &TargetPosition, NewFormSelected );
+     RenderUIElement(NewTypeTexture, &NewTypeQuad, &TargetPosition, NewTypeSelected );
+     RenderUIElement(RotateFigureTexture, &RotateFigureQuad, &TargetPosition, RotateFigureSelected );
+     RenderUIElement(FlipFigureTexture, &FlipFigureQuad, &TargetPosition, FlipFigureSelected );
 }

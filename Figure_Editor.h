@@ -29,6 +29,14 @@ struct Figure_Editor
      bool FigureIsSelected  = false;
      bool LeftMousePressed  = false;
      bool RightMousePressed = false;
+     bool KeyboardPressed   = false; 
+
+     bool NewFigureSelected    = false;
+     bool DelFigureSelected    = false;
+     bool NewTypeSelected      = false;
+     bool NewFormSelected      = false;
+     bool RotateFigureSelected = false;
+     bool FlipFigureSelected   = false; 
 
      Figure_Editor(TTF_Font*& Font, Figure_Manager* FigureManager);
      ~Figure_Editor();
