@@ -88,6 +88,9 @@ void Figure_Manager::adjust_figure(int index, int angle)
 {
      int area = block_width * 2;
 
+     int pitch_x = index / 2;
+     int pitch_y = index % 2;
+
      int columns = 0;
      // columns = (figure_container.size()  / 2) + 1; 
      if(figure_container.size() % 2 == 0)
@@ -98,7 +101,7 @@ void Figure_Manager::adjust_figure(int index, int angle)
      {
      	  columns = (figure_container.size() / 2) + 1;
      }
-     int distance = (columns * area);
+     int distance = (columns * area) + ((block_width/4)*(columns));
       
      int figure_width  = figure_container[index]->get_width();
      int figure_height = figure_container[index]->get_height();
@@ -109,12 +112,9 @@ void Figure_Manager::adjust_figure(int index, int angle)
      }
 
      SDL_Rect rect_area = figure_container[index]->get_area();
-
-     int pitch_x = index / 2; 
-     int pitch_y = index % 2;
 	  
      int center_y = default_zone.y  + ((block_width*4)*pitch_y) + ((block_width/6)*pitch_y);
-     int center_x = (default_zone.x + (default_zone.w>>1)) - (distance>>1) + (((area)*pitch_x) + ((block_width / 4)*pitch_x));
+     int center_x = (default_zone.x + (default_zone.w / 2)) - (distance / 2) + (((area)*pitch_x) + ((block_width / 4)*pitch_x));
      
      int x_target = center_x;
      int y_target = center_y;

@@ -6,6 +6,7 @@
 void InitTexture(TTF_Font *& Font,  SDL_Texture*& Texture, SDL_Rect* Quad, const char* Text)
 {
      printf("InitTexture()\n");
+     
      if(!Font) return;
      if(!Text) return;
      
