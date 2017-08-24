@@ -15,9 +15,8 @@
 #include "Level_Info.h"
 #include "Figure.h"
 #include "Figure_Manager.h"
-#include "Figure_Editor.h"
 #include "Grid_Manager.h"
-#include "Grid_Editor.h"
+#include "Level_Editor.h"
 
 #define LEVEL_INCOMPLETE 0
 #define LEVEL_COMPLETE   1
@@ -57,8 +56,7 @@ private:
     Mix_Music *music                   = nullptr;
     
     TTF_Font *font                     = nullptr;
-    Grid_Editor *grid_editor           = nullptr;
-    Figure_Editor *figure_editor       = nullptr;
+    Level_Editor *level_editor         = nullptr; 
      
     SDL_Rect figure_area;
     SDL_Rect menu_bar_area;

@@ -9,9 +9,16 @@
 
 #include "window.h"
 
-Window_Info::Window_Info(){
+Window_Info::Window_Info()
+{
      printf("Window_Info::Window_Info()\n");
+     
+#ifdef _WIN32 
      SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+#else
+     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles");
+#endif
+     
      SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
      if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
@@ -27,11 +34,13 @@ Window_Info::Window_Info(){
 	       printf("Failed to IMG_Init: %s", IMG_GetError());
 	       return;
 	  }
-	  if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0){
+	  if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+	  {
 	       printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
 	       return;
 	  }
-	  if(TTF_Init()==-1){
+	  if(TTF_Init()==-1)
+	  {
 	       printf("Failed to TTF_Init: %s", TTF_GetError());
 	       return;
 	  }
@@ -74,7 +83,8 @@ Window_Info::Window_Info(){
      }
 }
 
-Window_Info::~Window_Info(){
+Window_Info::~Window_Info()
+{
      SDL_DestroyRenderer(renderer);
      SDL_DestroyWindow(window);
      
