@@ -125,7 +125,8 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 	  {
 	       KeyboardPressed = true;
 
-	       int tmp_index = FigureManager->SelectedFigure; 
+	       int tmp_index   = FigureManager->SelectedFigure;
+	       int figure_size = FigureManager->get_figure_amount();
 
 	       SDL_Keycode key = event->key.keysym.sym;
 	       switch(key)
@@ -148,6 +149,16 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 		    } break; 
 	       }
 
+	       if(tmp_index < 0)
+	       {
+		    tmp_index = figure_size - 1;
+	       }
+	       
+	       if(tmp_index >= figure_size)
+	       {
+		    tmp_index = 0; 
+	       }
+	       
 	       FigureManager->select_figure(tmp_index);
 	  }
      }

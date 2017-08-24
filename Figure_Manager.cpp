@@ -110,7 +110,6 @@ void Figure_Manager::adjust_figure(int index, int angle)
      int y_target = center_y;
 
      int center_x = (default_zone.x + (default_zone.w>>1)) - (distance>>1) + (((area)*pitch_x) + ((block_width>>1)*pitch_x));
-     // int center_x = (default_zone.x + block_width*2) + pitch_x*(area+(block_width>>1));
      int width = rect_area.w;
      int x_target = center_x;
      figure_container[index]->set_default(x_target, y_target);
