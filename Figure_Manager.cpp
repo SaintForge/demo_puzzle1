@@ -18,9 +18,7 @@ Figure_Manager::Figure_Manager()
      default_zone.h = block_width * 8;
      default_zone.y = height - (default_zone.h);
      default_zone.x = 0;
-
-     printf("default_zone.h = %d\n", default_zone.h);
-
+     
 #ifdef _WIN32
      grab_sound     = Mix_LoadWAV("..\\data\\sound\\piece_grab_new.wav");
      idle_sound     = Mix_LoadWAV("..\\data\\sound\\endpillars_panel_scint_endpoint_cut.wav");
@@ -68,58 +66,77 @@ void Figure_Manager::align_vertically()
 
 void Figure_Manager::align_horisontally(std::vector<int>& angle)
 {
-     if(angle.empty()) return;
-
-     for (int i = 0; i < figure_container.size(); i++)
+     for (int i = 0; i < figure_container.size(); ++i)
      {
-	  adjust_figure(i, angle[i]);
-     }
-}
-
-void Figure_Manager::realign_horisontally()
-{
-     for (int i = 0; i < figure_container.size(); i++)
-     {
-	  adjust_figure(i, 0);
-     }    
-}
-
-void Figure_Manager::adjust_figure(int index, int angle)
-{
-     int area = block_width * 2;
-
-     int pitch_x = index / 2;
-     int pitch_y = index % 2;
-
-     int columns = 0;
-     // columns = (figure_container.size()  / 2) + 1; 
-     if(figure_container.size() % 2 == 0)
-     {
-     	  columns = (figure_container.size() / 2);
-     }
-     else
-     {
-     	  columns = (figure_container.size() / 2) + 1;
-     }
-     int distance = (columns * area) + ((block_width/4)*(columns));
-      
-     int figure_width  = figure_container[index]->get_width();
-     int figure_height = figure_container[index]->get_height();
-     if(figure_width > figure_height)
-     {
-     	  figure_container[index]->rotate_shell(angle * 90.0);
-     	  figure_container[index]->update_angle(angle * 90.0);
-     }
-
-     SDL_Rect rect_area = figure_container[index]->get_area();
+     	  int FigureWidth  = figure_container[i]->get_width();
+     	  int FigureHeight = figure_container[i]->get_height();
 	  
-     int center_y = default_zone.y  + ((block_width*4)*pitch_y) + ((block_width/6)*pitch_y);
-     int center_x = (default_zone.x + (default_zone.w / 2)) - (distance / 2) + (((area)*pitch_x) + ((block_width / 4)*pitch_x));
+     	  if(FigureWidth > FigureHeight)
+     	  {
+     	       figure_container[i]->rotate_shell(angle[i] * 90.0);
+     	       figure_container[i]->update_angle(angle[i] * 90.0);
+     	  }
+     }
+
+     align_horisontally();
+}
+
+void Figure_Manager::align_horisontally()
+{
+     printf("Figure_Manager::align_horisontally()\n");
+
+     int RowSize1 = 0;
+     int RowSize2 = 0;
      
-     int x_target = center_x;
-     int y_target = center_y;
+     int FigureIntervalX  = block_width / 4;
+     int FigureIntervalY  = block_width / 6;
+     
+     for (int i = 0; i < figure_container.size(); ++i)
+     {
+	  i % 2 == 0
+	       ? RowSize1 += figure_container[i]->get_area().w + FigureIntervalX
+	       : RowSize2 += figure_container[i]->get_area().w + FigureIntervalX; 
+     }
+
+     int PitchY           = 0;
+     int NewPositionX     = 0;
+     int NewPositionY     = 0;
+     
+     int CurrentRowSize1  = 0;
+     int CurrentRowSize2  = 0;
+     int FigureBoxHeight  = 0;
+
+     SDL_Rect FigureArea = {};
+     
+     for (int i = 0; i < figure_container.size(); ++i)
+     {
+	  PitchY = i % 2;
+
+	  FigureArea = figure_container[i]->get_area();
+
+	  FigureBoxHeight  = block_width * 4;
+
+	  NewPositionY = default_zone.y + (FigureBoxHeight * PitchY);
+	  NewPositionY += (FigureBoxHeight / 2) - (FigureArea.h / 2);
+	  NewPositionY += FigureIntervalY * PitchY; 
+
+	  if(i % 2 == 0)
+	  {
+	       NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize1 / 2);
+	       NewPositionX += CurrentRowSize1;
+	       
+	       CurrentRowSize1 += (FigureArea.w + FigureIntervalX);
+	  }
+	  else
+	  {
+	       NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize2 / 2);
+	       NewPositionX += CurrentRowSize2;
+	       
+	       CurrentRowSize2 += (FigureArea.w + FigureIntervalX);
+	  }
 	  
-     figure_container[index]->set_default(x_target, y_target);
+	  figure_container[i]->set_default(NewPositionX, NewPositionY);
+     }
 }
 
 void Figure_Manager::add_new_figure(Figure_Form form, Figure_Type type)
@@ -128,8 +145,7 @@ void Figure_Manager::add_new_figure(Figure_Form form, Figure_Type type)
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
      figure_container.push_back(tmp_figure);
      
-     realign_horisontally();
-     
+     align_horisontally();
      SelectedFigure = figure_container.size() - 1;
 }
 
@@ -141,30 +157,47 @@ void Figure_Manager::add_new_figure(Figure_Form form, Figure_Type type)
 void Figure_Manager::delete_figure()
 {
      printf("Figure_Manager::delete_figure()\n");
-     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
+     
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
+     {
+	  return;
+     }
 
      int O_index = O[SelectedFigure];
      figure_container.erase(figure_container.begin() + SelectedFigure);
 
      for (int i = 0 ; i < O.size(); ++i)
      {
-	  if(O_index == O[i]) O.erase(O.begin() + i);
+	  if(O_index == O[i])
+	  {
+	       O.erase(O.begin() + i);
+	  }
      }
      
      if(figure_container.size() != O_index)
      {
-	  for (int i = 0; i < O.size(); ++i) if(O[i] > O_index) O[i]--;
+	  for (int i = 0; i < O.size(); ++i)
+	  {
+	       if(O[i] > O_index)
+	       {
+		    O[i]--;
+	       }
+	  }
+     }
+     
+     if(figure_container.size() == SelectedFigure)
+     {
+	  SelectedFigure -= 1;
+     }
+     else if(SelectedFigure < figure_container.size() - 1)
+     {
+	  SelectedFigure += 2;
+     }
+     else
+     {
      }
 
-     printf("were SelectedFigure = %d\n", SelectedFigure);
-
-     if(figure_container.size() == SelectedFigure) SelectedFigure--;
-     else if(SelectedFigure < figure_container.size() - 1) SelectedFigure++;
-     else{}
-
-     printf("now SelectedFigure = %d\n", SelectedFigure);
-
-     realign_horisontally();
+     align_horisontally();
 }
 
 void Figure_Manager::change_figures(
@@ -193,55 +226,6 @@ void Figure_Manager::change_figures(
 	  O.push_back(figure_container.size());
 	  std::shared_ptr<Figure> tmp_figure(new Figure(fg[i].first, fg[i].second));
 	  figure_container.push_back(tmp_figure);
-
-	  /* 
-	     The explanation to whoever reading this.(this will probably be Max himself)
-	     This mess down here is basically the calculation 
-	     of default places of figures.
-	  
-	     First off, our figures will be placed in a grid-like area,
-	     having a specific row and column(depends on index of the figure).
-	     So, we need 2 variables that will help us find its specific place 
-	     on the grid.
-	     pitch_x indicates the column number.
-	     pitch_y indicates the row number.
-	  */
-	  
-	  // int pitch_x = i % 2;
-	  // int pitch_y = i / 2;
-
-	  /* After we found our place in a grid we need to find out 
-	     where exactly we're gonna place our figure.
-	     First of all, we need to find the 'x' position of the figure,
-	     and mind you when we're talking about finding the position 
-	     we're talking about finding the up-left corner of a rectangle that
-	     our figure will be drawn on.
-	     1. center_x value indicates the middle point of either left column 
-	     or right column(depends on pitch_x). 
-	     2. width is the width of the figure.
-	     3. x_target basically tells us the offset on 
-	     where we should place our x-position of the up-left corner of the rectangle.
-	  */
-	  // int center_x = (default_zone.x + (default_zone.w>>2)) + (default_zone.w/2)*pitch_x;
-	  // int width = tmp_figure->get_width();
-	  // int x_target = center_x - (width/2);
-
-	  /* Same goes for 'y' value.
-	     1. center_y indicates the area on a given row 
-	     and it also uses some offset so that we won't draw our figure on top 
-	     of a frame.
-	     2. height is the height of the figure.
-	     3. y_target tells us where we should place our y-position of up-left corner
-	     relative of the rectangle's height.
-	  */
-	  // int center_y = (default_zone.y + block_width>>1) + pitch_y*(area+(block_width>>1));
-	  // int height = tmp_figure->get_height();
-	  // int y_target = center_y+(block_width<<1) - height/2;
-	  /* and then, with the given coordinates we tell the figure 
-	     where to place it on a default state.*/
-	  
-	  // figure_container[i]->set_default(x_target, y_target);
-	  // figure_container[i]->transparent_off();
      }
 
      align_horisontally(angles);
@@ -264,9 +248,6 @@ void Figure_Manager::change_figures(
      idle = false;
      idle_index = 0;
      adjust_move = false;
-
-     // vel.x = 0;
-     // vel.y = 0;
 }
 
 int Figure_Manager::check_mouse_click(int x, int y)
@@ -331,7 +312,7 @@ void Figure_Manager::change_figure_form()
      figure_container.insert(figure_container.begin() + SelectedFigure + 1, tmp_figure);
      figure_container.erase(figure_container.begin() + SelectedFigure);
      
-     realign_horisontally();
+     align_horisontally();
 }
 
 void Figure_Manager::change_figure_type()
@@ -362,27 +343,35 @@ void Figure_Manager::change_figure_type()
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
      figure_container.insert(figure_container.begin() + SelectedFigure + 1, tmp_figure);
      figure_container.erase(figure_container.begin() + SelectedFigure);
-     adjust_figure(SelectedFigure, figure_angle / 90);
+     align_horisontally();
 }
 
 void Figure_Manager::change_figure_angle()
 {
      printf("Figure_Manager::change_figure_angle()\n");
-     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
+     
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
+     {
+	  return;
+     }
      
      figure_container[SelectedFigure]->rotate_shell(90);
      figure_container[SelectedFigure]->update_angle(90);
 
-     adjust_figure(SelectedFigure, 0);
+     align_horisontally();
 }
 
 void Figure_Manager::change_figure_flip()
 {
      printf("change_figure_flip()\n");
-     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size()) return;
+     
+     if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
+     {
+	  return;
+     }
 
      figure_container[SelectedFigure]->flip_figure();
-     adjust_figure(SelectedFigure, 0);
+     align_horisontally();
 }
 
 void Figure_Manager::load_effect(const char* path)
@@ -1207,7 +1196,7 @@ void Figure_Manager::animate_stick_effect()
 
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
      SDL_Point *shell = figure_container[stick_effect_index]->get_shell();
-     int size = get_activeblock_size();
+     int size = active_block_size;
      
      for (int i = 0; i < 4; i++)
      {

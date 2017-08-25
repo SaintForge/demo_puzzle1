@@ -44,8 +44,8 @@ public:
      void toogle_stick_effect(int index);
      void animate_stick_effect();
 
-     void adjust_figure(int index, int angle);
-     void realign_horisontally();
+     void adjust_figure(int index);
+     void align_horisontally();
      void align_horisontally(std::vector<int>& angles);
      void align_vertically();
      void restart();
