@@ -13,8 +13,6 @@
 
 static int default_block_size = 26;
 static int active_block_size  = 40;
-static int get_defblock_size() { int size = default_block_size; return size;}
-static int get_activeblock_size() { int size = active_block_size; return active_block_size; }
 
 enum Figure_Form
 {
@@ -69,6 +67,7 @@ public:
 
      void set_default(int x, int y);
      void set_default_state();
+     void scale_image(int scale_dx);
      void set_idle();
      
      void mouse_attach(bool attach);
@@ -84,7 +83,7 @@ private:
      void load_figure(Figure_Form, Figure_Type);
      void load_figure_image(const char* path);
      
-     void scale_image(int scale_dx);
+
 private:
      SDL_Texture *sprite = NULL;
 

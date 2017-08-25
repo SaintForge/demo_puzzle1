@@ -9,11 +9,12 @@
 
 #define round(x) ((x)>=0?(float)((x)+0.5):(float)((x)-0.5))
 
-Layer::Layer(){
+Layer::Layer()
+{
     
 }
-void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
-		       SDL_Texture*& texture2, TTF_Font*& font){
+void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,	
+	       SDL_Texture*& texture2, TTF_Font*& font){
     
     int width = Window_Info::get_width();
     int height = Window_Info::get_height();
@@ -728,7 +729,8 @@ void Menu::init_texture(SDL_Texture *& texture, const char* path){
     texture = tmp_texture;
 }
 
-void Menu::init_font(){
+void Menu::init_font()
+{
     TTF_Font* tmp_font = TTF_OpenFont(font_path, font_size);
     if(!tmp_font){
 	printf("Failed opening font! - %s\n",TTF_GetError());

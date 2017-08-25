@@ -15,8 +15,8 @@
 
 Figure::Figure(Figure_Form form, Figure_Type type)
 {
-     int size = default_block_size;
      printf("Figure()\n");
+
      int index         = 0;
      int row_block     = 0;
      int column_block  = 0;
@@ -25,8 +25,13 @@ Figure::Figure(Figure_Form form, Figure_Type type)
      fig_form = form;
      fig_type = type;
      float center_offset = 0.5f;
+     int size = default_block_size;
+     
      std::vector<std::vector<int>> matrix(2);
-     for (int i = 0; i < 2; i++) { matrix[i].resize(4); }
+     for (int i = 0; i < 2; i++)
+     {
+	  matrix[i].resize(4);
+     }
 
      switch(form)
      {
@@ -305,6 +310,12 @@ void Figure::set_to(int x, int y)
      move_figure(shift_x, shift_y);
 }
 
+/*
+
+  This function moves the center of the figure,
+  not the up-left corner.
+
+*/
 void Figure::move_figure(float shift_x, float shift_y)
 {
      int offset_x = sprite_area.x - center.x;
@@ -324,6 +335,8 @@ void Figure::move_figure(float shift_x, float shift_y)
 }
 
 void Figure::set_default_state(){
+     printf("Figure::set_default_state()\n");
+     
      if(!idle)
      {
 	  if(angle != def_angle)
@@ -337,6 +350,7 @@ void Figure::set_default_state(){
 
 	  SDL_Point old_cntr = {center.x, center.y};
 	  scale_image(size);
+	  
 	  int shift_x = old_cntr.x - center.x;
 	  int shift_y = old_cntr.y - center.y;
 	  move_figure(shift_x, shift_y);
