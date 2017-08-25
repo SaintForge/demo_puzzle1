@@ -121,53 +121,42 @@ void Figure_Editor::HandleEvent(SDL_Event* event)
 {
      if(event->type == SDL_KEYDOWN)
      {
-	  if(!KeyboardPressed)
+
+	  int tmp_index   = FigureManager->SelectedFigure;
+	  int figure_size = FigureManager->get_figure_amount();
+
+	  SDL_Keycode key = event->key.keysym.sym;
+	  switch(key)
 	  {
-	       KeyboardPressed = true;
-
-	       int tmp_index   = FigureManager->SelectedFigure;
-	       int figure_size = FigureManager->get_figure_amount();
-
-	       SDL_Keycode key = event->key.keysym.sym;
-	       switch(key)
+	       case SDLK_w:
 	       {
-		    case SDLK_w:
-		    {
-			 tmp_index -= 1;
-		    } break;
-		    case SDLK_a:
-		    {
-			 tmp_index -= 2;
-		    } break; 
-		    case SDLK_s:
-		    {
-			 tmp_index += 1;
-		    } break; 
-		    case SDLK_d:
-		    {
-			 tmp_index += 2;
-		    } break; 
-	       }
-
-	       if(tmp_index < 0)
+		    tmp_index -= 1;
+	       } break;
+	       case SDLK_a:
 	       {
-		    tmp_index = figure_size - 1;
-	       }
-	       
-	       if(tmp_index >= figure_size)
+		    tmp_index -= 2;
+	       } break; 
+	       case SDLK_s:
 	       {
-		    tmp_index = 0; 
-	       }
-	       
-	       FigureManager->select_figure(tmp_index);
+		    tmp_index += 1;
+	       } break; 
+	       case SDLK_d:
+	       {
+		    tmp_index += 2;
+	       } break; 
 	  }
-     }
-     else if(event->type == SDL_KEYUP)
-     {
-	  if(KeyboardPressed)
+
+	  if(tmp_index < 0)
 	  {
-	       KeyboardPressed = false;
+	       tmp_index = figure_size - 1;
 	  }
+	       
+	  if(tmp_index >= figure_size)
+	  {
+	       tmp_index = 0; 
+	  }
+	       
+	  FigureManager->select_figure(tmp_index);
      }
 
      if(event->type == SDL_MOUSEBUTTONDOWN
@@ -310,4 +299,6 @@ void Figure_Editor::RenderEditor()
      RenderUIElement(NewTypeTexture, &NewTypeQuad, &TargetPosition, NewTypeSelected );
      RenderUIElement(RotateFigureTexture, &RotateFigureQuad, &TargetPosition, RotateFigureSelected );
      RenderUIElement(FlipFigureTexture, &FlipFigureQuad, &TargetPosition, FlipFigureSelected );
+
+     
 }
