@@ -72,6 +72,7 @@ public:
      
      void mouse_attach(bool attach);
      void grid_stick();
+     void grid_unstick();
 
      void flip_figure();
      void rotate_shell(float angle_dx = 0);

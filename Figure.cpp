@@ -481,8 +481,14 @@ SDL_Point Figure::get_def_center()
 }
 void Figure::grid_stick()
 {
-     stick = !stick ? 1 : 0;
+     // stick = !stick ? 1 : 0;
+     stick = true;
 }
+void Figure::grid_unstick()
+{
+     stick = false;
+}
+
 int Figure::get_angle()
 {
      return angle;

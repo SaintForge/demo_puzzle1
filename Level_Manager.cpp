@@ -27,8 +27,8 @@ Level_Manager::Level_Manager()
      printf("loaded images!\n");
      
      begin_sound      = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\idle.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter1-cut.wav");
      printf("loaded sound!\n");
      
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
@@ -157,14 +157,20 @@ void Level_Manager::update_level_number_animation()
 	    level_line[0].x -=2;
 	    level_line[0].w +=2;
 	}
-	else left_stop = true;
+	else
+	{
+	     left_stop = true;
+	}
 	    
 
 	if(level_line[1].x + level_line[1].w < Window_Info::get_width() - margin)
 	{
 	    level_line[1].w += 2;
 	}
-	else right_stop = true;
+	else
+	{
+	     right_stop = true;
+	}
 
 	if(alpha_level_number < 250)
 	{

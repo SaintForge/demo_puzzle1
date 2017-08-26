@@ -25,7 +25,8 @@ Grid_Manager::Grid_Manager()
 
 void print_grid(std::vector<std::vector<uint8_t>> &v)
 {
-     for (int i = 0 ; i < v.size(); i++)
+     printf("------------\n");
+     for (int i = 0; i < v.size(); i++)
      {
 	  for (int j = 0; j < v[i].size(); j++)
 	  {
@@ -33,6 +34,7 @@ void print_grid(std::vector<std::vector<uint8_t>> &v)
 	  }
 	  printf("\n");
      }
+     printf("------------\n");
 }
 Grid_Manager::~Grid_Manager()
 {
@@ -241,7 +243,7 @@ void Grid_Manager::restart_grid()
 
 int Grid_Manager::update()
 {
-     if(state == GRID_FULL && stick_effect == false)
+     if(state == GRID_FULL)
      {
 	  return GRID_FULL;
      }
@@ -250,50 +252,47 @@ int Grid_Manager::update()
      {
 	  return GRID_EMPTY;
      }
-     int amount = manager->get_figure_amount();
      
+     int amount = manager->get_figure_amount();
      if(amount == 0)
      {
 	  return GRID_ZERO;
      }
 
-
-     if(stick_effect)
+     for (int i = 0; i < stick_list.size(); ++i)
      {
-	  bool done = true;
-	  for (int i = 0; i < stick_list.size(); i++)
+	  if(!stick_list[i].is_sticked)
 	  {
 	       int index = stick_list[i].index;
 	       std::shared_ptr<Figure> figure = manager->get_figure_at(index);
 	       
 	       SDL_Point cntr = figure->get_center();
 	       SDL_Point targ_cntr = stick_list[i].targ_cntr;
-	       if(cntr.x != targ_cntr.x || cntr.y != targ_cntr.y)
+
+	       const int max_vel = 5;
+
+	       Vector2 vel;
+	       vel.x = targ_cntr.x - cntr.x;
+	       vel.y = targ_cntr.y - cntr.y;
+
+	       vel.limit(max_vel);
+	       figure->move_figure(round(vel.x), round(vel.y));
+
+	       cntr = figure->get_center();
+	       if(cntr.x == targ_cntr.x && cntr.y == targ_cntr.y)
 	       {
-		    const int max_vel = 5;
-
-		    Vector2 vel;
-		    vel.x = targ_cntr.x - cntr.x;
-		    vel.y = targ_cntr.y - cntr.y;
-
-		    vel.limit(max_vel);
-		    figure->move_figure(round(vel.x), round(vel.y));
-		    done = false;
-		    
-		    cntr = figure->get_center();
-		    if(cntr.x == targ_cntr.x && cntr.y == targ_cntr.y){
-			 Mix_PlayChannel(-1, piece_snap, 0);
-			 for (int j = 0; j < 4; j++) 
-			      bit_field[stick_list[i].row[j]][stick_list[i].col[j]] = 1;
-			 if(is_full()){
-			      state = GRID_FULL;
-			 }
+		    Mix_PlayChannel(-1, piece_snap, 0);
+		    stick_list[i].is_sticked = true;
+			 
+		    for (int j = 0; j < 4; j++)
+		    {
+			 bit_field[stick_list[i].row[j]][stick_list[i].col[j]] = 1;
+		    }
+		    if(is_full())
+		    {
+			 state = GRID_FULL;
 		    }
 	       }
-	  }
-	  if(done == true)
-	  {
-	       stick_effect = false;
 	  }
      }
 
@@ -301,7 +300,10 @@ int Grid_Manager::update()
      {
      	  std::shared_ptr<Figure> figure = manager->get_figure_at(k); // try O[i]
 	  
-	  if(figure->is_idle()) continue;
+	  if(figure->is_idle())
+	  {
+	       continue;
+	  }
 	  bool attached = manager->is_attached(k);
 	  bool sticked  = figure->is_sticked();
 
@@ -392,7 +394,6 @@ int Grid_Manager::update()
 		    {
 			 //  set the state of a figure and playing a sound
 			 figure->grid_stick();
-			 stick_effect = true;
 			 
 			 // creating a unit that will hold the information about
 			 // that figure in case we want to remove that figure from the grid 
@@ -443,7 +444,7 @@ int Grid_Manager::update()
 			 }
 			 
 			 stick_list.erase(stick_list.begin() + i);
-			 figure->grid_stick();
+			 figure->grid_unstick();
 			 break;
 		    }
 	       }
@@ -455,24 +456,18 @@ int Grid_Manager::update()
 
 bool Grid_Manager::is_full()
 {
-     bool if_one = true;
-     for (int i = 0; i < bit_field.size() && if_one == true; i++)
+     for (int i = 0; i < bit_field.size(); i++)
      {
 	  for (int j = 0; j < bit_field[i].size(); j++)
 	  {
 	       if(bit_field[i][j] == 0)
 	       {
-		    if_one = false;
-		    break;
+		    return false;
 	       }
 	  }
      }
-     if(if_one)
-     {
-	  return true;
-     }
-     
-     return false;
+
+     return true;
 }
 
 int Grid_Manager::get_last_stick_index()
@@ -506,7 +501,10 @@ bool Grid_Manager::unattach_figure(int index){
 void Grid_Manager::draw()
 {
      if(!texture)
+     {
 	  return;
+     }
+     
      SDL_Renderer *RenderScreen = Window_Info::get_renderer();
 
      SDL_Rect rect;

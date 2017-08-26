@@ -12,21 +12,25 @@
 #include "Figure_Manager.h"
 #include "Level_Info.h"
 
-enum GRID_STATE{
+enum GRID_STATE
+{
      GRID_EMPTY = 0,
      GRID_FULL  = 1,
      GRID_ZERO  = 2,
      GRID_HIT   = 3
 };
 
-struct Sticked_Unit{
+struct Sticked_Unit
+{
      Sticked_Unit() : index(0){}
      ~Sticked_Unit(){}
      
      int index;
      int row[4]{0};
      int col[4]{0};
+
      SDL_Point targ_cntr;
+     bool is_sticked = false;
 };
 
 class Grid_Manager{
@@ -65,8 +69,7 @@ private:
      int row_amount       = 0;
      int column_amount    = 0;
      
-     bool stick_effect       = false;
-     bool start_animation    = true;
+     bool start_animation = true;
 
      SDL_Rect grid_area;
      

@@ -467,6 +467,7 @@ void Figure_Manager::handle_event(SDL_Event &event)
      {
 	  return;
      }
+     
      int width = Window_Info::get_width();
      int height = Window_Info::get_height();
 
@@ -1156,11 +1157,11 @@ void Figure_Manager::draw(){
 	       DrawFrame(figure_area, 5);
 	  }
 
-	  for (int i = 0; i < figure_container.size(); ++i)
-	  {
-	       figure_container[i]->draw_shell();
-	  }
+     }
 
+     for (int i = 0; i < figure_container.size(); ++i)
+     {
+	  figure_container[i]->draw_shell();
      }
 
      if(is_idle) SDL_SetTextureAlphaMod(idle_effect, alpha);
