@@ -27,8 +27,8 @@ Level_Manager::Level_Manager()
      printf("loaded images!\n");
      
      begin_sound      = Mix_LoadWAV("..\\data\\sound\\focus_enter_new.wav");
-     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\menu_enter2.wav");
-     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\menu_enter1-cut.wav");
+     complete_sound_1 = Mix_LoadWAV("..\\data\\sound\\lvl_enter_1.wav");
+     complete_sound_2 = Mix_LoadWAV("..\\data\\sound\\lvl_enter_2.wav");
      printf("loaded sound!\n");
      
      font = TTF_OpenFont("..\\data\\Karmina-Bold.otf", 50);
@@ -101,6 +101,7 @@ void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
 
 void Level_Manager::next_level(Level_Info &info, int level_number)
 {
+     printf("Level_Manager::next_level()\n");
      figure_manager.change_figures(info.figure_type, info.figure_angle);
      
      int width = Window_Info::get_width();
@@ -108,6 +109,7 @@ void Level_Manager::next_level(Level_Info &info, int level_number)
      
      int x = width / 2;
      int y = menu_bar_area.h + ((height - (figure_manager.get_idle_zone().h + menu_bar_area.h))/2);
+     printf("here!\n");
      grid_manager.update_grid(&figure_manager, x, y, info);
      
      level_complete = false;
@@ -243,11 +245,6 @@ void Level_Manager::delete_editor_mode()
 }
 
 int Level_Manager::handle_event(SDL_Event &event){
-     if(!level_complete)
-     {
-	  figure_manager.handle_event(event);
-     }
-     
      if(event.key.keysym.sym == SDLK_AC_BACK
 	|| (event.type == SDL_QUIT)
 	|| (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
@@ -258,6 +255,17 @@ int Level_Manager::handle_event(SDL_Event &event){
      if(toggle_level_editor && level_editor)
      {
 	  level_editor->HandleEvents(&event);
+     }
+     else
+     {
+	  if(!level_complete)
+	  {
+	       bool was_action = figure_manager.handle_event(event);
+	       if(!was_action)
+	       {
+		    grid_manager.handle_event(event);
+	       }
+	  }
      }
 
      if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKQUOTE )

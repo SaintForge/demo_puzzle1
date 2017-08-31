@@ -33,13 +33,28 @@ struct Sticked_Unit
      bool is_sticked = false;
 };
 
-class Grid_Manager{
+struct MovingBlock
+{
+     SDL_Rect BlockQuad = {};
+     SDL_Texture *BlockTexture = NULL;
+
+     int row_index    = 0;
+     int column_index = 0; 
+};
+
+class Grid_Manager
+{
 public:
      Grid_Manager();
      ~Grid_Manager();
 
-     void check_input(int, int ); 
-     void change_block(int, int); 
+     bool GridMouseClick(int, int);
+     bool CellMouseClick(int, int, int*, int*);
+
+     void change_block(int, int);
+     void move_block_horizontally(int);
+     void move_block_vertically(int);
+
      void update_grid(int, int); 
      void update_grid(Figure_Manager*, int, int, Level_Info&);
      void restart_grid();
@@ -51,16 +66,23 @@ public:
 
      bool is_full();
      bool unattach_figure(int index);
-     
+
+     void handle_event(SDL_Event&);
      int  update();
      void draw();
 private:
+     void add_moving_block(int, int);
+     void delete_moving_block(int, int);
+
+     void toggle_moving_block(int);
+     void release_horizontal_block();
+     
      void load_grid_texture(SDL_Texture *&, const char* path);
      bool is_figure_inside(std::shared_ptr<Figure> fig);
      bool animate_start();
 private:
-     SDL_Texture* texture   = NULL;
-     SDL_Texture* texture2  = NULL;
+     SDL_Texture* GridCellTexture    = NULL;
+     SDL_Texture* MovingBlockTexture = NULL; 
      Mix_Chunk *piece_snap  = NULL;
      Mix_Chunk *block_sound = NULL;
 
@@ -68,11 +90,16 @@ private:
      int size             = 40;
      int row_amount       = 0;
      int column_amount    = 0;
+     int block_index      = 0; 
      
      bool start_animation = true;
+     bool mouse_pressed   = false;
+     bool block_grabbed   = false; 
 
      SDL_Rect grid_area;
-     
+     SDL_Rect moving_area; 
+
+     std::vector<MovingBlock> moving_blocks; 
      std::vector<std::vector<uint8_t>> bit_field;
      std::vector<Sticked_Unit> stick_list;
      std::vector<uint8_t> ani_block;

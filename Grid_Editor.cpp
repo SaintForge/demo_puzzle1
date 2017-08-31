@@ -149,7 +149,14 @@ void Grid_Editor::HandleEvent(SDL_Event *event)
 		    grid->update_grid(RowNumber, ColumnNumber);
 	       }
 
-	       grid->check_input(x_button, y_button);
+	       if(grid->GridMouseClick(x_button, y_button ))
+	       {
+		    int row, column;
+		    if(grid->CellMouseClick(x_button, y_button, &row, &column))
+		    {
+			 grid->change_block(row, column);
+		    }
+	       }
 	  }
      }
      else if(event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT)

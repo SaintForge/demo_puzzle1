@@ -83,8 +83,6 @@ public:
 private:
      void load_figure(Figure_Form, Figure_Type);
      void load_figure_image(const char* path);
-     
-
 private:
      SDL_Texture *sprite = NULL;
 

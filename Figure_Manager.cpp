@@ -247,7 +247,6 @@ void Figure_Manager::change_figures(
 
      idle = false;
      idle_index = 0;
-     adjust_move = false;
 }
 
 int Figure_Manager::check_mouse_click(int x, int y)
@@ -461,15 +460,22 @@ bool Figure_Manager::is_attached(int index)
      return false;
 }
 
-void Figure_Manager::handle_event(SDL_Event &event)
+bool Figure_Manager::is_hit()
+{
+     return hit; 
+}
+
+bool Figure_Manager::handle_event(SDL_Event &event)
 {
      if(figure_container.empty())
      {
-	  return;
+	  return false;
      }
      
      int width = Window_Info::get_width();
      int height = Window_Info::get_height();
+
+     bool was_action = false; 
 
 #ifdef _WIN32
      switch(event.type)
@@ -497,7 +503,8 @@ void Figure_Manager::handle_event(SDL_Event &event)
 				   if(index != -1)
 				   {
 					hit = true;
-					hit_index = index;
+					hit_index  = index;
+					was_action = true;
 					x_rel = x_button - figure_container[index]->get_center().x;
 					y_rel = y_button - figure_container[index]->get_center().y;
 					
@@ -513,6 +520,7 @@ void Figure_Manager::handle_event(SDL_Event &event)
 				   if(grabbed)
 				   {
 					release_figure();
+					was_action = true;
 				   }
 			      }
 			      
@@ -535,6 +543,8 @@ void Figure_Manager::handle_event(SDL_Event &event)
 					figure_container[current]->flip_figure();
 					Mix_PlayChannel( -1, rotation_sound, 0 );
 				   }
+
+				   was_action = true;
 			      }
 			      mouse_right_button = true;
 			 }
@@ -641,6 +651,8 @@ void Figure_Manager::handle_event(SDL_Event &event)
      	  } break;
      }
 #endif
+
+     return was_action; 
 }
 
 int Figure_Manager::check_input(int x, int y)

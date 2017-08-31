@@ -55,13 +55,14 @@ public:
      std::shared_ptr<Figure> get_figure_at(int index);
      int get_figure_amount();
 
+     bool is_hit();
      bool is_grabbed();
      bool is_attached(int index);
      bool is_being_restarted();
      bool is_being_rotated();
 
      bool move_figure(int index, SDL_Point &target);
-     void handle_event(SDL_Event &event);
+     bool handle_event(SDL_Event &event);
      int  check_input(int x, int y);
      
      void figure_high_priority(int index);
@@ -95,7 +96,6 @@ private:
 
      int current;
      bool grabbed;
-     bool adjust_move;
      int x_rel, y_rel;
 
      SDL_Rect idle_rect;
@@ -124,6 +124,7 @@ private:
 
      // Vector2 vel;
      float approach_radius = 50;
+
 };
 
 #endif 

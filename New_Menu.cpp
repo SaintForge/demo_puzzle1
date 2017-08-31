@@ -14,8 +14,8 @@ Layer::Layer()
     
 }
 void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,	
-	       SDL_Texture*& texture2, TTF_Font*& font){
-    
+		       SDL_Texture*& texture2, TTF_Font*& font)
+{
     int width = Window_Info::get_width();
     int height = Window_Info::get_height();
     
@@ -222,7 +222,8 @@ void Layer::init_buttons(Select_Menu menu_choice){
     level_page = true;
 
     std::string lvl_mode;
-    switch(menu_choice){
+    switch(menu_choice)
+    {
 	case EASY_PAGE: lvl_mode = "easy"; break;
 	case NORMAL_PAGE: lvl_mode = "normal"; break;
 	case HARD_PAGE: lvl_mode = "hard"; break;
@@ -235,6 +236,10 @@ void Layer::init_buttons(Select_Menu menu_choice){
     {
 	int tmp_index = 0;
 	int start_index = data.read_variable(tmp_index, lvl_mode, lvl_amount);
+	
+	printf("lvl_amount = %d\n", lvl_amount );
+	printf("start_index = %d\n", start_index );
+	
 	if(start_index > 0)
 	{
 	    data.set_searching_point(start_index);
@@ -255,7 +260,8 @@ void Layer::init_buttons(Select_Menu menu_choice){
 
 	int countdown = lvl_amount;
 	//TODO: make io function that read all levels at once
-	while(countdown != 0){
+	while(countdown != 0)
+	{
 	    if(index % 20 == 0 && index != 0) start_x += width + (width/2);
 	    if(index % 4 == 0) pitch_y++;
 	    if(pitch_y >= 5) pitch_y = 0;
