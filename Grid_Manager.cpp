@@ -374,7 +374,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 			      }
 			      else
 			      {
-				   bit_field[row_index][column_index] = 0;
+				   // bit_field[row_index][column_index] = 0;
 				   toggle_moving_block(i);
 				   
 				   break;
@@ -421,8 +421,10 @@ void Grid_Manager::toggle_moving_block(int index )
      int start_x = moving_blocks[block_index].BlockQuad.x;
      int start_y = moving_blocks[block_index].BlockQuad.y; 
 
-     SDL_Rect left_area  = {start_x, start_y, 0, size };
-     SDL_Rect right_area = {start_x + size, start_y, 0, size }; 
+     int left_cursor        = start_x;
+     int left_cursor_width  = 0;
+     int right_cursor_width = size; 
+
      int row_index = moving_blocks[block_index].row_index;
      int column_index = moving_blocks[block_index].column_index; 
 
@@ -432,24 +434,26 @@ void Grid_Manager::toggle_moving_block(int index )
 	  {
 	       if(bit_field[row_index][i] == 0)
 	       {
-		    left_area.w += size;
-		    left_area.x -= size;
+		    left_cursor -= size;
+		    left_cursor_width += size;
+		    printf("left_area + 40\n");
 	       }
 	       else break; 
 	  }
      }
 
-     for (int i = column_index ; i < bit_field[row_index].size(); ++i)
+     for (int i = column_index + 1 ; i < bit_field[row_index].size(); ++i)
      {
 	  if(bit_field[row_index][i] == 0)
 	  {
-	       right_area.w += size; 
+	       right_cursor_width += size;
+	       printf("right_area + 40\n");
 	  }
 	  else break;
      }
 
-     moving_area.x = left_area.x;
-     moving_area.w = left_area.w + right_area.w;
+     moving_area.x = left_cursor; 
+     moving_area.w = left_cursor_width + right_cursor_width; 
 
      printf("moving_area.w = %d\n", moving_area.w );
 }
@@ -458,6 +462,14 @@ void Grid_Manager::release_horizontal_block()
 {
      printf("release_horizontal_block()\n");
      int row_index = moving_blocks[block_index].row_index;
+     int previous_column_index = moving_blocks[block_index].column_index;
+     SDL_Rect previous_area =
+	  {
+	       grid_area.x + (size * previous_column_index),
+	       0,
+	       size,
+	       size
+	  } ;
      
      SDL_Rect target_area =
 	  {
@@ -494,12 +506,44 @@ void Grid_Manager::release_horizontal_block()
 	  }
      }
 
+     block_centerX = moving_blocks[block_index].BlockQuad.x + \
+	  (moving_blocks[block_index].BlockQuad.w/2);
+
+     if(block_centerX > previous_area.x + (previous_area.w / 2))
+     {
+	  printf("it's completelely to the right!\n");
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index] = 0;
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index+1] = 2;
+
+	  moving_blocks[block_index].column_index += 1;
+     }
+     else if(block_centerX < previous_area.x)
+     {
+	  printf("it's completely to the left!\n ");
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index] = 0;
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index-1] = 2;
+
+	  moving_blocks[block_index].column_index -= 1;
+     }
+     
+
 }
 
 void Grid_Manager::move_block_horizontally(int offset_x)
 {
      printf("Grid_Manager::move_block_horizontally()\n");
-     
+
+     int previous_column_index = moving_blocks[block_index].column_index;
+     SDL_Rect previous_area =
+	  {
+	       grid_area.x + (size * previous_column_index),
+	       0,
+	       size,
+	       size
+	  } ;
+
+     printf("previous_area.x = %d\n", previous_area.x );
+
      Vector2 velocity;
      velocity.x = offset_x;
      velocity.y = 0;
@@ -518,7 +562,26 @@ void Grid_Manager::move_block_horizontally(int offset_x)
 	  moving_blocks[block_index].BlockQuad.x = (moving_area.x + moving_area.w) - \
 	       moving_blocks[block_index].BlockQuad.w;
      }
-     
+
+     int block_centerX = moving_blocks[block_index].BlockQuad.x + \
+	  (moving_blocks[block_index].BlockQuad.w/2);
+
+     if(block_centerX > previous_area.x + (previous_area.w / 2))
+     {
+	  printf("it's completelely to the right!\n");
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index] = 0;
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index+1] = 2;
+
+	  moving_blocks[block_index].column_index += 1;
+     }
+     else if(block_centerX < previous_area.x)
+     {
+	  printf("it's completely to the left!\n ");
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index] = 0;
+	  bit_field[moving_blocks[block_index].row_index][previous_column_index-1] = 2;
+
+	  moving_blocks[block_index].column_index -= 1;
+     }
 }
 
 void Grid_Manager::move_block_vertically(int offset_y)
@@ -528,6 +591,8 @@ void Grid_Manager::move_block_vertically(int offset_y)
 
 int Grid_Manager::update()
 {
+     print_grid(bit_field);
+     
      if(state == GRID_FULL)
      {
 	  return GRID_FULL;
@@ -807,7 +872,7 @@ void Grid_Manager::draw()
 		    if(status != 1)
 		    {
 			 rect.x = grid_area.x + (rect.w*j);
-			 if(status == 0)
+			 if(status == 0 || status == 2 )
 			 {
 			      SDL_RenderCopy(RenderScreen, GridCellTexture, NULL, &rect);
 			 }
