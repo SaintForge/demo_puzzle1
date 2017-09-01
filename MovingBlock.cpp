@@ -10,10 +10,10 @@
 #include "MovingBlock.h"
 
 
-void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & bit_field)
-
+void MovingBlock::release_horizontal_block()
 {
      printf("release_horizontal_block!\n");
+     
      int block_size = active_block_size;
 
      SDL_Rect previous_cell = {};
@@ -30,7 +30,7 @@ void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & b
      
      int block_centerX = BlockQuad.x + (BlockQuad.w / 2);
 
-     for (int i = 0 ; i < bit_field.size(); ++i)
+     for (int i = 0; i < row_field->size(); ++i)
      {
 	  target_area.x = grid_area->x + (i * block_size);
 
@@ -41,22 +41,96 @@ void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & b
 	       BlockQuad.x = target_area.x;
 	       BlockQuad.y = target_area.y;
 
-	       if(bit_field[row_index][column_index] == 2)
+	       if((*row_field)[column_index] == 2)
 	       {
-		    bit_field[row_index][column_index] = 0;
+		    (*row_field)[column_index] = 0;
 	       }
 
 	       column_index = i;
-	       bit_field[row_index][column_index] = 2;
+	       (*row_field)[column_index] = 2;
 	  }
      }
 
 }
-void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> & bit_field)
+
+void MovingBlock::release_vertical_block()
+{
+     printf("MovingBlock::release_vertical_block()\n");
+     int block_size = active_block_size;
+
+     SDL_Rect previous_cell = {};
+     previous_cell.x = grid_area->x + (block_size * column_index);
+     previous_cell.y = grid_area->y + (block_size * row_index);
+     previous_cell.w = block_size;
+     previous_cell.h = block_size;
+     
+     SDL_Rect target_area = {};
+     target_area.x = grid_area->x + (column_index * block_size);
+     target_area.y = 0;
+     target_area.w = block_size;
+     target_area.h = block_size;
+
+     int block_centerY = BlockQuad.y + (BlockQuad.h / 2) ;
+
+     for (int i = 0; i < column_field.size(); ++i)
+     {
+	  target_area.y = grid_area->x + (i * block_size);
+
+	  if(block_centerY < target_area.y)                      continue;
+	  else if(block_centerY > target_area.y + target_area.h) continue;
+	  else
+	  {
+	       BlockQuad.x = target_area.x;
+	       BlockQuad.y = target_area.y;
+	       
+	       if(*column_field[row_index] == 2)
+	       {
+		    *column_field[row_index] = 0;
+	       }
+
+	       row_index = i;
+	       *column_field[row_index] = 2;
+	  }
+     }
+
+}
+
+void MovingBlock::check_vertical_collision()
+{
+     int block_size = active_block_size;
+     int start_y = grid_area->y + (block_size * row_index);
+
+     int up_cursor          = start_y;
+     int up_cursor_length   = 0;
+     int down_cursor_length = block_size;
+
+     for (int i = row_index-1; i >= 0; ++i)
+     {
+	  if(*column_field[i] == 0)
+	  {
+	       up_cursor -= block_size;
+	       up_cursor_length += block_size; 
+	  }
+	  else break; 
+     }
+
+     for (int i = row_index + 1; i < column_field.size(); ++i)
+     {
+	  if(*column_field[i] == 0)
+	  {
+	       down_cursor_length += block_size;
+	  }
+	  else break; 
+     }
+
+     CollisionQuad.y = up_cursor;
+     CollisionQuad.h = up_cursor_length + down_cursor_length;
+}
+
+void MovingBlock::check_horizontal_collision()
 {
      int block_size = active_block_size;
      int start_x = grid_area->x + (block_size * column_index);
-     int start_y = grid_area->y + (block_size * row_index);
 
      int left_cursor        = start_x;
      int left_cursor_width  = 0;
@@ -64,16 +138,16 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
 
      for (int i = column_index-1; i >= 0; --i)
      {
-	  if(bit_field[row_index][i] == 0)
+	  if((*row_field)[i] == 0)
 	  {
 	       left_cursor -= block_size;
 	       left_cursor_width += block_size;
 	  }
 	  else break; 
      }
-     for (int i = column_index + 1; i < bit_field[row_index].size(); ++i)
+     for (int i = column_index + 1; i < row_field->size(); ++i)
      {
-	  if(bit_field[row_index][i] == 0)
+	  if((*row_field)[i] == 0)
 	  {
 	       right_cursor_width += block_size;
 	  }
@@ -84,8 +158,55 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
      CollisionQuad.w = left_cursor_width + right_cursor_width;
 }
 
-void MovingBlock::move_block_horizontally(int offset_x,
-					  std::vector<std::vector<uint8_t>> & bit_field)
+void MovingBlock::move_block_vertically(int offset_y )
+{
+     printf("move_block_vertically(int)\n");
+     int block_size = active_block_size;
+
+     SDL_Rect previous_cell = {} ;
+     previous_cell.x = grid_area->x + (block_size * column_index);
+     previous_cell.y = grid_area->y + (block_size * row_index);
+     previous_cell.w = block_size;
+     previous_cell.h = block_size;
+
+     Vector2 velocity;
+     velocity.x = 0;
+     velocity.y = offset_y;
+
+     BlockQuad.y += round(velocity.y);
+
+     if(BlockQuad.y <= CollisionQuad.y)
+     {
+	  BlockQuad.y = CollisionQuad.y;
+     }
+     else if(BlockQuad.y + BlockQuad.h >= CollisionQuad.y + CollisionQuad.h)
+     {
+	  BlockQuad.y = (CollisionQuad.y + CollisionQuad.h) - BlockQuad.h;
+     }
+
+     bool up_dir    = false;
+     bool down_dir = false;
+
+     if(BlockQuad.y >= previous_cell.y + previous_cell.h)  down_dir = true;
+     else if(BlockQuad.y + BlockQuad.h <= previous_cell.y) up_dir = true;
+
+     if(up_dir || down_dir)
+     {
+	  if(*column_field[row_index] == 2)
+	  {
+	       *column_field[row_index] = 0;
+	  }
+
+	  up_dir == true
+	       ? row_index -= 1
+	       : row_index += 1;
+
+	  check_vertical_collision();
+	  *column_field[row_index] = 2;
+     }
+}
+
+void MovingBlock::move_block_horizontally(int offset_x)
 {
      int block_size = active_block_size;
      
@@ -123,21 +244,17 @@ void MovingBlock::move_block_horizontally(int offset_x,
 
      if(left_dir || right_dir)
      {
-	  if(bit_field[row_index][column_index] == 2)
+	  if((*row_field)[column_index] == 2)
 	  {
-	       bit_field[row_index][column_index] = 0;
+	       (*row_field)[column_index] = 0;
 	  }
 
 	  left_dir == true
 	       ? column_index -= 1
 	       : column_index += 1;
 	       
-	  check_horizontal_collision(bit_field);
-	  bit_field[row_index][column_index] = 2;
+	  check_horizontal_collision();
+	  (*row_field)[column_index] = 2;
      }
 }
 
-void MovingBlock::move_block_vertically(int offset_y)
-{
-     
-}

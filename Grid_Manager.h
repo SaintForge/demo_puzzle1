@@ -62,7 +62,7 @@ public:
      int  update();
      void draw();
 private:
-     void add_moving_block(int, int);
+     void add_moving_block(int, int, bool );
      void delete_moving_block(int, int);
      
      void load_grid_texture(SDL_Texture *&, const char* path);
