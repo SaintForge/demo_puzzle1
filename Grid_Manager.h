@@ -11,6 +11,7 @@
 
 #include "Figure_Manager.h"
 #include "Level_Info.h"
+#include "MovingBlock.h"
 
 enum GRID_STATE
 {
@@ -33,15 +34,6 @@ struct Sticked_Unit
      bool is_sticked = false;
 };
 
-struct MovingBlock
-{
-     SDL_Rect BlockQuad = {};
-     SDL_Texture *BlockTexture = NULL;
-
-     int row_index    = 0;
-     int column_index = 0; 
-};
-
 class Grid_Manager
 {
 public:
@@ -50,10 +42,9 @@ public:
 
      bool GridMouseClick(int, int);
      bool CellMouseClick(int, int, int*, int*);
+     bool check_rectangle_collision(int, int, SDL_Rect* );
 
      void change_block(int, int);
-     void move_block_horizontally(int);
-     void move_block_vertically(int);
 
      void update_grid(int, int); 
      void update_grid(Figure_Manager*, int, int, Level_Info&);
@@ -73,9 +64,6 @@ public:
 private:
      void add_moving_block(int, int);
      void delete_moving_block(int, int);
-
-     void toggle_moving_block(int);
-     void release_horizontal_block();
      
      void load_grid_texture(SDL_Texture *&, const char* path);
      bool is_figure_inside(std::shared_ptr<Figure> fig);
@@ -90,16 +78,15 @@ private:
      int size             = 40;
      int row_amount       = 0;
      int column_amount    = 0;
-     int block_index      = 0; 
+     int mov_indx      = 0; 
      
      bool start_animation = true;
      bool mouse_pressed   = false;
      bool block_grabbed   = false; 
 
      SDL_Rect grid_area;
-     SDL_Rect moving_area; 
 
-     std::vector<MovingBlock> moving_blocks; 
+     std::vector<MovingBlock> mov_bl; 
      std::vector<std::vector<uint8_t>> bit_field;
      std::vector<Sticked_Unit> stick_list;
      std::vector<uint8_t> ani_block;

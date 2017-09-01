@@ -7,4 +7,7 @@ the game somehow crashes.
 so that every class or struct wouldn't need to create it's own boolean
 every time.
 
-3. There's something wrong with the Flip Algorithm 
+3. There's something wrong with the Flip Algorithm
+
+
+1. first make that the figure can't stick to the grid unless you move your little thingy

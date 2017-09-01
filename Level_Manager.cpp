@@ -265,6 +265,10 @@ int Level_Manager::handle_event(SDL_Event &event){
 	       {
 		    grid_manager.handle_event(event);
 	       }
+	       else
+	       {
+		    printf("Was action!\n ");
+	       }
 	  }
      }
 
