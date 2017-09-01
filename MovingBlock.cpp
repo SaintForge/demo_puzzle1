@@ -63,11 +63,6 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
      int left_cursor_width  = 0;
      int right_cursor_width = block_size;
 
-     if(bit_field[row_index][column_index] == 1)
-     {
-	  printf("WTF SON!\n ");
-     }
-
      for (int i = column_index-1; i >= 0; --i)
      {
 	  printf("left i = %d\n", i );
@@ -92,9 +87,6 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
 
      CollisionQuad.x = left_cursor; 
      CollisionQuad.w = left_cursor_width + right_cursor_width;
-
-     printf("moving_area.x = %d\n", CollisionQuad.x);
-     printf("moving_area.w = %d\n", CollisionQuad.w);    
 }
 
 void MovingBlock::move_block_horizontally(int offset_x, SDL_Rect *grid_area,
@@ -125,34 +117,26 @@ void MovingBlock::move_block_horizontally(int offset_x, SDL_Rect *grid_area,
      }
      else if(BlockQuad.x + BlockQuad.w >= CollisionQuad.x + CollisionQuad.w )
      {
-	  printf("right collision\n ");
-	  printf("%d + %d >= %d + %d\n", \
-		 BlockQuad.x, BlockQuad.w, CollisionQuad.x, CollisionQuad.w );
 	  BlockQuad.x = (CollisionQuad.x + CollisionQuad.w) - BlockQuad.w;
-	  printf("BlockQuad.x = %d\n",BlockQuad.x);
      }
 
-     if(BlockQuad.x >= previous_cell.x + previous_cell.w)
+     bool left_dir  = false;
+     bool right_dir = false;
+
+     if(BlockQuad.x >= previous_cell.x + previous_cell.w) right_dir = true; 
+     else if(BlockQuad.x + BlockQuad.w <= previous_cell.x) left_dir = true; 
+
+     if(left_dir || right_dir)
      {
-	  printf("BlockQuad.x >= previous_cell.x + previous_cell.w\n");
 	  if(bit_field[row_index][column_index] == 2)
 	  {
 	       bit_field[row_index][column_index] = 0;
 	  }
 
-	  column_index += 1;
-	  check_horizontal_collision(bit_field, grid_area );
-	  bit_field[row_index][column_index] = 2;
-     }
-     else if(BlockQuad.x + BlockQuad.w <= previous_cell.x)
-     {
-	  printf("BlockQuad.x <= previous_cell.x\n");
-	  if(bit_field[row_index][column_index] == 2)
-	  {
-	       bit_field[row_index][column_index] = 0;
-	  }
-
-	  column_index -= 1;
+	  left_dir == true
+	       ? column_index -= 1
+	       : column_index += 1;
+	       
 	  check_horizontal_collision(bit_field, grid_area );
 	  bit_field[row_index][column_index] = 2;
      }
