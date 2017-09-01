@@ -10,8 +10,8 @@
 #include "MovingBlock.h"
 
 
-void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & bit_field,
-					   SDL_Rect *grid_area )
+void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & bit_field)
+
 {
      printf("release_horizontal_block!\n");
      int block_size = active_block_size;
@@ -52,8 +52,7 @@ void MovingBlock::release_horizontal_block(std::vector<std::vector<uint8_t>> & b
      }
 
 }
-void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> & bit_field,
-     SDL_Rect *grid_area )
+void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> & bit_field)
 {
      int block_size = active_block_size;
      int start_x = grid_area->x + (block_size * column_index);
@@ -65,13 +64,10 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
 
      for (int i = column_index-1; i >= 0; --i)
      {
-	  printf("left i = %d\n", i );
-	  printf("bit_field[row_index][i] = %d\n",bit_field[row_index][i]);
 	  if(bit_field[row_index][i] == 0)
 	  {
 	       left_cursor -= block_size;
 	       left_cursor_width += block_size;
-	       printf("left_area + 40\n");
 	  }
 	  else break; 
      }
@@ -80,7 +76,6 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
 	  if(bit_field[row_index][i] == 0)
 	  {
 	       right_cursor_width += block_size;
-	       printf("right_area + 40\n");
 	  }
 	  else break;
      }
@@ -89,7 +84,7 @@ void MovingBlock::check_horizontal_collision(std::vector<std::vector<uint8_t>> &
      CollisionQuad.w = left_cursor_width + right_cursor_width;
 }
 
-void MovingBlock::move_block_horizontally(int offset_x, SDL_Rect *grid_area,
+void MovingBlock::move_block_horizontally(int offset_x,
 					  std::vector<std::vector<uint8_t>> & bit_field)
 {
      int block_size = active_block_size;
@@ -137,7 +132,7 @@ void MovingBlock::move_block_horizontally(int offset_x, SDL_Rect *grid_area,
 	       ? column_index -= 1
 	       : column_index += 1;
 	       
-	  check_horizontal_collision(bit_field, grid_area );
+	  check_horizontal_collision(bit_field);
 	  bit_field[row_index][column_index] = 2;
      }
 }

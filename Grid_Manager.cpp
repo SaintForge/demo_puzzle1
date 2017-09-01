@@ -172,9 +172,11 @@ void Grid_Manager::add_moving_block(int row_index, int column_index )
      moving_block.BlockQuad.h = size;
 
      moving_block.BlockTexture = MovingBlockTexture;
-
+     
      moving_block.row_index = row_index;
      moving_block.column_index = column_index;
+
+     moving_block.grid_area = &grid_area;
 
      mov_bl.push_back(moving_block);
 }
@@ -359,7 +361,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 			      
 			 if(check_rectangle_collision(x_mouse, y_mouse, &mov_bl[i].BlockQuad))
 			 {
-			      mov_bl[i].check_horizontal_collision(bit_field, &grid_area );
+			      mov_bl[i].check_horizontal_collision(bit_field);
 			      block_grabbed = true;
 			      mov_indx = i;
 			      // bit_field[row_index][column_index] = 0;
@@ -379,7 +381,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 	       if(block_grabbed)
 	       {
 		    block_grabbed = false;
-		    mov_bl[mov_indx].release_horizontal_block(bit_field, &grid_area);
+		    mov_bl[mov_indx].release_horizontal_block(bit_field);
 	       }
 	  }
      }
@@ -391,7 +393,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 	       {
 		    int offset_x = event.motion.xrel;
 		    printf("offset_x = %d\n", offset_x );
-		    mov_bl[mov_indx].move_block_horizontally(offset_x, &grid_area, bit_field );
+		    mov_bl[mov_indx].move_block_horizontally(offset_x, bit_field );
 	       }
 	  }
      }
@@ -515,7 +517,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 
 int Grid_Manager::update()
 {
-     print_grid(bit_field);
+     // print_grid(bit_field);
 
      bool was_action = false; 
      int amount = manager->get_figure_amount();
@@ -733,8 +735,7 @@ int Grid_Manager::update()
      {
      	  if(block_grabbed)
      	  {
-     	       printf("recalculating the collision!\n");
-     	       mov_bl[mov_indx].check_horizontal_collision(bit_field, &grid_area );
+     	       mov_bl[mov_indx].check_horizontal_collision(bit_field);
      	  }
      }
 
