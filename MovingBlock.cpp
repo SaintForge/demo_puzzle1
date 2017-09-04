@@ -9,6 +9,27 @@
 #include "Figure.h"
 #include "MovingBlock.h"
 
+void MovingBlock::create_line_field(const std::vector<uint8_t> &bit_field)
+{
+     if(!line_field.empty())
+     {
+	  line_field.clear();
+     }
+
+     for (int i = 0 ; i < bit_field.size(); ++i)
+     {
+	  line_field.push_back(bit_field[i]);
+     }
+}
+
+void MovingBlock::update_line_field(const std::vector<uint8_t>& bit_field )
+{
+     for (int i = 0; i < line_field.size(); ++i)
+     {
+	  line_field[i] = bit_field[i];
+     }
+}
+
 
 void MovingBlock::release_horizontal_block()
 {
@@ -30,7 +51,7 @@ void MovingBlock::release_horizontal_block()
      
      int block_centerX = BlockQuad.x + (BlockQuad.w / 2);
 
-     for (int i = 0; i < row_field->size(); ++i)
+     for (int i = 0; i < line_field.size(); ++i)
      {
 	  target_area.x = grid_area->x + (i * block_size);
 
@@ -41,16 +62,28 @@ void MovingBlock::release_horizontal_block()
 	       BlockQuad.x = target_area.x;
 	       BlockQuad.y = target_area.y;
 
-	       if((*row_field)[column_index] == 2)
+	       if(line_field[column_index] == 2)
 	       {
-		    (*row_field)[column_index] = 0;
+		    line_field[column_index] = 0;
 	       }
 
 	       column_index = i;
-	       (*row_field)[column_index] = 2;
+	       line_field[column_index] = 2;
 	  }
      }
 
+}
+
+void MovingBlock::print_line_field()
+{
+     for(int n : line_field)
+	  printf("%d ",n);
+     printf("\n");
+
+     printf("quad.x = %d\n",CollisionQuad.x);
+     printf("quad.y = %d\n",CollisionQuad.y);
+     printf("quad.w = %d\n",CollisionQuad.w);
+     printf("quad.h = %d\n",CollisionQuad.h);
 }
 
 void MovingBlock::release_vertical_block()
@@ -72,9 +105,9 @@ void MovingBlock::release_vertical_block()
 
      int block_centerY = BlockQuad.y + (BlockQuad.h / 2) ;
 
-     for (int i = 0; i < column_field.size(); ++i)
+     for (int i = 0; i < line_field.size(); ++i)
      {
-	  target_area.y = grid_area->x + (i * block_size);
+	  target_area.y = grid_area->y + (i * block_size);
 
 	  if(block_centerY < target_area.y)                      continue;
 	  else if(block_centerY > target_area.y + target_area.h) continue;
@@ -83,79 +116,71 @@ void MovingBlock::release_vertical_block()
 	       BlockQuad.x = target_area.x;
 	       BlockQuad.y = target_area.y;
 	       
-	       if(*column_field[row_index] == 2)
+	       if(line_field[row_index] == 3)
 	       {
-		    *column_field[row_index] = 0;
+		    line_field[row_index] = 0;
 	       }
 
 	       row_index = i;
-	       *column_field[row_index] = 2;
+	       line_field[row_index] = 3;
 	  }
      }
 
 }
 
-void MovingBlock::check_vertical_collision()
+void MovingBlock::update_collision_quad()
 {
-     int block_size = active_block_size;
-     int start_y = grid_area->y + (block_size * row_index);
+     int BlockSize = active_block_size;
+     
+     int StartPoint = 0;
+     int StartIndex = 0;
+     // int * QuadCursor = NULL;
+     // int * QuadLength = NULL;
 
-     int up_cursor          = start_y;
-     int up_cursor_length   = 0;
-     int down_cursor_length = block_size;
-
-     for (int i = row_index-1; i >= 0; ++i)
+     if(is_vertical)
      {
-	  if(*column_field[i] == 0)
+	  StartPoint = grid_area->y + (BlockSize * row_index);
+	  StartIndex = row_index;
+     }
+     else
+     {
+	  StartPoint = grid_area->x + (BlockSize * column_index );
+	  StartIndex = column_index;
+     }
+
+     int Cursor           = StartPoint;
+     int FirstSideLength  = 0;
+     int SecondSideLength = BlockSize;
+
+     for (int i = StartIndex-1; i >= 0; --i)
+     {
+	  if(line_field[i] == 0)
 	  {
-	       up_cursor -= block_size;
-	       up_cursor_length += block_size; 
+	       Cursor -= BlockSize;
+	       FirstSideLength += BlockSize;
 	  }
 	  else break; 
      }
 
-     for (int i = row_index + 1; i < column_field.size(); ++i)
+     for (int i = StartIndex + 1; i < line_field.size(); ++i)
      {
-	  if(*column_field[i] == 0)
+	  if(line_field[i] == 0)
 	  {
-	       down_cursor_length += block_size;
+	       SecondSideLength += BlockSize;
 	  }
 	  else break; 
      }
 
-     CollisionQuad.y = up_cursor;
-     CollisionQuad.h = up_cursor_length + down_cursor_length;
-}
-
-void MovingBlock::check_horizontal_collision()
-{
-     int block_size = active_block_size;
-     int start_x = grid_area->x + (block_size * column_index);
-
-     int left_cursor        = start_x;
-     int left_cursor_width  = 0;
-     int right_cursor_width = block_size;
-
-     for (int i = column_index-1; i >= 0; --i)
+     if(is_vertical)
      {
-	  if((*row_field)[i] == 0)
-	  {
-	       left_cursor -= block_size;
-	       left_cursor_width += block_size;
-	  }
-	  else break; 
+	  CollisionQuad.y = Cursor;
+	  CollisionQuad.h = FirstSideLength + SecondSideLength;
      }
-     for (int i = column_index + 1; i < row_field->size(); ++i)
+     else
      {
-	  if((*row_field)[i] == 0)
-	  {
-	       right_cursor_width += block_size;
-	  }
-	  else break;
+	  CollisionQuad.x = Cursor;
+	  CollisionQuad.w = FirstSideLength + SecondSideLength;
      }
-
-     CollisionQuad.x = left_cursor; 
-     CollisionQuad.w = left_cursor_width + right_cursor_width;
 }
 
 void MovingBlock::move_block_vertically(int offset_y )
@@ -163,7 +188,7 @@ void MovingBlock::move_block_vertically(int offset_y )
      printf("move_block_vertically(int)\n");
      int block_size = active_block_size;
 
-     SDL_Rect previous_cell = {} ;
+     SDL_Rect previous_cell = {};
      previous_cell.x = grid_area->x + (block_size * column_index);
      previous_cell.y = grid_area->y + (block_size * row_index);
      previous_cell.w = block_size;
@@ -192,17 +217,17 @@ void MovingBlock::move_block_vertically(int offset_y )
 
      if(up_dir || down_dir)
      {
-	  if(*column_field[row_index] == 2)
+	  if(line_field[row_index] == 3)
 	  {
-	       *column_field[row_index] = 0;
+	       line_field[row_index] = 0;
 	  }
 
 	  up_dir == true
 	       ? row_index -= 1
 	       : row_index += 1;
 
-	  check_vertical_collision();
-	  *column_field[row_index] = 2;
+	  update_collision_quad();
+	  line_field[row_index] = 3;
      }
 }
 
@@ -244,17 +269,17 @@ void MovingBlock::move_block_horizontally(int offset_x)
 
      if(left_dir || right_dir)
      {
-	  if((*row_field)[column_index] == 2)
+	  if(line_field[column_index] == 2)
 	  {
-	       (*row_field)[column_index] = 0;
+	       line_field[column_index] = 0;
 	  }
 
 	  left_dir == true
 	       ? column_index -= 1
 	       : column_index += 1;
 	       
-	  check_horizontal_collision();
-	  (*row_field)[column_index] = 2;
+	  update_collision_quad();
+	  line_field[column_index] = 2;
      }
 }
 

@@ -77,7 +77,7 @@ int Grid_Manager::get_block_size()
 
 bool Grid_Manager::GridMouseClick(int x_mouse, int y_mouse)
 {
-     printf("Grid_Manager::check_input()\n");
+     printf("Grid_Manager::GridMouseClick()\n");
      
      if(x_mouse < grid_area.x)                    return false ;
      else if(y_mouse < grid_area.y)               return false ;
@@ -141,8 +141,15 @@ void Grid_Manager::change_block(int row_index, int column_index)
 	  bit_field[row_index][column_index] += 1;
 
 	  int cell_status = bit_field[row_index][column_index];
-	  if(cell_status == 2) add_moving_block(row_index, column_index, false );
-	  if(cell_status == 3) add_moving_block(row_index, column_index, true );
+	  if(cell_status == 2)
+	  {
+	       add_moving_block(row_index, column_index, false );
+	  }
+	  if(cell_status == 3)
+	  {
+	       mov_bl.pop_back();
+	       add_moving_block(row_index, column_index, true );
+	  }
      }
      else
      {
@@ -166,6 +173,52 @@ std::vector<uint8_t*> get_column(std::vector<std::vector<uint8_t>> &bit_field, i
      return tmp_vector; 
 }
 
+
+void update_moving_block(MovingBlock& mov_block,
+			 const std::vector<std::vector<uint8_t>> &bit_field)
+{
+     printf("update_moving_block(MovingBlock, bit_field\n )");
+     int row_index = mov_block.row_index;
+     int column_index = mov_block.column_index;
+     
+     if(mov_block.is_vertical)
+     {
+	  std::vector<uint8_t> tmp_vec;
+	  for (int i = 0 ; i < bit_field.size(); ++i)
+	  {
+	       tmp_vec.push_back(bit_field[i][column_index]);
+	  }
+
+	  mov_block.update_line_field(tmp_vec);
+     }
+     else
+     {
+	  mov_block.update_line_field(bit_field[row_index]);
+     }
+}
+
+void update_bitfield(std::vector<std::vector<uint8_t>> &bit_field,
+		     MovingBlock &mov_block )
+{
+     int row_index = mov_block.row_index;
+     int column_index = mov_block.column_index; 
+     if(mov_block.is_vertical)
+     {
+	  for (int i = 0 ; i < bit_field.size(); ++i)
+	  {
+	       bit_field[i][column_index] = mov_block.line_field[i];
+	  }
+     }
+     else
+     {
+	  for (int i = 0 ; i < bit_field[row_index].size(); ++i)
+	  {
+	       bit_field[row_index][i] = mov_block.line_field[i];
+	  }
+     }
+}
+
+
 void Grid_Manager::add_moving_block(int row_index, int column_index, bool is_vertical)
 {
      printf("Grid_Manager::add_moving_block(int, int )\n");
@@ -188,8 +241,21 @@ void Grid_Manager::add_moving_block(int row_index, int column_index, bool is_ver
      moving_block.column_index = column_index;
 
      moving_block.grid_area = &grid_area;
-     moving_block.row_field = &bit_field[row_index];
-     moving_block.column_field = get_column(bit_field, column_index);
+
+     if(is_vertical)
+     {
+	  std::vector<uint8_t> tmp_vec;
+	  for (int i = 0 ; i < bit_field.size(); ++i)
+	  {
+	       tmp_vec.push_back(bit_field[i][column_index]);
+	  }
+
+	  moving_block.create_line_field(tmp_vec);
+     }
+     else
+     {
+	  moving_block.create_line_field(bit_field[row_index]);
+     }
 
      mov_bl.push_back(moving_block);
 }
@@ -337,7 +403,6 @@ void Grid_Manager::restart_grid()
 		    bit_field[row_index][column_index] = 0;
 	       }
 	  }
-
 	  stick_list.clear();
      }
 }
@@ -350,6 +415,7 @@ bool Grid_Manager::check_rectangle_collision(int x, int y, SDL_Rect* area)
      else if(y > area->y + area->h) return false;
      else                           return true;
 }
+
 
 void Grid_Manager::handle_event(SDL_Event& event)
 {
@@ -374,8 +440,9 @@ void Grid_Manager::handle_event(SDL_Event& event)
 			      
 			 if(check_rectangle_collision(x_mouse, y_mouse, &mov_bl[i].BlockQuad))
 			 {
-			      if(mov_bl[i].is_vertical) mov_bl[i].check_vertical_collision();
-			      else mov_bl[i].check_horizontal_collision();
+			      update_moving_block(mov_bl[i], bit_field);
+			      mov_bl[mov_indx].update_collision_quad();
+			      mov_bl[mov_indx].print_line_field();
 			      
 			      block_grabbed = true;
 			      mov_indx = i;
@@ -394,7 +461,10 @@ void Grid_Manager::handle_event(SDL_Event& event)
 		    
 	       if(block_grabbed)
 	       {
+		    int row_index = mov_bl[mov_indx].row_index;
+		    int column_index = mov_bl[mov_indx].column_index;
 		    block_grabbed = false;
+		    
 		    if(mov_bl[mov_indx].is_vertical)
 		    {
 			 mov_bl[mov_indx].release_vertical_block();
@@ -403,6 +473,8 @@ void Grid_Manager::handle_event(SDL_Event& event)
 		    {
 			 mov_bl[mov_indx].release_horizontal_block();
 		    }
+		    
+		    update_bitfield(bit_field, mov_bl[mov_indx]);
 	       }
 	  }
      }
@@ -430,7 +502,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 
 int Grid_Manager::update()
 {
-     // print_grid(bit_field);
+     print_grid(bit_field);
 
      bool was_action = false; 
      int amount = manager->get_figure_amount();
@@ -648,14 +720,7 @@ int Grid_Manager::update()
      {
      	  if(block_grabbed)
      	  {
-	       if(mov_bl[mov_indx].is_vertical)
-	       {
-		    mov_bl[mov_indx].check_vertical_collision();
-	       }
-	       else
-	       {
-		    mov_bl[mov_indx].check_horizontal_collision();
-	       }
+	       update_moving_block(mov_bl[mov_indx], bit_field );
      	  }
      }
 
@@ -745,7 +810,15 @@ void Grid_Manager::draw()
 
      for (int i = 0 ; i < mov_bl.size(); ++i)
      {
-	  SDL_RenderCopy(RenderScreen, mov_bl[i].BlockTexture, NULL, &mov_bl[i].BlockQuad );
+	  if(mov_bl[i].is_vertical)
+	  {
+	       SDL_SetRenderDrawColor(RenderScreen, 0, 255, 0, 255);
+	       SDL_RenderFillRect(RenderScreen, &mov_bl[i].BlockQuad);
+	  }
+	  else
+	  {
+	       SDL_RenderCopy(RenderScreen, mov_bl[i].BlockTexture, NULL, &mov_bl[i].BlockQuad);
+	  }
      }
 
 }
