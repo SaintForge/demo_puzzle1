@@ -130,6 +130,11 @@ void MovingBlock::release_vertical_block()
 
 void MovingBlock::update_collision_quad()
 {
+     printf("update_collision_quad()\n");
+     printf("before collision!\n ");
+     print_line_field();
+     printf("column_index = %d\n",column_index);
+
      int BlockSize = active_block_size;
      
      int StartPoint = 0;
@@ -152,20 +157,24 @@ void MovingBlock::update_collision_quad()
      int FirstSideLength  = 0;
      int SecondSideLength = BlockSize;
 
+     printf("first side!\n ");
      for (int i = StartIndex-1; i >= 0; --i)
      {
 	  if(line_field[i] == 0)
 	  {
+	       printf("sum\n");
 	       Cursor -= BlockSize;
 	       FirstSideLength += BlockSize;
 	  }
 	  else break; 
      }
 
+     printf("second side!\n ");
      for (int i = StartIndex + 1; i < line_field.size(); ++i)
      {
 	  if(line_field[i] == 0)
 	  {
+	       printf("sum!\n");
 	       SecondSideLength += BlockSize;
 	  }
 	  else break; 
@@ -181,11 +190,15 @@ void MovingBlock::update_collision_quad()
 	  CollisionQuad.x = Cursor;
 	  CollisionQuad.w = FirstSideLength + SecondSideLength;
      }
+
+     printf("after!\n");
+     print_line_field();
+
 }
 
 void MovingBlock::move_block_vertically(int offset_y )
 {
-     printf("move_block_vertically(int)\n");
+     // printf("move_block_vertically(int)\n");
      int block_size = active_block_size;
 
      SDL_Rect previous_cell = {};

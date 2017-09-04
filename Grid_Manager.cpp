@@ -177,7 +177,6 @@ std::vector<uint8_t*> get_column(std::vector<std::vector<uint8_t>> &bit_field, i
 void update_moving_block(MovingBlock& mov_block,
 			 const std::vector<std::vector<uint8_t>> &bit_field)
 {
-     printf("update_moving_block(MovingBlock, bit_field\n )");
      int row_index = mov_block.row_index;
      int column_index = mov_block.column_index;
      
@@ -198,10 +197,11 @@ void update_moving_block(MovingBlock& mov_block,
 }
 
 void update_bitfield(std::vector<std::vector<uint8_t>> &bit_field,
-		     MovingBlock &mov_block )
+		     MovingBlock &mov_block)
 {
      int row_index = mov_block.row_index;
-     int column_index = mov_block.column_index; 
+     int column_index = mov_block.column_index;
+     
      if(mov_block.is_vertical)
      {
 	  for (int i = 0 ; i < bit_field.size(); ++i)
@@ -216,12 +216,15 @@ void update_bitfield(std::vector<std::vector<uint8_t>> &bit_field,
 	       bit_field[row_index][i] = mov_block.line_field[i];
 	  }
      }
+     printf("bit_field now!\n");
+     print_grid(bit_field);
 }
 
 
 void Grid_Manager::add_moving_block(int row_index, int column_index, bool is_vertical)
 {
      printf("Grid_Manager::add_moving_block(int, int )\n");
+     printf("whomst column = %d and row = %d\n", column_index, row_index);
      
      if(row_index < 0 || column_index < 0)
      {
@@ -442,7 +445,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 			 {
 			      update_moving_block(mov_bl[i], bit_field);
 			      mov_bl[mov_indx].update_collision_quad();
-			      mov_bl[mov_indx].print_line_field();
+			      // mov_bl[mov_indx].print_line_field()'
 			      
 			      block_grabbed = true;
 			      mov_indx = i;
@@ -502,7 +505,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 
 int Grid_Manager::update()
 {
-     print_grid(bit_field);
+     // print_grid(bit_field);
 
      bool was_action = false; 
      int amount = manager->get_figure_amount();
