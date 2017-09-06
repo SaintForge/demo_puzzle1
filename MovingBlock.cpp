@@ -139,9 +139,7 @@ void MovingBlock::update_collision_quad()
      
      int StartPoint = 0;
      int StartIndex = 0;
-     // int * QuadCursor = NULL;
-     // int * QuadLength = NULL;
-
+     
      if(is_vertical)
      {
 	  StartPoint = grid_area->y + (BlockSize * row_index);
@@ -157,12 +155,14 @@ void MovingBlock::update_collision_quad()
      int FirstSideLength  = 0;
      int SecondSideLength = BlockSize;
 
+     printf("StartIndex = %d\n",StartIndex);
+
      printf("first side!\n ");
      for (int i = StartIndex-1; i >= 0; --i)
      {
 	  if(line_field[i] == 0)
 	  {
-	       printf("sum\n");
+	       printf("left sum\n");
 	       Cursor -= BlockSize;
 	       FirstSideLength += BlockSize;
 	  }
@@ -174,7 +174,7 @@ void MovingBlock::update_collision_quad()
      {
 	  if(line_field[i] == 0)
 	  {
-	       printf("sum!\n");
+	       printf("right sum!\n");
 	       SecondSideLength += BlockSize;
 	  }
 	  else break; 
@@ -191,7 +191,7 @@ void MovingBlock::update_collision_quad()
 	  CollisionQuad.w = FirstSideLength + SecondSideLength;
      }
 
-     printf("after!\n");
+     printf("after collision !\n");
      print_line_field();
 
 }

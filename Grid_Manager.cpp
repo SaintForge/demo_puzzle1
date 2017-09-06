@@ -162,7 +162,8 @@ void Grid_Manager::change_block(int row_index, int column_index)
      }
 }
 
-std::vector<uint8_t*> get_column(std::vector<std::vector<uint8_t>> &bit_field, int column )
+std::vector<uint8_t*>
+get_column(std::vector<std::vector<uint8_t>> &bit_field, int column )
 {
      std::vector<uint8_t*> tmp_vector;
      for (int i = 0 ; i < bit_field.size(); ++i)
@@ -444,8 +445,7 @@ void Grid_Manager::handle_event(SDL_Event& event)
 			 if(check_rectangle_collision(x_mouse, y_mouse, &mov_bl[i].BlockQuad))
 			 {
 			      update_moving_block(mov_bl[i], bit_field);
-			      mov_bl[mov_indx].update_collision_quad();
-			      // mov_bl[mov_indx].print_line_field()'
+			      mov_bl[i].update_collision_quad();
 			      
 			      block_grabbed = true;
 			      mov_indx = i;
