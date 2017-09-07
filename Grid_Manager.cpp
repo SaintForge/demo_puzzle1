@@ -147,17 +147,25 @@ void Grid_Manager::change_block(int row_index, int column_index)
 	  }
 	  if(cell_status == 3)
 	  {
-	       mov_bl.pop_back();
-	       add_moving_block(row_index, column_index, true );
+	       for (int i = 0 ; i < mov_bl.size(); ++i)
+	       {
+		    if(mov_bl[i].column_index == column_index
+			 && mov_bl[i].row_index == row_index )
+		    {
+			 mov_bl[i].is_vertical = true;
+			 std::vector<uint8_t> tmp_vec;
+			 for (int i = 0 ; i < bit_field.size(); ++i)
+			 {
+			      tmp_vec.push_back(bit_field[i][column_index]);
+			 }
+			 mov_bl[i].create_line_field(tmp_vec);
+		    }
+	       }
 	  }
      }
      else
      {
-	  if(bit_field[row_index][column_index] == 3)
-	  {
-	       delete_moving_block(row_index, column_index);
-	  }
-	  
+	  delete_moving_block(row_index, column_index);
 	  bit_field[row_index][column_index] = 0;
      }
 }
@@ -439,13 +447,10 @@ void Grid_Manager::handle_event(SDL_Event& event)
 	       {
 		    for (int i = 0 ; i < mov_bl.size(); ++i)
 		    {
-			 int row_index    = mov_bl[i].row_index;
-			 int column_index = mov_bl[i].column_index;
-			      
 			 if(check_rectangle_collision(x_mouse, y_mouse, &mov_bl[i].BlockQuad))
 			 {
 			      update_moving_block(mov_bl[i], bit_field);
-			      mov_bl[i].update_collision_quad();
+			      mov_bl[i].shift_block();
 			      
 			      block_grabbed = true;
 			      mov_indx = i;
@@ -464,40 +469,8 @@ void Grid_Manager::handle_event(SDL_Event& event)
 		    
 	       if(block_grabbed)
 	       {
-		    int row_index = mov_bl[mov_indx].row_index;
-		    int column_index = mov_bl[mov_indx].column_index;
 		    block_grabbed = false;
-		    
-		    if(mov_bl[mov_indx].is_vertical)
-		    {
-			 mov_bl[mov_indx].release_vertical_block();
-		    }
-		    else
-		    {
-			 mov_bl[mov_indx].release_horizontal_block();
-		    }
-		    
 		    update_bitfield(bit_field, mov_bl[mov_indx]);
-	       }
-	  }
-     }
-     else if(event.type == SDL_MOUSEMOTION)
-     {
-	  if(mouse_pressed)
-	  {
-	       if(block_grabbed)
-	       {
-		    int offset_x = event.motion.xrel;
-		    int offset_y = event.motion.yrel;
-
-		    if(mov_bl[mov_indx].is_vertical)
-		    {
-			 mov_bl[mov_indx].move_block_vertically(offset_y);
-		    }
-		    else
-		    {
-			 mov_bl[mov_indx].move_block_horizontally(offset_x);
-		    }
 	       }
 	  }
      }
@@ -507,7 +480,11 @@ int Grid_Manager::update()
 {
      // print_grid(bit_field);
 
-     bool was_action = false; 
+     for (int i = 0 ; i < mov_bl.size(); ++i)
+     {
+	  mov_bl[i].update_shift_animation();
+     }
+     
      int amount = manager->get_figure_amount();
      
      if(amount == 0)
@@ -549,7 +526,6 @@ int Grid_Manager::update()
 	       {
 		    Mix_PlayChannel(-1, piece_snap, 0);
 		    stick_list[i].is_sticked = true;
-		    was_action = true;
 			 
 		    for (int j = 0; j < 4; j++)
 		    {
@@ -571,9 +547,9 @@ int Grid_Manager::update()
 	  {
 	       continue;
 	  }
+	  
 	  bool attached = manager->is_attached(k);
 	  bool sticked  = figure->is_sticked();
-
 
 	  // NOTE: there are basically 3 scenarions right here
 	  //1.a If a figure is sticked and not attached then we skip it
@@ -661,7 +637,6 @@ int Grid_Manager::update()
 		    {
 			 //  set the state of a figure and playing a sound
 			 figure->grid_stick();
-			 was_action = true;
 			 
 			 // creating a unit that will hold the information about
 			 // that figure in case we want to remove that figure from the grid 
@@ -718,15 +693,7 @@ int Grid_Manager::update()
 	       }
 	  }
      }
-
-     if(was_action)
-     {
-     	  if(block_grabbed)
-     	  {
-	       update_moving_block(mov_bl[mov_indx], bit_field );
-     	  }
-     }
-
+     
      return GRID_EMPTY;
 }
 

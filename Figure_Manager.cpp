@@ -1146,7 +1146,10 @@ void Figure_Manager::draw(){
 	  draw_shadow(O[i]);
 
 	  figure_container[O[i]]->draw();
-	  if(stick_effect && stick_effect_index == O[i]) animate_stick_effect();
+	  if(stick_effect && stick_effect_index == O[i])
+	  {
+	       animate_stick_effect();
+	  }
 	  if(is_idle && alpha != 0)
 	  {
 	       if(!figure_container[O[i]]->is_sticked())
