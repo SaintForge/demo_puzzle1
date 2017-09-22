@@ -40,7 +40,7 @@ void Game_Engine::run()
 	{
 	    update_menu();
 	}
-	
+
 	SDL_RenderPresent(RenderScreen);
 	SDL_RenderClear(RenderScreen);
     }
@@ -49,6 +49,7 @@ void Game_Engine::run()
 void Game_Engine::menu_events()
 {
     int menu_result = menu->handle_event(event);
+    printf("menu_result = %d\n", menu_result);
     switch(menu_result)
     {
 	case EXIT:
@@ -83,7 +84,7 @@ void Game_Engine::menu_events()
 		    Level_Info lvl_info;
 		    data.load_level(level_number, lvl_info);
 				
-		    level->next_level(lvl_info, level_number);
+		    level->next_level(lvl_info);
 		    current_lvl_time = lvl_info.time;
 		}
 	    }
@@ -147,7 +148,7 @@ void Game_Engine::update_level()
 		data.save_level(level_number, lvl_info);
 		data.save_data();
 
-		level->next_level(lvl_info, level_number);
+		level->next_level(lvl_info);
 		printf("Level #%d\n",level_number);
 	    }
 	}

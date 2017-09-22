@@ -99,21 +99,21 @@ void Level_Manager::load_image(SDL_Texture *&sprite, const char* path){
      }
 }
 
-void Level_Manager::next_level(Level_Info &info, int level_number)
+void Level_Manager::next_level(Level_Info &info)
 {
      printf("Level_Manager::next_level()\n");
      figure_manager.change_figures(info.figure_type, info.figure_angle);
      
-     int width = Window_Info::get_width();
+     int width  = Window_Info::get_width();
      int height = Window_Info::get_height();
      
      int x = width / 2;
      int y = menu_bar_area.h + ((height - (figure_manager.get_idle_zone().h + menu_bar_area.h))/2);
      printf("here!\n");
      grid_manager.update_grid(&figure_manager, x, y, info);
-     
-     level_complete = false;
+
      alpha = 255;
+     level_complete = false;
 
      Mix_PlayChannel( -1, begin_sound, 0 );
      start_time = SDL_GetTicks();
@@ -150,8 +150,8 @@ void Level_Manager::update_level_number_animation()
     if(level_number_animation)
     {
 	int margin = active_block_size*2;
-	bool left_stop  = false;
-	bool right_stop = false;
+	bool left_stop   = false;
+	bool right_stop  = false;
 	bool alpha_stop  = false;
 	
 	if(level_line[0].x > margin)

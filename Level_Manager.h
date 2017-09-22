@@ -27,7 +27,7 @@ public:
     Level_Manager();
     ~Level_Manager();
 
-    void next_level(Level_Info& info, int lvl_number);
+    void next_level(Level_Info& info);
     int handle_event(SDL_Event&);
     uint32_t total_time();
 

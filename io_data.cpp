@@ -14,7 +14,6 @@ char* ModeToChar(level_mode Mode)
 	  case normal:   return "normal.bin";
 	  case hardcore: return "hardcore.bin";
      }
-
 }
 
 void IOReadLevelBinaryData(level_mode Mode, level_binary_data *LevelBinaryData)

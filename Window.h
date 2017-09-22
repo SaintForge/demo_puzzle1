@@ -5,7 +5,8 @@
 
 class Window_Info{
 public:
-    static SDL_Renderer* get_renderer(){
+    static SDL_Renderer* get_renderer()
+    {
 	return get_window_info().renderer;
     }
     static SDL_Window* get_window(){

@@ -33,8 +33,10 @@ void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
     page_info_texture = NULL;
     
     int w, h;
-    switch(menu){
-	case MAIN_PAGE:{
+    switch(menu)
+    {
+	case MAIN_PAGE:
+	{
 	    Button_Info but;
 	    w = (width*2)/3;
 	    h = width/4;
@@ -187,28 +189,12 @@ void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
 	    }
 	}break;
 
-	 // case EASY_PAGE:
-	 // case NORMAL_PAGE:
-	 // case HARD_PAGE:
-	 // {
-	 //      return 
-	 // }
-
 	 case EASY_PAGE:
-	{
-	     init_buttons(EASY_PAGE);
-	     break;
-	}
-	case NORMAL_PAGE:
-	{
-	     init_buttons(NORMAL_PAGE);
-	     break;
-	}
-	case HARD_PAGE:
-	{
-	     init_buttons(HARD_PAGE);
-	     break;
-	}
+	 case NORMAL_PAGE:
+	 case HARD_PAGE:
+	 {
+	      init_buttons(menu);
+	 } break;
     }
 }
 
@@ -681,8 +667,11 @@ void Layer::animate_scroll(){
 bool Layer::update(){
     animate_scroll();
     check_input();
+    
     if(update_button_animation())
+    {
 	return 1;
+    }
 
     return 0;
 }
@@ -896,7 +885,8 @@ void Menu::update(){
     int result = 0;
     result = layer.top().update();
     if(result){
-	if(is_loading){
+	if(is_loading)
+	{
 	    Layer new_layer;
 	    layer.push(new_layer);
 	    layer.top().init_layer(menu_layer, button_texture, highlight_texture, font);

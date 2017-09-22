@@ -28,7 +28,6 @@ Figure_Manager::Figure_Manager()
 
      load_effect("..\\data\\sprites\\circle.png");
 #else
-     
      grab_sound     = Mix_LoadWAV("data/sound/piece_grab_new.wav");
      idle_sound     = Mix_LoadWAV("data/sound/endpillars_panel_scint_endpoint_cut.wav");
      return_sound   = Mix_LoadWAV("data/sound/piece_snap.wav");
