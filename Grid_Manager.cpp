@@ -368,7 +368,6 @@ void Grid_Manager::update_grid(Figure_Manager *man, int x, int y, Level_Info& in
      stick_list.reserve(manager->get_figure_amount());
 
      //TODO: do normal distibution here!
-     
      start_animation = true;
      int block_amount = row_amount * column_amount;
      int def = active_block_size / block_amount;

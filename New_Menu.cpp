@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include "io_data.h"
 #include "New_Menu.h"
 #include "Window.h"
 
@@ -22,11 +23,11 @@ void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
     // target_width = (width*2)/3;
     is_opening = false;
     is_closing = false;
-    
-    this->button_texture = texture;
-    this->highlight_texture = texture2;
-    this->font = font;
 
+    this->font              = font;
+    this->button_texture    = texture;
+    this->highlight_texture = texture2;
+    
     speed = width / 19;
 
     page_info_texture = NULL;
@@ -186,13 +187,33 @@ void Layer::init_layer(Select_Menu menu, SDL_Texture*& texture,
 	    }
 	}break;
 
-	case EASY_PAGE:   init_buttons(EASY_PAGE);  break;
-	case NORMAL_PAGE: init_buttons(NORMAL_PAGE); break;
-	case HARD_PAGE:   init_buttons(HARD_PAGE); break;
+	 // case EASY_PAGE:
+	 // case NORMAL_PAGE:
+	 // case HARD_PAGE:
+	 // {
+	 //      return 
+	 // }
+
+	 case EASY_PAGE:
+	{
+	     init_buttons(EASY_PAGE);
+	     break;
+	}
+	case NORMAL_PAGE:
+	{
+	     init_buttons(NORMAL_PAGE);
+	     break;
+	}
+	case HARD_PAGE:
+	{
+	     init_buttons(HARD_PAGE);
+	     break;
+	}
     }
 }
 
-void Layer::init_buttons(Select_Menu menu_choice){
+void Layer::init_buttons(Select_Menu menu_choice)
+{
     int width = Window_Info::get_width();
     int height = Window_Info::get_height();
 

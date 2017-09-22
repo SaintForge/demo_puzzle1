@@ -26,7 +26,8 @@ enum Select_Menu{
     ABOUT_PAGE
 };
 
-struct Button_Info{
+struct Button_Info
+{
     int status;
     SDL_Rect pos;
     bool is_button = false;
