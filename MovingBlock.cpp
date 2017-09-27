@@ -1,10 +1,10 @@
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <vector>
 #include <stdio.h>
 
-#include "window.h"
+#include "Window.h"
 #include "Vector2.h"
 #include "Figure.h"
 #include "MovingBlock.h"

@@ -2,8 +2,8 @@
 #ifndef F_MANAGER
 #define F_MANAGER
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <memory>
 #include <vector>

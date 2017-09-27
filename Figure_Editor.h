@@ -1,7 +1,7 @@
 #ifndef FIGURE_EDITOR_H
 #define FIGURE_EDITOR_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Figure.h"
 #include "Figure_Manager.h"
 

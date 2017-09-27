@@ -1,15 +1,15 @@
 #ifndef T_BONES
 #define T_BONES
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 #include <stdio.h>
 #include <stdint.h>
 #include <vector>
 
-#include "window.h"
+#include "Window.h"
 
 static int default_block_size = 26;
 static int active_block_size  = 40;

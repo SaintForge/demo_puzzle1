@@ -1,5 +1,5 @@
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <vector>
 #include <stdio.h>
@@ -48,18 +48,18 @@ void Figure_Manager::align_vertically()
 
      for (int i = 0; i < figure_container.size(); i++)
      {
-	  int pitch_x = i % 2;
-	  int pitch_y = i / 2;
+					int pitch_x = i % 2;
+					int pitch_y = i / 2;
 
-	  int center_x = (default_zone.x + (default_zone.w>>2)) + (default_zone.w/2)*pitch_x;
-	  int width = figure_container[i]->get_width();
-	  int x_target = center_x - (width/2);
+					int center_x = (default_zone.x + (default_zone.w>>2)) + (default_zone.w/2)*pitch_x;
+					int width = figure_container[i]->get_width();
+					int x_target = center_x - (width/2);
 
-	  int center_y = (default_zone.y + block_width>>1) + pitch_y*(area+(block_width>>1));
-	  int height = figure_container[i]->get_height();
-	  int y_target = center_y+(block_width<<1) - height/2;
+					int center_y = (default_zone.y + block_width>>1) + pitch_y*(area+(block_width>>1));
+					int height = figure_container[i]->get_height();
+					int y_target = center_y+(block_width<<1) - height/2;
 
-	  figure_container[i]->set_default(x_target, y_target);
+					figure_container[i]->set_default(x_target, y_target);
      }
 }
 
@@ -67,14 +67,14 @@ void Figure_Manager::align_horisontally(std::vector<int>& angle)
 {
      for (int i = 0; i < figure_container.size(); ++i)
      {
-     	  int FigureWidth  = figure_container[i]->get_width();
-     	  int FigureHeight = figure_container[i]->get_height();
+					int FigureWidth  = figure_container[i]->get_width();
+					int FigureHeight = figure_container[i]->get_height();
 	  
-     	  if(FigureWidth > FigureHeight)
-     	  {
-     	       figure_container[i]->rotate_shell(angle[i] * 90.0);
-     	       figure_container[i]->update_angle(angle[i] * 90.0);
-     	  }
+					if(FigureWidth > FigureHeight)
+					{
+							 figure_container[i]->rotate_shell(angle[i] * 90.0);
+							 figure_container[i]->update_angle(angle[i] * 90.0);
+					}
      }
 
      align_horisontally();
@@ -92,9 +92,9 @@ void Figure_Manager::align_horisontally()
      
      for (int i = 0; i < figure_container.size(); ++i)
      {
-	  i % 2 == 0
-	       ? RowSize1 += figure_container[i]->get_area().w + FigureIntervalX
-	       : RowSize2 += figure_container[i]->get_area().w + FigureIntervalX; 
+					i % 2 == 0
+							 ? RowSize1 += figure_container[i]->get_area().w + FigureIntervalX
+							 : RowSize2 += figure_container[i]->get_area().w + FigureIntervalX; 
      }
 
      int PitchY           = 0;
@@ -109,32 +109,32 @@ void Figure_Manager::align_horisontally()
      
      for (int i = 0; i < figure_container.size(); ++i)
      {
-	  PitchY = i % 2;
+					PitchY = i % 2;
 
-	  FigureArea = figure_container[i]->get_area();
+					FigureArea = figure_container[i]->get_area();
 
-	  FigureBoxHeight  = block_width * 4;
+					FigureBoxHeight  = block_width * 4;
 
-	  NewPositionY = default_zone.y + (FigureBoxHeight * PitchY);
-	  NewPositionY += (FigureBoxHeight / 2) - (FigureArea.h / 2);
-	  NewPositionY += FigureIntervalY * PitchY; 
+					NewPositionY = default_zone.y + (FigureBoxHeight * PitchY);
+					NewPositionY += (FigureBoxHeight / 2) - (FigureArea.h / 2);
+					NewPositionY += FigureIntervalY * PitchY; 
 
-	  if(i % 2 == 0)
-	  {
-	       NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize1 / 2);
-	       NewPositionX += CurrentRowSize1;
+					if(i % 2 == 0)
+					{
+							 NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize1 / 2);
+							 NewPositionX += CurrentRowSize1;
 	       
-	       CurrentRowSize1 += (FigureArea.w + FigureIntervalX);
-	  }
-	  else
-	  {
-	       NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize2 / 2);
-	       NewPositionX += CurrentRowSize2;
+							 CurrentRowSize1 += (FigureArea.w + FigureIntervalX);
+					}
+					else
+					{
+							 NewPositionX = (default_zone.x + (default_zone.w / 2)) - (RowSize2 / 2);
+							 NewPositionX += CurrentRowSize2;
 	       
-	       CurrentRowSize2 += (FigureArea.w + FigureIntervalX);
-	  }
+							 CurrentRowSize2 += (FigureArea.w + FigureIntervalX);
+					}
 	  
-	  figure_container[i]->set_default(NewPositionX, NewPositionY);
+					figure_container[i]->set_default(NewPositionX, NewPositionY);
      }
 }
 
@@ -159,7 +159,7 @@ void Figure_Manager::delete_figure()
      
      if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
      {
-	  return;
+					return;
      }
 
      int O_index = O[SelectedFigure];
@@ -167,30 +167,30 @@ void Figure_Manager::delete_figure()
 
      for (int i = 0 ; i < O.size(); ++i)
      {
-	  if(O_index == O[i])
-	  {
-	       O.erase(O.begin() + i);
-	  }
+					if(O_index == O[i])
+					{
+							 O.erase(O.begin() + i);
+					}
      }
      
      if(figure_container.size() != O_index)
      {
-	  for (int i = 0; i < O.size(); ++i)
-	  {
-	       if(O[i] > O_index)
-	       {
-		    O[i]--;
-	       }
-	  }
+					for (int i = 0; i < O.size(); ++i)
+					{
+							 if(O[i] > O_index)
+							 {
+										O[i]--;
+							 }
+					}
      }
      
      if(figure_container.size() == SelectedFigure)
      {
-	  SelectedFigure -= 1;
+					SelectedFigure -= 1;
      }
      else if(SelectedFigure < figure_container.size() - 1)
      {
-	  SelectedFigure += 2;
+					SelectedFigure += 2;
      }
      else
      {
@@ -204,27 +204,27 @@ void Figure_Manager::change_figures(
 {
      if(!figure_container.empty())
      {
-	  figure_container.clear();
+					figure_container.clear();
      }
      
      if(!O.empty())
      {
-	  O.clear();
+					O.clear();
      }
      
      if(fg.size() != angles.size())
      {
-	  printf("Error! - Amount of figures doesn't match amount of angles!\n");
-	  return;
+					printf("Error! - Amount of figures doesn't match amount of angles!\n");
+					return;
      }
 
      int area = block_width * 2;
 
      for (int i = 0; i < fg.size(); i++)
      {
-	  O.push_back(figure_container.size());
-	  std::shared_ptr<Figure> tmp_figure(new Figure(fg[i].first, fg[i].second));
-	  figure_container.push_back(tmp_figure);
+					O.push_back(figure_container.size());
+					std::shared_ptr<Figure> tmp_figure(new Figure(fg[i].first, fg[i].second));
+					figure_container.push_back(tmp_figure);
      }
 
      align_horisontally(angles);
@@ -253,19 +253,19 @@ int Figure_Manager::check_mouse_click(int x, int y)
      int size = figure_container.size();
      for(int i = 0; i < size; ++i)
      {
-	  SDL_Rect area = figure_container[i]->get_area();
-	  if(x < area.x)
-	       continue;
-	  else if(x > area.x + area.w)
-	       continue;
-	  else if(y < area.y)
-	       continue;
-	  else if(y > area.y + area.h)
-	       continue;
-	  else
-	  {
-	       return i;
-	  }
+					SDL_Rect area = figure_container[i]->get_area();
+					if(x < area.x)
+							 continue;
+					else if(x > area.x + area.w)
+							 continue;
+					else if(y < area.y)
+							 continue;
+					else if(y > area.y + area.h)
+							 continue;
+					else
+					{
+							 return i;
+					}
      }
      return -1;
 }
@@ -274,7 +274,7 @@ void Figure_Manager::select_figure(int index)
 {
      if(index < 0 || index >= figure_container.size())
      {
-	  return;
+					return;
      }
 
      SelectedFigure = index;
@@ -284,12 +284,12 @@ void Figure_Manager::change_figure_form()
 {
      if(figure_container.empty())
      {
-	  return;
+					return;
      }
      
      if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
      {
-	  return;
+					return;
      }
 
      int figure_angle = figure_container[SelectedFigure]->get_angle();
@@ -297,12 +297,12 @@ void Figure_Manager::change_figure_form()
      Figure_Form form = figure_container[SelectedFigure]->get_form();
      if(form != T_figure)
      {
-	  int form_index = ((int) form) + 1;
-	  form = static_cast<Figure_Form>(form_index);
+					int form_index = ((int) form) + 1;
+					form = static_cast<Figure_Form>(form_index);
      }
      else
      {
-	  form = O_figure;
+					form = O_figure;
      }
 
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
@@ -317,11 +317,11 @@ void Figure_Manager::change_figure_type()
 {
      if(figure_container.empty())
      {
-	  return;
+					return;
      }
      if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
      {
-	  return;
+					return;
      }
 
      int figure_angle = figure_container[SelectedFigure]->get_angle();
@@ -330,12 +330,12 @@ void Figure_Manager::change_figure_type()
      
      if(type != mirror)
      {
-	  int type_index = ((int) type) + 1;
-	  type = static_cast<Figure_Type>(type_index);
+					int type_index = ((int) type) + 1;
+					type = static_cast<Figure_Type>(type_index);
      }
      else
      {
-	  type = classic;
+					type = classic;
      }
 
      std::shared_ptr<Figure> tmp_figure(new Figure(form, type));
@@ -350,7 +350,7 @@ void Figure_Manager::change_figure_angle()
      
      if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
      {
-	  return;
+					return;
      }
      
      figure_container[SelectedFigure]->rotate_shell(90);
@@ -365,7 +365,7 @@ void Figure_Manager::change_figure_flip()
      
      if(SelectedFigure < 0 || SelectedFigure >= figure_container.size())
      {
-	  return;
+					return;
      }
 
      figure_container[SelectedFigure]->flip_figure();
@@ -380,29 +380,29 @@ void Figure_Manager::load_effect(const char* path)
      
      if(idle_effect)
      {
-	  SDL_DestroyTexture(idle_effect);
+					SDL_DestroyTexture(idle_effect);
      }
 
      tmp_surface = IMG_Load(path);
      if(tmp_surface)
      {
-	  tmp_texture = SDL_CreateTextureFromSurface(RenderScreen, tmp_surface);
-	  if(tmp_texture)
-	  {
-	       idle_effect = tmp_texture;
-	       SDL_SetTextureBlendMode(idle_effect, SDL_BLENDMODE_BLEND);
-	       SDL_FreeSurface(tmp_surface);
-	  }
-	  else
-	  {
-	       SDL_FreeSurface(tmp_surface);
-	       printf("failed to load a texture from the surface! %s\n", SDL_GetError());
-	       return;
-	  }
+					tmp_texture = SDL_CreateTextureFromSurface(RenderScreen, tmp_surface);
+					if(tmp_texture)
+					{
+							 idle_effect = tmp_texture;
+							 SDL_SetTextureBlendMode(idle_effect, SDL_BLENDMODE_BLEND);
+							 SDL_FreeSurface(tmp_surface);
+					}
+					else
+					{
+							 SDL_FreeSurface(tmp_surface);
+							 printf("failed to load a texture from the surface! %s\n", SDL_GetError());
+							 return;
+					}
      }
      else{
-	  printf("failed to load a picture with a given path! - %s\n", IMG_GetError());
-	  return;
+					printf("failed to load a picture with a given path! - %s\n", IMG_GetError());
+					return;
      }
 
 }
@@ -431,11 +431,11 @@ std::shared_ptr<Figure>  Figure_Manager::get_figure_at(int index)
 {
      if(index >= 0 && index < figure_container.size())
      {
-	  return figure_container[index];
+					return figure_container[index];
      }
      else
      {
-	  return NULL;
+					return NULL;
      }
 }
 
@@ -453,7 +453,7 @@ bool Figure_Manager::is_attached(int index)
 {
      if(grabbed && (index == current))
      {
-	  return true;
+					return true;
      }
      
      return false;
@@ -468,7 +468,7 @@ bool Figure_Manager::handle_event(SDL_Event &event)
 {
      if(figure_container.empty())
      {
-	  return false;
+					return false;
      }
      
      int width = Window_Info::get_width();
@@ -476,178 +476,178 @@ bool Figure_Manager::handle_event(SDL_Event &event)
 
      bool was_action = false; 
 
-#ifdef _WIN32
+#ifdef __linux__
      switch(event.type)
      {
-     	  case SDL_MOUSEBUTTONDOWN:
-	  {
-	       switch(event.button.button)
-	       {
-		    case SDL_BUTTON_LEFT:
-		    {
-			 if(!mouse_left_button)
-			 {
-			      if(!grabbed)
-			      {
-				   if(is_idle)
-				   {
-					is_idle = false;
-				   }
-				   start_ticks = SDL_GetTicks();
-		    
-				   int x_button = event.button.x;
-				   int y_button = event.button.y;
-		    
-				   int index = check_input(x_button, y_button);
-				   if(index != -1)
-				   {
-					hit = true;
-					hit_index  = index;
-					was_action = true;
-					x_rel = x_button - figure_container[index]->get_center().x;
-					y_rel = y_button - figure_container[index]->get_center().y;
-					
-					if(stick_effect)
+					case SDL_MOUSEBUTTONDOWN:
 					{
-					     stick_effect = false;
-					     stick_effect_alpha = 150;
-					}
-				   }
-			      }
-			      else
-			      {
-				   if(grabbed)
-				   {
-					release_figure();
-					was_action = true;
-				   }
-			      }
+							 switch(event.button.button)
+							 {
+										case SDL_BUTTON_LEFT:
+										{
+												 if(!mouse_left_button)
+												 {
+															if(!grabbed)
+															{
+																	 if(is_idle)
+																	 {
+																				is_idle = false;
+																	 }
+																	 start_ticks = SDL_GetTicks();
+		    
+																	 int x_button = event.button.x;
+																	 int y_button = event.button.y;
+		    
+																	 int index = check_input(x_button, y_button);
+																	 if(index != -1)
+																	 {
+																				hit = true;
+																				hit_index  = index;
+																				was_action = true;
+																				x_rel = x_button - figure_container[index]->get_center().x;
+																				y_rel = y_button - figure_container[index]->get_center().y;
+					
+																				if(stick_effect)
+																				{
+																						 stick_effect = false;
+																						 stick_effect_alpha = 150;
+																				}
+																	 }
+															}
+															else
+															{
+																	 if(grabbed)
+																	 {
+																				release_figure();
+																				was_action = true;
+																	 }
+															}
 			      
-			      mouse_left_button = true;
-			 }
-		    } break;
-		    case SDL_BUTTON_RIGHT:
-		    {
-			 if(!mouse_right_button)
-			 {
-			      if(grabbed)
-			      {
-				   Figure_Type type = figure_container[current]->get_type();
-				   if(type == classic)
-				   {
-					rotate_figure(current);
-				   }
-				   else if(type == mirror)
-				   {
-					figure_container[current]->flip_figure();
-					Mix_PlayChannel( -1, rotation_sound, 0 );
-				   }
+															mouse_left_button = true;
+												 }
+										} break;
+										case SDL_BUTTON_RIGHT:
+										{
+												 if(!mouse_right_button)
+												 {
+															if(grabbed)
+															{
+																	 Figure_Type type = figure_container[current]->get_type();
+																	 if(type == classic)
+																	 {
+																				rotate_figure(current);
+																	 }
+																	 else if(type == mirror)
+																	 {
+																				figure_container[current]->flip_figure();
+																				Mix_PlayChannel( -1, rotation_sound, 0 );
+																	 }
 
-				   was_action = true;
-			      }
-			      mouse_right_button = true;
-			 }
-		    } break;
-	       }
-     	  } break;
-     	  case SDL_MOUSEBUTTONUP:
-	  {
-	       switch(event.button.button)
-	       {
-		    case SDL_BUTTON_LEFT:
-		    {
-			 if(mouse_left_button)
-			 {
-			      mouse_left_button = false;
-			 }
-		    } break;
-		    case SDL_BUTTON_RIGHT:{
-			 if(mouse_right_button)
-			 {
-			      mouse_right_button = false;
-			 }
-		    } break;
+																	 was_action = true;
+															}
+															mouse_right_button = true;
+												 }
+										} break;
+							 }
+					} break;
+					case SDL_MOUSEBUTTONUP:
+					{
+							 switch(event.button.button)
+							 {
+										case SDL_BUTTON_LEFT:
+										{
+												 if(mouse_left_button)
+												 {
+															mouse_left_button = false;
+												 }
+										} break;
+										case SDL_BUTTON_RIGHT:{
+												 if(mouse_right_button)
+												 {
+															mouse_right_button = false;
+												 }
+										} break;
 			 
-	       } break;
-	  }
-	  case SDL_MOUSEMOTION:
-	  {
-	       if(grabbed)
-	       {
-		    int x = event.motion.xrel;
-		    int y = event.motion.yrel;
-		    figure_container[current]->move_figure(x, y);
-	       }
-	  } break;
+							 } break;
+					}
+					case SDL_MOUSEMOTION:
+					{
+							 if(grabbed)
+							 {
+										int x = event.motion.xrel;
+										int y = event.motion.yrel;
+										figure_container[current]->move_figure(x, y);
+							 }
+					} break;
      }
 #else
      switch(event.type)
      {
-     	  case SDL_FINGERDOWN:
-	  {
-     	       if(!mouse_left_button && event.tfinger.fingerId == 0)
-	       {
-     		    start_ticks = SDL_GetTicks();
-     		    int x = round(event.tfinger.x * width);
-     		    int y = round(event.tfinger.y * height);
+					case SDL_FINGERDOWN:
+					{
+							 if(!mouse_left_button && event.tfinger.fingerId == 0)
+							 {
+										start_ticks = SDL_GetTicks();
+										int x = round(event.tfinger.x * width);
+										int y = round(event.tfinger.y * height);
 		    
-     		    int index = check_input(x, y);
-     		    if(index != -1)
-		    {
-     			 hit = true;
-     			 hit_index = index;
+										int index = check_input(x, y);
+										if(index != -1)
+										{
+												 hit = true;
+												 hit_index = index;
 			 
-			 x_rel = x_button - figure_container[index]->get_center().x;
-			 y_rel = y_button - figure_container[index]->get_center().y;
+												 x_rel = x_button - figure_container[index]->get_center().x;
+												 y_rel = y_button - figure_container[index]->get_center().y;
 
-			 if(stick_effect)
-			 {
-			      stick_effect = false;
-			      stick_effect_alpha = 150;
-			 }
-     		    }
-     		    mouse_left_button = true;
-     	       }
-	       else if(mouse_left_button && event.tfinger.fingerId > 0)
-	       {
-		    if(grabbed)
-		    {
-			 rotate_figure(current);
-		    }
-	       }
-     	  } break;
-     	  case SDL_FINGERUP:
-	  {
-     	       if(mouse_left_button && (event.tfinger.fingerId == 0))
-	       {
-     		    if(grabbed)
-		    {
-     			 release_figure();
-     		    }
-     		    if(hit && !grabbed)
-		    {
-     			 if(!figure_container[hit_index]->is_idle())
-			 {
-     			      rotate_figure(hit_index);
-			      grabbed = true;
-			      current = hit_index;
-			      figure_high_priority(hit_index);
-			 }
-     			 hit = false;
-     		    }
+												 if(stick_effect)
+												 {
+															stick_effect = false;
+															stick_effect_alpha = 150;
+												 }
+										}
+										mouse_left_button = true;
+							 }
+							 else if(mouse_left_button && event.tfinger.fingerId > 0)
+							 {
+										if(grabbed)
+										{
+												 rotate_figure(current);
+										}
+							 }
+					} break;
+					case SDL_FINGERUP:
+					{
+							 if(mouse_left_button && (event.tfinger.fingerId == 0))
+							 {
+										if(grabbed)
+										{
+												 release_figure();
+										}
+										if(hit && !grabbed)
+										{
+												 if(!figure_container[hit_index]->is_idle())
+												 {
+															rotate_figure(hit_index);
+															grabbed = true;
+															current = hit_index;
+															figure_high_priority(hit_index);
+												 }
+												 hit = false;
+										}
 		    
-     		    mouse_left_button = false;
-     	       }
-     	  } break;
-     	  case SDL_FINGERMOTION:
-	  {
-     	       if(grabbed && event.tfinger.fingerId == 0)
-	       {
-     	  	    int x = round(event.tfinger.dx * width);
-     	  	    int y = round(event.tfinger.dy * height);
-     	  	    figure_container[current]->move_figure(x, y);
-     	       }
-     	  } break;
+										mouse_left_button = false;
+							 }
+					} break;
+					case SDL_FINGERMOTION:
+					{
+							 if(grabbed && event.tfinger.fingerId == 0)
+							 {
+										int x = round(event.tfinger.dx * width);
+										int y = round(event.tfinger.dy * height);
+										figure_container[current]->move_figure(x, y);
+							 }
+					} break;
      }
 #endif
 
@@ -659,37 +659,37 @@ int Figure_Manager::check_input(int x, int y)
      int size = figure_container.size();
      for (int i = size-1; i >= 0; --i)
      {
-	  SDL_Rect area = figure_container[O[i]]->get_area();
-	  if(x < area.x)
-	       continue;
-	  else if(x > area.x + area.w)
-	       continue;
-	  else if(y < area.y)
-	       continue;
-	  else if(y > area.y + area.h)
-	       continue;
-	  else
-	  {
-	       const SDL_Point *points = figure_container[O[i]]->get_shell();
-	       int width = figure_container[O[i]]->get_size();
-	       SDL_Rect tmp_rect = {0, 0, width, width};
-	       for (int j = 0; j < 4; j++)
-	       {
-		    tmp_rect.x = points[j].x - (width >> 1);
-		    tmp_rect.y = points[j].y - (width >> 1);
-		    if(x < tmp_rect.x)
-			 continue;
-		    else if(x > tmp_rect.x + tmp_rect.w)
-			 continue;
-		    else if(y < tmp_rect.y)
-			 continue;
-		    else if(y > tmp_rect.y + tmp_rect.h)
-			 continue;
-		    else{
-			 return O[i];
-		    }
-	       }
-	  }
+					SDL_Rect area = figure_container[O[i]]->get_area();
+					if(x < area.x)
+							 continue;
+					else if(x > area.x + area.w)
+							 continue;
+					else if(y < area.y)
+							 continue;
+					else if(y > area.y + area.h)
+							 continue;
+					else
+					{
+							 const SDL_Point *points = figure_container[O[i]]->get_shell();
+							 int width = figure_container[O[i]]->get_size();
+							 SDL_Rect tmp_rect = {0, 0, width, width};
+							 for (int j = 0; j < 4; j++)
+							 {
+										tmp_rect.x = points[j].x - (width >> 1);
+										tmp_rect.y = points[j].y - (width >> 1);
+										if(x < tmp_rect.x)
+												 continue;
+										else if(x > tmp_rect.x + tmp_rect.w)
+												 continue;
+										else if(y < tmp_rect.y)
+												 continue;
+										else if(y > tmp_rect.y + tmp_rect.h)
+												 continue;
+										else{
+												 return O[i];
+										}
+							 }
+					}
      }
      return -1;
 }
@@ -713,7 +713,7 @@ void Figure_Manager::grab_figure(int index)
 {
      if(index < 0 || index > figure_container.size() - 1)
      {
-	  return;
+					return;
      }
 
      current = index;
@@ -724,9 +724,9 @@ void Figure_Manager::grab_figure(int index)
 
      if(is_idle)
      {
-	  is_idle = false;
-	  Mix_HaltChannel(-1);
-	  start_ticks = SDL_GetTicks();
+					is_idle = false;
+					Mix_HaltChannel(-1);
+					start_ticks = SDL_GetTicks();
      }
      Mix_PlayChannel( -1, grab_sound, 0);
      grabbed = true;
@@ -737,20 +737,20 @@ void Figure_Manager::figure_high_priority(int index)
      int size = figure_container.size();
      if(current != O[size - 1])
      {
-	  int up_index = 0;
-	  for (int i = 0; i < size; i++)
-	  {
-	       if(O[i] == index)
-	       {
-		    up_index = i;
-	       }
-	  }
+					int up_index = 0;
+					for (int i = 0; i < size; i++)
+					{
+							 if(O[i] == index)
+							 {
+										up_index = i;
+							 }
+					}
 
-	  for (int i = up_index; i < size-1; ++i)
-	  {
-	       O[i] = O[i+1];
-	  }
-	  O[size-1] = current;
+					for (int i = up_index; i < size-1; ++i)
+					{
+							 O[i] = O[i+1];
+					}
+					O[size-1] = current;
      }
 }
 
@@ -758,28 +758,28 @@ void Figure_Manager::figure_low_priority(int index){
      int size = figure_container.size();
      if(index < 0 || index > size - 1)
      {
-	  return;
+					return;
      }
 
      if(O[0] == index)
      {
-	  return;
+					return;
      }
 
      int start_index = 0;
      for (int i = 0; i < size; i++)
      {
-	  if(O[i] == index)
-	  {
-	       start_index = i;
-	       break;
-	  }
+					if(O[i] == index)
+					{
+							 start_index = i;
+							 break;
+					}
      }
      
 
      for (int i = start_index; i > 0; i--)
      {
-	  O[i] = O[i-1];
+					O[i] = O[i-1];
      }
      
      O[0] = index;
@@ -788,25 +788,25 @@ void Figure_Manager::figure_low_priority(int index){
 void Figure_Manager::release_figure(){
      if(!grabbed)
      {
-	  return;
+					return;
      }
 
      figure_container[current]->mouse_attach(false);
      
      if(check_edge_collision())
      {
-	  figure_container[current]->set_default_state();
-	  figure_container[current]->set_idle();
-	  if(figure_container[current]->get_type() == Figure_Type::mirror)
-	  {
-	       if(figure_container[current]->is_flip())
-	       {
-		    figure_container[current]->flip_figure();
-	       }
-	  }
-	  return_to_idle_zone(current);
-	  idle = true;
-	  idle_index = current;
+					figure_container[current]->set_default_state();
+					figure_container[current]->set_idle();
+					if(figure_container[current]->get_type() == Figure_Type::mirror)
+					{
+							 if(figure_container[current]->is_flip())
+							 {
+										figure_container[current]->flip_figure();
+							 }
+					}
+					return_to_idle_zone(current);
+					idle = true;
+					idle_index = current;
      }
 
      grabbed = false;
@@ -826,14 +826,14 @@ bool Figure_Manager::check_edge_collision(){
      SDL_Point *shell = figure_container[current]->get_shell();
      for (int i = 0; i < 4; i++)
      {
-	  if(shell[i].x < default_zone.x){}
-	  else if(shell[i].x > (default_zone.x + default_zone.w)){}
-	  else if(shell[i].y < default_zone.y){}
-	  else if(shell[i].y > (default_zone.y + default_zone.h)){}
-	  else
-	  {
-	       return true;
-	  }
+					if(shell[i].x < default_zone.x){}
+					else if(shell[i].x > (default_zone.x + default_zone.w)){}
+					else if(shell[i].y < default_zone.y){}
+					else if(shell[i].y > (default_zone.y + default_zone.h)){}
+					else
+					{
+							 return true;
+					}
      }
      return false;
 }
@@ -843,26 +843,26 @@ void Figure_Manager::restart()
      restart_figures = true;
      for (int i = 0; i < figure_container.size(); i++)
      {
-	  if(!figure_container[i]->is_idle())
-	  {
-	       figure_container[i]->set_default_state();
-	       figure_container[i]->set_idle();
-	       if(figure_container[i]->get_type() == Figure_Type::mirror)
-	       {
-		    if(figure_container[i]->is_flip())
-		    {
-			 figure_container[i]->flip_figure();
-		    }
-	       }
+					if(!figure_container[i]->is_idle())
+					{
+							 figure_container[i]->set_default_state();
+							 figure_container[i]->set_idle();
+							 if(figure_container[i]->get_type() == Figure_Type::mirror)
+							 {
+										if(figure_container[i]->is_flip())
+										{
+												 figure_container[i]->flip_figure();
+										}
+							 }
 	       
-	       return_to_idle_zone(i);
-	  }
+							 return_to_idle_zone(i);
+					}
      }
      
      if(is_rotating)
      {
-	  is_rotating = false;
-	  r_target = 0.0f;
+					is_rotating = false;
+					r_target = 0.0f;
      }
 }
 
@@ -870,11 +870,11 @@ void Figure_Manager::rotate_figure(int index)
 {
      if(!is_rotating)
      {
-	  figure_container[index]->rotate_shell(90.0);
-	  Mix_PlayChannel( -1, rotation_sound, 0 );
-	  is_rotating = true;
-	  r_index = index;
-	  start_ticks = SDL_GetTicks();
+					figure_container[index]->rotate_shell(90.0);
+					Mix_PlayChannel( -1, rotation_sound, 0 );
+					is_rotating = true;
+					r_index = index;
+					start_ticks = SDL_GetTicks();
      }
 }
 
@@ -900,170 +900,170 @@ void Figure_Manager::update()
 
      if(restart_figures && !idle)
      {
-	  bool clear = true;
-	  for (int i = 0; i < figure_container.size(); i++)
-	  {
-	       SDL_Point def_cntr = figure_container[i]->get_def_center();
-	       if(!move_figure(i, def_cntr))
-	       {
-		    clear = false;
-	       }
-	       else
-	       {
-		    SDL_Point* shell = figure_container[i]->get_shell();
-		    SDL_Point* def_shell = figure_container[i]->get_def_shell();
-		    for (int j = 0; j < 4; j++)
-		    {
-			 shell[j].x = def_shell[j].x;
-			 shell[j].y = def_shell[j].y;
-		    }
-	       }
-	  }
+					bool clear = true;
+					for (int i = 0; i < figure_container.size(); i++)
+					{
+							 SDL_Point def_cntr = figure_container[i]->get_def_center();
+							 if(!move_figure(i, def_cntr))
+							 {
+										clear = false;
+							 }
+							 else
+							 {
+										SDL_Point* shell = figure_container[i]->get_shell();
+										SDL_Point* def_shell = figure_container[i]->get_def_shell();
+										for (int j = 0; j < 4; j++)
+										{
+												 shell[j].x = def_shell[j].x;
+												 shell[j].y = def_shell[j].y;
+										}
+							 }
+					}
 
-	  if(clear)
-	  {
-	       Mix_PlayChannel( -1, return_sound, 0);
-	       restart_figures = false;
-	       printf("restarted!\n");
-	  }
+					if(clear)
+					{
+							 Mix_PlayChannel( -1, return_sound, 0);
+							 restart_figures = false;
+							 printf("restarted!\n");
+					}
      }
      
      if(hit)
      {
-	  bool fig_is_idle = figure_container[hit_index]->is_idle();
+					bool fig_is_idle = figure_container[hit_index]->is_idle();
 
 #ifdef _WIN32
-	  if(fig_is_idle)
-	  {
-	       SDL_Rect def_rect = figure_container[hit_index]->get_area();
+					if(fig_is_idle)
+					{
+							 SDL_Rect def_rect = figure_container[hit_index]->get_area();
 	       
-	       grab_figure(hit_index);
+							 grab_figure(hit_index);
 	       
-	       SDL_Rect rect = figure_container[current]->get_area();
-	       int end_y = def_rect.y;// - (rect.h>>1);
-	       int offset = end_y - (rect.y + (rect.h>>1));
+							 SDL_Rect rect = figure_container[current]->get_area();
+							 int end_y = def_rect.y;// - (rect.h>>1);
+							 int offset = end_y - (rect.y + (rect.h>>1));
 	       
-	       figure_container[current]->move_figure(0, offset);
-	       hit = false;
-	  }
-	  else
-	  {
-	       grab_figure(hit_index);
+							 figure_container[current]->move_figure(0, offset);
+							 hit = false;
+					}
+					else
+					{
+							 grab_figure(hit_index);
 	       
-	       SDL_Point target;
-	       SDL_Point cntr = figure_container[current]->get_center();
+							 SDL_Point target;
+							 SDL_Point cntr = figure_container[current]->get_center();
 	       
-	       SDL_GetMouseState(&target.x, &target.y);
-	       target.x = (target.x - x_rel) - cntr.x;
-	       target.y = (target.y - y_rel) - cntr.y;
-	       figure_container[current]->move_figure(target.x, target.y);
+							 SDL_GetMouseState(&target.x, &target.y);
+							 target.x = (target.x - x_rel) - cntr.x;
+							 target.y = (target.y - y_rel) - cntr.y;
+							 figure_container[current]->move_figure(target.x, target.y);
 
-	       hit = false;
-	  }
+							 hit = false;
+					}
 #else
-	  if(fig_is_idle)
-	  {
-	       SDL_Rect def_rect = figure_container[hit_index]->get_area();
+					if(fig_is_idle)
+					{
+							 SDL_Rect def_rect = figure_container[hit_index]->get_area();
 	       
-	       grab_figure(hit_index);
+							 grab_figure(hit_index);
 	       
-	       SDL_Rect rect = figure_container[current]->get_area();
-	       int end_y = def_rect.y;// - (rect.h>>1);
-	       int offset = end_y - (rect.y + (rect.h>>1));
+							 SDL_Rect rect = figure_container[current]->get_area();
+							 int end_y = def_rect.y;// - (rect.h>>1);
+							 int offset = end_y - (rect.y + (rect.h>>1));
 	       
-	       figure_container[current]->move_figure(0, offset);
-	       hit = false;
-	  }
-	  else if(time_dx > 0.1)
-	  {
-	       grab_figure(hit_index);
+							 figure_container[current]->move_figure(0, offset);
+							 hit = false;
+					}
+					else if(time_dx > 0.1)
+					{
+							 grab_figure(hit_index);
 	       
-	       SDL_Point target;
-	       SDL_Point cntr = figure_container[current]->get_center();
+							 SDL_Point target;
+							 SDL_Point cntr = figure_container[current]->get_center();
 	       
-	       SDL_GetMouseState(&target.x, &target.y);
-	       target.x = (target.x - x_rel) - cntr.x;
-	       target.y = (target.y - y_rel) - cntr.y;
+							 SDL_GetMouseState(&target.x, &target.y);
+							 target.x = (target.x - x_rel) - cntr.x;
+							 target.y = (target.y - y_rel) - cntr.y;
 	       
-	       figure_container[current]->move_figure(target.x, target.y);
+							 figure_container[current]->move_figure(target.x, target.y);
 
-	       hit = false;
-	  }
+							 hit = false;
+					}
 #endif
      }
 
      if(idle)
      {
-	  SDL_Point def_cntr = figure_container[idle_index]->get_def_center();
-	  if(move_figure(idle_index, def_cntr))
-	  {
-	       SDL_Point* shell = figure_container[idle_index]->get_shell();
-	       SDL_Point* def_shell = figure_container[idle_index]->get_def_shell();
-	       for (int i = 0; i < 4; i++)
-	       {
-		    shell[i].x = def_shell[i].x;
-		    shell[i].y = def_shell[i].y;
-	       }
-	       idle = false;
-	  }
-	  else
-	  {
-	       start_ticks = SDL_GetTicks();
-	  }
+					SDL_Point def_cntr = figure_container[idle_index]->get_def_center();
+					if(move_figure(idle_index, def_cntr))
+					{
+							 SDL_Point* shell = figure_container[idle_index]->get_shell();
+							 SDL_Point* def_shell = figure_container[idle_index]->get_def_shell();
+							 for (int i = 0; i < 4; i++)
+							 {
+										shell[i].x = def_shell[i].x;
+										shell[i].y = def_shell[i].y;
+							 }
+							 idle = false;
+					}
+					else
+					{
+							 start_ticks = SDL_GetTicks();
+					}
      }
 
      // updating animation for rotating a texture
      if(is_rotating)
      {
-     	  float angle_dt = time_dx * r_vel;
-     	  if(r_target < 90 && !(r_target + angle_dt >= 90.0))
-	  {
-     	       figure_container[r_index]->update_angle(angle_dt);
-     	       r_target += angle_dt;
-     	       start_ticks = SDL_GetTicks();
-     	  }
-     	  else
-	  {
-     	       figure_container[r_index]->update_angle(90.0f - r_target);
-     	       r_target = 0;
-     	       is_rotating = false;
-	       // TODO: don't forget that!!
-	       #ifdef ANDROID
-	       // if(grabbed && !mouse_left_button){
-	       // 	    grabbed = false;
-	       // 	    hit = false;
-	       // }
-	       #endif
-     	  }
+					float angle_dt = time_dx * r_vel;
+					if(r_target < 90 && !(r_target + angle_dt >= 90.0))
+					{
+							 figure_container[r_index]->update_angle(angle_dt);
+							 r_target += angle_dt;
+							 start_ticks = SDL_GetTicks();
+					}
+					else
+					{
+							 figure_container[r_index]->update_angle(90.0f - r_target);
+							 r_target = 0;
+							 is_rotating = false;
+							 // TODO: don't forget that!!
+#ifdef ANDROID
+							 // if(grabbed && !mouse_left_button){
+							 // 	    grabbed = false;
+							 // 	    hit = false;
+							 // }
+#endif
+					}
      }
 
      // idle effect algorithm in case if user didn't do anything for about 10 sec
      if(time_dx >= 10.0 && !(grabbed) && !(is_idle))
      {
-	  is_idle = true;
-	  start_ticks = SDL_GetTicks();
-	  alpha = 250;
-	  Mix_PlayChannel(-1, idle_sound, 0);
+					is_idle = true;
+					start_ticks = SDL_GetTicks();
+					alpha = 250;
+					Mix_PlayChannel(-1, idle_sound, 0);
      }
      
      if(is_idle)
      {
-	  float elapsed_dt = (SDL_GetTicks() - start_ticks) / 1000.0f;
-	  float move_dt    = block_width + (elapsed_dt * ANIMATION_SPEED);
-	  float move_alpha = elapsed_dt * ALPHA_SPEED;
+					float elapsed_dt = (SDL_GetTicks() - start_ticks) / 1000.0f;
+					float move_dt    = block_width + (elapsed_dt * ANIMATION_SPEED);
+					float move_alpha = elapsed_dt * ALPHA_SPEED;
 
-	  if(elapsed_dt < 3.0)
-	  {
-	       idle_rect.w = (move_dt+0.5);
-	       idle_rect.h = (move_dt+0.5);
-	       alpha = move_alpha <= 255 ? -(move_alpha+0.5) : alpha = 0;
-	  }
-	  else
-	  {
-	       alpha       = 255;
-	       start_ticks = SDL_GetTicks();
-	       Mix_PlayChannel(-1, idle_sound, 0);
-	  }
+					if(elapsed_dt < 3.0)
+					{
+							 idle_rect.w = (move_dt+0.5);
+							 idle_rect.h = (move_dt+0.5);
+							 alpha = move_alpha <= 255 ? -(move_alpha+0.5) : alpha = 0;
+					}
+					else
+					{
+							 alpha       = 255;
+							 start_ticks = SDL_GetTicks();
+							 Mix_PlayChannel(-1, idle_sound, 0);
+					}
      }
 }
 
@@ -1073,7 +1073,7 @@ bool Figure_Manager::move_figure(int index, SDL_Point &target)
      
      if(target.x == cntr.x && target.y == cntr.y)
      {
-     	  return true;
+					return true;
      }
      
      const int max_vel = 10;
@@ -1091,11 +1091,11 @@ bool Figure_Manager::move_figure(int index, SDL_Point &target)
 void Figure_Manager::draw_shadow(int index){
      if(index == current && is_rotating)
      {
-	  return;
+					return;
      }
      if(figure_container[index]->is_sticked())
      {
-	  return;
+					return;
      }
 
      uint8_t alpha_shadow = 200;
@@ -1106,20 +1106,20 @@ void Figure_Manager::draw_shadow(int index){
      
      for (int i = 0; i < 4; i++)
      {
-     	  SDL_Rect rect;
-     	  rect.x = shell[i].x - (size >> 1) + 3;
-     	  rect.y = shell[i].y - (size >> 1) + 2;
-     	  rect.w = size;
-     	  rect.h = size;
-     	  if(grabbed && index == current)
-	  {
-	       rect.x += 1;
-	       rect.y += 1;
-	       alpha_shadow = 50;
-	  }
+					SDL_Rect rect;
+					rect.x = shell[i].x - (size >> 1) + 3;
+					rect.y = shell[i].y - (size >> 1) + 2;
+					rect.w = size;
+					rect.h = size;
+					if(grabbed && index == current)
+					{
+							 rect.x += 1;
+							 rect.y += 1;
+							 alpha_shadow = 50;
+					}
 	  
-     	  SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha_shadow);
-     	  SDL_RenderFillRect(RenderScreen, &rect);
+					SDL_SetRenderDrawColor(RenderScreen, 0, 0, 0, alpha_shadow);
+					SDL_RenderFillRect(RenderScreen, &rect);
      }
 }
 
@@ -1130,11 +1130,11 @@ void DrawFrame(SDL_Rect Frame, int thicknes)
 
      for (int i = 0; i < thicknes; ++i)
      {
-	  SDL_RenderDrawRect(RenderScreen, &Frame);
-	  Frame.x -= 1;
-	  Frame.w += 2;
-	  Frame.y -= 1;
-	  Frame.h += 2;
+					SDL_RenderDrawRect(RenderScreen, &Frame);
+					Frame.x -= 1;
+					Frame.w += 2;
+					Frame.y -= 1;
+					Frame.h += 2;
      }
 }
 void Figure_Manager::draw(){
@@ -1142,40 +1142,40 @@ void Figure_Manager::draw(){
      
      for (int i = 0; i < figure_container.size(); i++)
      {
-	  draw_shadow(O[i]);
+					draw_shadow(O[i]);
 
-	  figure_container[O[i]]->draw();
-	  if(stick_effect && stick_effect_index == O[i])
-	  {
-	       animate_stick_effect();
-	  }
-	  if(is_idle && alpha != 0)
-	  {
-	       if(!figure_container[O[i]]->is_sticked())
-	       {
-		    SDL_Point cntr = figure_container[O[i]]->get_center();
+					figure_container[O[i]]->draw();
+					if(stick_effect && stick_effect_index == O[i])
+					{
+							 animate_stick_effect();
+					}
+					if(is_idle && alpha != 0)
+					{
+							 if(!figure_container[O[i]]->is_sticked())
+							 {
+										SDL_Point cntr = figure_container[O[i]]->get_center();
 		    
-		    idle_rect.x = cntr.x - (idle_rect.w/2);
-		    idle_rect.y = cntr.y - (idle_rect.h/2);
-		    SDL_RenderCopy(RenderScreen, idle_effect, 0, &idle_rect);
-	       }
-	  }
+										idle_rect.x = cntr.x - (idle_rect.w/2);
+										idle_rect.y = cntr.y - (idle_rect.h/2);
+										SDL_RenderCopy(RenderScreen, idle_effect, 0, &idle_rect);
+							 }
+					}
      }
 
      if(DeveloperMode && !figure_container.empty())
      {
-	  if(SelectedFigure >= 0 || SelectedFigure < figure_container.size())
-	  {
-	       SDL_SetRenderDrawColor(RenderScreen, 0, 255, 0, 255);
-	       SDL_Rect figure_area = figure_container[SelectedFigure]->get_area();
-	       DrawFrame(figure_area, 5);
-	  }
+					if(SelectedFigure >= 0 || SelectedFigure < figure_container.size())
+					{
+							 SDL_SetRenderDrawColor(RenderScreen, 0, 255, 0, 255);
+							 SDL_Rect figure_area = figure_container[SelectedFigure]->get_area();
+							 DrawFrame(figure_area, 5);
+					}
 
      }
 
      for (int i = 0; i < figure_container.size(); ++i)
      {
-	  figure_container[i]->draw_shell();
+					figure_container[i]->draw_shell();
      }
 
      if(is_idle) SDL_SetTextureAlphaMod(idle_effect, alpha);
@@ -1186,7 +1186,7 @@ void Figure_Manager::toogle_stick_effect(int index)
 {
      if(stick_effect)
      {
-	  stick_effect_alpha = 200;
+					stick_effect_alpha = 200;
      }
      
      stick_effect = true;
@@ -1197,14 +1197,14 @@ void Figure_Manager::animate_stick_effect()
 {
      if(!stick_effect)
      {
-	  return;
+					return;
      }
      
      if(stick_effect_alpha <= 10)
      {
-	  stick_effect = false;
-	  stick_effect_alpha = 200;
-	  return;
+					stick_effect = false;
+					stick_effect_alpha = 200;
+					return;
      }
      
      stick_effect_alpha -= 5;
@@ -1215,13 +1215,13 @@ void Figure_Manager::animate_stick_effect()
      
      for (int i = 0; i < 4; i++)
      {
-	  SDL_Rect rect;
+					SDL_Rect rect;
 
-	  rect.x = shell[i].x - (size >> 1);
-	  rect.y = shell[i].y - (size >> 1); 
-	  rect.w = rect.h = size;
+					rect.x = shell[i].x - (size >> 1);
+					rect.y = shell[i].y - (size >> 1); 
+					rect.w = rect.h = size;
 
-	  SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, stick_effect_alpha);
-	  SDL_RenderFillRect(RenderScreen, &rect);
+					SDL_SetRenderDrawColor(RenderScreen, 255, 255, 255, stick_effect_alpha);
+					SDL_RenderFillRect(RenderScreen, &rect);
      }
 }

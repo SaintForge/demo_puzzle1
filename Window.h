@@ -1,7 +1,7 @@
 #ifndef WINDOW
 #define WINDOW
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class Window_Info{
 public:
